@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ViralMaker - 모바일 제품 홍보글 & 카드뉴스 자동 생성기</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast-msg" class="toast-msg">클립보드에 복사되었습니다! ✨</div>
+
+  <div class="app-container">
+
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo-wrapper">
+        <div class="logo-icon">🚀</div>
+        <div>
+          <span class="logo-text">ViralMaker</span>
+          <span class="logo-badge">한/일 멀티 채널</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: var(--primary); color: var(--primary-light);" title="스마트폰으로 열기">
+          <span>📱</span> <span>폰으로 열기</span>
+        </button>
+        <button type="button" class="btn-header" id="btn-open-api-modal" title="Gemini AI 설정">
+          <span>⚙️</span> <span>AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT VIEWS -->
+    <main>
+
+      <!-- ============================================== -->
+      <!-- TAB 1: 초간단 입력 (Link, Image/Video, Memo) -->
+      <!-- ============================================== -->
+      <section id="tab-view-input" class="tab-view active">
+        
+        <!-- 원클릭 초고속 샘플 -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>✨ 1초 테스트용 샘플 불러오기</span>
+          </div>
+          <div class="preset-chips">
+            <button type="button" class="preset-chip active" data-preset="0">💆 목마사지기</button>
+            <button type="button" class="preset-chip" data-preset="1">💧 시카 수분앰플</button>
+            <button type="button" class="preset-chip" data-preset="2">🍳 세라믹 올인원팬</button>
+          </div>
+        </div>
+
+        <!-- 3대 핵심 입력 (링크, 미디어, 메모) -->
+        <div class="section-card">
+          <div class="section-title">
+            <span>📎 제품 링크 & 사진/영상 첨부</span>
+          </div>
+
+          <!-- 1. 제품 링크 -->
+          <div class="input-group">
+            <label for="product-link" class="input-label">
+              <span>🔗 제품 판매/홍보 링크 (URL)</span>
+              <span class="req">*</span>
+            </label>
+            <input type="url" id="product-link" class="input-control" placeholder="예: https://smartstore.naver.com/... 또는 쿠팡/텐핑 링크" value="https://smartstore.naver.com/sample/products/neck-care" required>
+            <span style="font-size: 11px; color: var(--text-dim);">※ 복붙용 글 본문 적재적소에 자동으로 포함됩니다.</span>
+          </div>
+
+          <!-- 2. 제품 사진 또는 영상 첨부 -->
+          <div class="input-group">
+            <label class="input-label">
+              <span>📸 제품 사진 또는 영상 첨부</span>
+              <span style="font-size: 11px; color: var(--primary-light); font-weight: normal;">(동영상도 첫 프레임 자동 캡처!)</span>
+            </label>
+            <input type="file" id="product-media-file" accept="image/*,video/*" style="display: none;">
+            <div class="upload-box" id="upload-box">
+              <img id="upload-preview" class="upload-preview" alt="미리보기">
+              <div id="upload-prompt">
+                <div style="font-size: 32px; margin-bottom: 4px;">📷 / 🎥</div>
+                <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">터치하여 사진 또는 동영상 선택</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">스마트폰 갤러리 또는 카메라 촬영 (JPG, PNG, MP4 등)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. (선택) 간단 메모 / 제품명 -->
+          <div class="input-group">
+            <label for="product-memo" class="input-label">
+              <span>✍️ (선택) 제품명 또는 핵심 특징 한줄 메모</span>
+            </label>
+            <textarea id="product-memo" class="textarea-control" style="min-height: 60px;" placeholder="예: 무선 온열 넥케어 마사지기, 하루 15분 승모근 케어 55% 한정특가"></textarea>
+          </div>
+        </div>
+
+        <!-- 일괄 생성 버튼 -->
+        <div style="margin-top: 14px; margin-bottom: 12px;">
+          <button type="button" class="btn-primary-large" id="btn-generate-all">
+            <span>⚡ 1초만에 복붙용 글 & 한/일 카드뉴스 완성하기</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: 복붙용 홍보글 (한국어 / 일본어 4대 채널) -->
+      <!-- ============================================== -->
+      <section id="tab-view-copy" class="tab-view">
+        
+        <!-- 채널 선택 가로 스크롤 필 -->
+        <div class="channel-pills">
+          <button type="button" class="channel-pill active" data-channel="threads-kr">⚡ 스레드 (한국어)</button>
+          <button type="button" class="channel-pill" data-channel="threads-jp">🇯🇵 스레드 (일본어)</button>
+          <button type="button" class="channel-pill" data-channel="naver-blog">📝 네이버 블로그</button>
+          <button type="button" class="channel-pill" data-channel="ameba-jp">🌸 아메바 블로그 (일본어)</button>
+          <button type="button" class="channel-pill" data-channel="instagram">📸 인스타그램</button>
+        </div>
+
+        <!-- 채널 성격 안내 박스 -->
+        <div class="channel-info-box" id="channel-info-text">
+          ⚡ 한국 스레드(Threads): 구매 링크 자동 포함, 500자 이내 일상 후기체 & 댓글 소통 유도
+        </div>
+
+        <!-- 텍스트 편집 및 출력 카드 -->
+        <div class="section-card" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--primary-light);">📄 원클릭 복붙 텍스트 (수정 가능)</span>
+            <span class="char-counter" id="char-counter">0자</span>
+          </div>
+
+          <textarea id="copy-textarea" class="copy-textarea" placeholder="생성된 홍보글이 여기에 표시됩니다."></textarea>
+          
+          <div class="copy-footer-actions">
+            <button type="button" class="btn-regen" id="btn-regen-channel">🔄 이 글만 다시 작성</button>
+            <button type="button" class="btn-copy" id="btn-copy-text" style="font-size: 15px; padding: 12px 24px;">
+              <span>📋 원클릭 복사 (복붙 완료)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 카드뉴스 이동 안내 -->
+        <div style="text-align: center; margin-top: 14px;">
+          <button type="button" class="btn-header" style="width: 100%; justify-content: center; padding: 12px; background: var(--bg-card); font-size: 13px;" onclick="document.querySelector('.nav-item[data-tab=\'cardnews\']').click();">
+            <span>🎨 인스타 카드뉴스(한국어/일본어) 이미지 확인하러 가기 ➔</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: 인스타 쇼핑 카드뉴스 (한국어 / 일본어 2버전) -->
+      <!-- ============================================== -->
+      <section id="tab-view-cardnews" class="tab-view">
+        
+        <!-- 언어 선택 토글 (한국어 vs 일본어) -->
+        <div class="section-card" style="padding: 12px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">🌐 카드뉴스 언어 선택:</span>
+            <div class="ratio-toggle">
+              <button type="button" class="lang-btn active" id="btn-lang-ko" data-lang="ko" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇰🇷 한국어 버전</button>
+              <button type="button" class="lang-btn" id="btn-lang-ja" data-lang="ja" style="background: none; color: var(--text-muted); border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇯🇵 일본어 버전 (日本語)</button>
+            </div>
+          </div>
+
+          <div class="cardnews-controls" style="justify-content: space-between;">
+            <!-- 비율 토글 -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">규격:</span>
+              <div class="ratio-toggle">
+                <button type="button" class="ratio-btn active" data-ratio="1:1">1:1 피드</button>
+                <button type="button" class="ratio-btn" data-ratio="4:5">4:5 세로최적화</button>
+              </div>
+            </div>
+
+            <!-- 테마 선택 칩 -->
+            <div class="theme-selector" style="margin-bottom: 0; padding-bottom: 0;">
+              <div class="theme-chip active" data-theme="modern-dark">모던 다크</div>
+              <div class="theme-chip" data-theme="warm-minimal">웜 베이지</div>
+              <div class="theme-chip" data-theme="clean-white">화이트</div>
+              <div class="theme-chip" data-theme="vivid-sale">특가 세일</div>
+              <div class="theme-chip" data-theme="japanese-zen">재팬 젠</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 카드뉴스 캔버스 프리뷰 -->
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="cardnews-canvas" width="1080" height="1080"></canvas>
+        </div>
+
+        <!-- 슬라이드 내비게이션 (이전 / 다음) -->
+        <div class="slide-nav">
+          <button type="button" class="slide-nav-btn" id="btn-prev-slide">◀ 이전</button>
+          <div class="slide-indicator-text" id="slide-indicator-text">슬라이드 1 / 5</div>
+          <button type="button" class="slide-nav-btn" id="btn-next-slide">다음 ▶</button>
+        </div>
+
+        <!-- 다운로드 및 모바일 저장 액션 버튼들 -->
+        <div class="download-grid">
+          <button type="button" class="btn-download-action primary" id="btn-mobile-save">
+            <span>📱 폰 사진첩에 저장 (길게 누르기)</span>
+          </button>
+          <button type="button" class="btn-download-action" id="btn-download-slide">
+            <span>💾 현재 슬라이드 PNG</span>
+          </button>
+          <button type="button" class="btn-download-action" id="btn-download-all">
+            <span>📦 전체 5장 일괄 저장</span>
+          </button>
+        </div>
+
+        <!-- 현재 슬라이드 실시간 문구 편집 카드 (간단 접이식) -->
+        <details class="section-card" style="margin-top: 14px; padding: 14px;">
+          <summary style="font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;">
+            ✏️ 현재 슬라이드 세부 문구 수정하기 (접기/펼치기)
+          </summary>
+          <div style="margin-top: 12px;">
+            <div class="input-group">
+              <label for="slide-edit-badge" class="input-label">상단 뱃지 텍스트</label>
+              <input type="text" id="slide-edit-badge" class="input-control">
+            </div>
+            <div class="input-group">
+              <label for="slide-edit-title" class="input-label">메인 타이틀</label>
+              <textarea id="slide-edit-title" class="textarea-control" style="min-height: 50px;"></textarea>
+            </div>
+            <div class="input-group">
+              <label for="slide-edit-subtitle" class="input-label">서브 타이틀</label>
+              <textarea id="slide-edit-subtitle" class="textarea-control" style="min-height: 60px;"></textarea>
+            </div>
+          </div>
+        </details>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: 피드 시뮬레이터 (Preview) -->
+      <!-- ============================================== -->
+      <section id="tab-view-preview" class="tab-view">
+        <div class="section-title" style="margin-bottom: 8px;">
+          <span>📱 인스타그램 실제 업로드 시뮬레이션</span>
+        </div>
+        <p class="section-desc">완성된 카드뉴스와 링크가 포함된 본문 글이 인스타 피드에서 어떻게 보이는지 실시간으로 확인해보세요.</p>
+
+        <!-- Instagram Feed Mockup -->
+        <div class="insta-simulator">
+          <div class="insta-header">
+            <div class="insta-profile">
+              <div class="insta-avatar">
+                <div class="insta-avatar-inner">🛍️</div>
+              </div>
+              <div class="insta-name">my_shopping_store</div>
+            </div>
+            <div style="color: #64748B; font-weight: bold;">•••</div>
+          </div>
+
+          <img id="insta-sim-image" class="insta-image-preview" alt="피드 미리보기">
+
+          <div class="insta-actions-bar">
+            <div style="display: flex; gap: 14px;">
+              <span>❤️</span> <span>💬</span> <span>🚀</span>
+            </div>
+            <div><span>🏷️</span></div>
+          </div>
+
+          <div class="insta-caption-box" id="insta-sim-caption">
+            인스타그램 캡션 텍스트가 여기에 표시됩니다.
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <button type="button" class="btn-primary-large" onclick="document.querySelector('.nav-item[data-tab=\'copy\']').click();">
+            <span>📋 복붙 텍스트 복사하러 가기</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FIXED BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav">
+      <button type="button" class="nav-item active" data-tab="input">
+        <span class="nav-icon">🛍️</span>
+        <span class="nav-label">간편 입력</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="copy">
+        <span class="nav-icon">✍️</span>
+        <span class="nav-label">복붙 홍보글</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="cardnews">
+        <span class="nav-icon">🎨</span>
+        <span class="nav-label">카드뉴스</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="preview">
+        <span class="nav-icon">📱</span>
+        <span class="nav-label">피드 확인</span>
+      </button>
+    </nav>
+
+    <!-- MODAL 1: 스마트폰 사진첩 길게 누르기 저장 모달 -->
+    <div class="modal-overlay" id="modal-mobile-save">
+      <div class="modal-card">
+        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">📸 사진첩에 저장하기</h3>
+        <div class="modal-tip">💡 아래 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!</div>
+        <img id="modal-save-image" class="modal-image" alt="저장용 이미지">
+        <button type="button" class="btn-primary-large" id="btn-close-modal" style="padding: 12px;">닫기</button>
+      </div>
+    </div>
+
+    <!-- MODAL 2: 폰으로 열기 QR 코드 모달 -->
+    <div class="modal-overlay" id="modal-qr">
+      <div class="modal-card">
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">📱 핸드폰에서 열기</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+          스마트폰 기본 카메라로 아래 QR 코드를 비추면<br>핸드폰 브라우저에서 바로 사용하실 수 있습니다!
+        </p>
+        
+        <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=http://192.168.0.9:8080/" alt="QR Code" style="width: 200px; height: 200px; display: block;">
+        </div>
+
+        <div style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 13px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
+          http://192.168.0.9:8080/
+        </div>
+
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 16px;">
+          ※ PC와 스마트폰이 같은 와이파이(Wi-Fi)에 연결되어 있어야 합니다.
+        </p>
+
+        <button type="button" class="btn-primary-large" id="btn-close-qr-modal" style="padding: 12px;">확인 완료</button>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Gemini AI 설정 모달 -->
+    <div class="modal-overlay" id="modal-api-key">
+      <div class="modal-card">
+        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">⚙️ Gemini AI 설정 (선택사항)</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+          Gemini API 키를 입력하시면 더욱 풍부한 뉘앙스로 글이 자동 생성됩니다.<br>
+          (미입력 시에도 내장 스마트 템플릿으로 100% 무료 즉시 작동합니다)
+        </p>
+        <div class="input-group">
+          <input type="password" id="input-gemini-key" class="input-control" placeholder="AIzaSy... (Gemini API Key)">
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button type="button" class="btn-header" id="btn-close-api-modal" style="flex: 1; padding: 12px; justify-content: center;">취소</button>
+          <button type="button" class="btn-primary" id="btn-save-api-key" style="flex: 1; padding: 12px; background: var(--primary); border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer;">키 저장</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 캐시 방지 (핸드폰 새로고침 시 즉각 최신 버전 반영) -->
+  <script>
+    const buildVer = Date.now();
+    ['js/templates.js', 'js/generator.js', 'js/cardnews.js', 'js/app.js'].forEach(file => {
+      document.write('<script src="' + file + '?v=' + buildVer + '"><\/script>');
+    });
+  </script>
+</body>
+</html>
