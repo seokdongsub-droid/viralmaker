@@ -46,15 +46,41 @@
       <!-- ============================================== -->
       <section id="tab-view-input" class="tab-view active">
         
-        <!-- 원클릭 초고속 샘플 -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>✨ 1초 테스트용 샘플 불러오기</span>
+        <!-- 🔥 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 라이브러리 -->
+        <div class="section-card" style="border: 1px solid rgba(244, 63, 94, 0.35); background: linear-gradient(180deg, rgba(244, 63, 94, 0.06), var(--bg-card));">
+          <div class="section-title" style="margin-bottom: 6px;">
+            <span style="display: flex; align-items: center; gap: 6px; color: var(--accent-pink);">
+              🔥 <strong>오늘 뭐 팔지? 바이럴 추천템 치트키</strong>
+            </span>
+            <button type="button" class="btn-header" id="btn-random-pick" style="font-size: 11px; padding: 4px 10px; color: var(--primary-light);">
+              🎲 랜덤 추천 1초 픽
+            </button>
           </div>
-          <div class="preset-chips">
-            <button type="button" class="preset-chip active" data-preset="0">💆 목마사지기</button>
-            <button type="button" class="preset-chip" data-preset="1">💧 시카 수분앰플</button>
-            <button type="button" class="preset-chip" data-preset="2">🍳 세라믹 올인원팬</button>
+          <p class="section-desc" style="margin-bottom: 10px;">제품 찾느라 지치셨죠? SNS/숏폼에서 실제로 판매 폭발 중인 검증된 꿀템들입니다. 터치 한 번으로 소구점과 후킹 메모까지 자동 채워집니다!</p>
+
+          <!-- 카테고리 탭 (레시피/조리도구, 살림/수납, 자취/꿀템) -->
+          <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none;">
+            <button type="button" class="viral-cat-btn active" data-cat="kitchen">🍳 레시피/조리도구 (돈되는템)</button>
+            <button type="button" class="viral-cat-btn" data-cat="living">🏠 살림/수납/청소</button>
+            <button type="button" class="viral-cat-btn" data-cat="lifestyle">🛋️ 자취/삶의질 수직상승</button>
+          </div>
+
+          <!-- 추천템 칩 리스트 (동적 렌더링) -->
+          <div id="viral-items-container" class="preset-chips" style="flex-wrap: wrap; margin-bottom: 8px;">
+            <!-- JS 동적 렌더링 -->
+          </div>
+
+          <!-- 선택된 제품 쿠팡 검색 도우미 바 -->
+          <div id="viral-selected-info" style="margin-top: 8px; padding: 10px 12px; background: var(--bg-surface); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <span style="font-size: 11px; color: var(--text-muted);">선택된 추천템:</span>
+              <strong id="selected-viral-title" style="font-size: 13px; color: var(--text-main); margin-left: 4px;">사각 딥 계란말이팬</strong>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <a id="btn-coupang-search" href="https://www.coupang.com/np/search?component=&q=사각+계란말이팬" target="_blank" class="btn-header" style="font-size: 11px; padding: 5px 10px; color: #f43f5e; text-decoration: none;">
+                🔍 쿠팡에서 내 링크 찾기 ➔
+              </a>
+            </div>
           </div>
         </div>
 
@@ -125,11 +151,50 @@
 
         <!-- 채널 성격 안내 박스 -->
         <div class="channel-info-box" id="channel-info-text">
-          ⚡ 한국 스레드(Threads): 구매 링크 자동 포함, 500자 이내 일상 후기체 & 댓글 소통 유도
+          ⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 지원
         </div>
 
-        <!-- 텍스트 편집 및 출력 카드 -->
-        <div class="section-card" style="margin-bottom: 12px;">
+        <!-- 1. 스레드 전용 2단계 안전 분리 패널 (threads-kr, threads-jp) -->
+        <div id="threads-copy-container" class="section-card" style="margin-bottom: 12px; display: block;">
+          <div class="threads-safety-banner">
+            <strong>🛡️ 스레드 계정 보호 2단계 업로드 (알고리즘 최적화)</strong><br>
+            <span>본문에는 외부 링크 없이 사진/영상과 썰만 올리고, <strong>첫 번째 댓글</strong>에 링크를 남겨야 계정 정지(삭제)를 방지하고 추천 피드 노출이 폭발합니다!</span>
+          </div>
+
+          <!-- 1단계 본문 -->
+          <div class="threads-step-box">
+            <div class="threads-step-header">
+              <span class="threads-step-title">📌 [1단계] 본문 포스팅 (사진/영상 첨부용, 링크 없음 🛡️)</span>
+              <button type="button" class="btn-copy-step" id="btn-copy-threads-body">
+                <span>📋 1단계 본문 복사</span>
+              </button>
+            </div>
+            <textarea id="threads-body-textarea" class="copy-textarea" style="min-height: 140px; margin-bottom: 4px;" placeholder="스레드 본문 포스팅 내용"></textarea>
+            <div style="text-align: right; font-size: 11px; color: var(--text-dim);" id="threads-body-counter">0자</div>
+          </div>
+
+          <!-- 2단계 댓글 -->
+          <div class="threads-step-box">
+            <div class="threads-step-header">
+              <span class="threads-step-title">💬 [2단계] 첫 번째 댓글 (내 글에 답글 달기, 링크 🔗)</span>
+              <button type="button" class="btn-copy-step comment-btn" id="btn-copy-threads-comment">
+                <span>💬 2단계 댓글 복사</span>
+              </button>
+            </div>
+            <textarea id="threads-comment-textarea" class="copy-textarea" style="min-height: 110px; margin-bottom: 4px;" placeholder="스레드 첫 번째 댓글 내용"></textarea>
+            <div style="text-align: right; font-size: 11px; color: var(--text-dim);" id="threads-comment-counter">0자</div>
+          </div>
+
+          <div class="copy-footer-actions">
+            <button type="button" class="btn-regen" id="btn-regen-threads">🔄 이 글만 다시 작성</button>
+            <button type="button" class="btn-header" id="btn-copy-threads-all" style="font-size: 13px; padding: 10px 16px;">
+              <span>📋 전체 일괄 복사</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. 블로그 / 인스타 일반 채널 단일 출력 패널 (naver-blog, ameba-jp, instagram) -->
+        <div id="standard-copy-container" class="section-card" style="margin-bottom: 12px; display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-size: 13px; font-weight: 700; color: var(--primary-light);">📄 원클릭 복붙 텍스트 (수정 가능)</span>
             <span class="char-counter" id="char-counter">0자</span>
@@ -181,7 +246,8 @@
 
             <!-- 테마 선택 칩 -->
             <div class="theme-selector" style="margin-bottom: 0; padding-bottom: 0;">
-              <div class="theme-chip active" data-theme="modern-dark">모던 다크</div>
+              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 포토 (Dayz스타일)</div>
+              <div class="theme-chip" data-theme="modern-dark">모던 다크</div>
               <div class="theme-chip" data-theme="warm-minimal">웜 베이지</div>
               <div class="theme-chip" data-theme="clean-white">화이트</div>
               <div class="theme-chip" data-theme="vivid-sale">특가 세일</div>
@@ -358,7 +424,7 @@
 
   <!-- Scripts -->
   <script src="js/templates.js"></script>
-  <script src="js/generator.js"></script>
+  <script src="js/content_generator.js"></script>
   <script src="js/cardnews.js"></script>
   <script src="js/app.js"></script>
 </body>

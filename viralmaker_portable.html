@@ -269,6 +269,27 @@ body {
   color: var(--text-main);
 }
 
+.viral-cat-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.viral-cat-btn.active {
+  background: var(--accent-pink);
+  border-color: var(--accent-pink);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.4);
+}
+
+
 /* Image Upload Area */
 .upload-box {
   border: 2px dashed var(--border-subtle);
@@ -426,6 +447,68 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+
+/* Threads 2-Step Safety Panel */
+.threads-safety-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #34D399;
+}
+
+.threads-step-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.threads-step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.threads-step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-copy-step {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #FFFFFF;
+  border: none;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.1s ease;
+}
+
+.btn-copy-step:active {
+  transform: scale(0.96);
+}
+
+.btn-copy-step.comment-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
 
 /* Card News Studio (Tab 3) */
 .cardnews-controls {
@@ -847,15 +930,41 @@ body {
       <!-- ============================================== -->
       <section id="tab-view-input" class="tab-view active">
         
-        <!-- 원클릭 초고속 샘플 -->
-        <div class="section-card">
-          <div class="section-title">
-            <span>✨ 1초 테스트용 샘플 불러오기</span>
+        <!-- 🔥 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 라이브러리 -->
+        <div class="section-card" style="border: 1px solid rgba(244, 63, 94, 0.35); background: linear-gradient(180deg, rgba(244, 63, 94, 0.06), var(--bg-card));">
+          <div class="section-title" style="margin-bottom: 6px;">
+            <span style="display: flex; align-items: center; gap: 6px; color: var(--accent-pink);">
+              🔥 <strong>오늘 뭐 팔지? 바이럴 추천템 치트키</strong>
+            </span>
+            <button type="button" class="btn-header" id="btn-random-pick" style="font-size: 11px; padding: 4px 10px; color: var(--primary-light);">
+              🎲 랜덤 추천 1초 픽
+            </button>
           </div>
-          <div class="preset-chips">
-            <button type="button" class="preset-chip active" data-preset="0">💆 목마사지기</button>
-            <button type="button" class="preset-chip" data-preset="1">💧 시카 수분앰플</button>
-            <button type="button" class="preset-chip" data-preset="2">🍳 세라믹 올인원팬</button>
+          <p class="section-desc" style="margin-bottom: 10px;">제품 찾느라 지치셨죠? SNS/숏폼에서 실제로 판매 폭발 중인 검증된 꿀템들입니다. 터치 한 번으로 소구점과 후킹 메모까지 자동 채워집니다!</p>
+
+          <!-- 카테고리 탭 (레시피/조리도구, 살림/수납, 자취/꿀템) -->
+          <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none;">
+            <button type="button" class="viral-cat-btn active" data-cat="kitchen">🍳 레시피/조리도구 (돈되는템)</button>
+            <button type="button" class="viral-cat-btn" data-cat="living">🏠 살림/수납/청소</button>
+            <button type="button" class="viral-cat-btn" data-cat="lifestyle">🛋️ 자취/삶의질 수직상승</button>
+          </div>
+
+          <!-- 추천템 칩 리스트 (동적 렌더링) -->
+          <div id="viral-items-container" class="preset-chips" style="flex-wrap: wrap; margin-bottom: 8px;">
+            <!-- JS 동적 렌더링 -->
+          </div>
+
+          <!-- 선택된 제품 쿠팡 검색 도우미 바 -->
+          <div id="viral-selected-info" style="margin-top: 8px; padding: 10px 12px; background: var(--bg-surface); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <span style="font-size: 11px; color: var(--text-muted);">선택된 추천템:</span>
+              <strong id="selected-viral-title" style="font-size: 13px; color: var(--text-main); margin-left: 4px;">사각 딥 계란말이팬</strong>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <a id="btn-coupang-search" href="https://www.coupang.com/np/search?component=&q=사각+계란말이팬" target="_blank" class="btn-header" style="font-size: 11px; padding: 5px 10px; color: #f43f5e; text-decoration: none;">
+                🔍 쿠팡에서 내 링크 찾기 ➔
+              </a>
+            </div>
           </div>
         </div>
 
@@ -926,11 +1035,50 @@ body {
 
         <!-- 채널 성격 안내 박스 -->
         <div class="channel-info-box" id="channel-info-text">
-          ⚡ 한국 스레드(Threads): 구매 링크 자동 포함, 500자 이내 일상 후기체 & 댓글 소통 유도
+          ⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 지원
         </div>
 
-        <!-- 텍스트 편집 및 출력 카드 -->
-        <div class="section-card" style="margin-bottom: 12px;">
+        <!-- 1. 스레드 전용 2단계 안전 분리 패널 (threads-kr, threads-jp) -->
+        <div id="threads-copy-container" class="section-card" style="margin-bottom: 12px; display: block;">
+          <div class="threads-safety-banner">
+            <strong>🛡️ 스레드 계정 보호 2단계 업로드 (알고리즘 최적화)</strong><br>
+            <span>본문에는 외부 링크 없이 사진/영상과 썰만 올리고, <strong>첫 번째 댓글</strong>에 링크를 남겨야 계정 정지(삭제)를 방지하고 추천 피드 노출이 폭발합니다!</span>
+          </div>
+
+          <!-- 1단계 본문 -->
+          <div class="threads-step-box">
+            <div class="threads-step-header">
+              <span class="threads-step-title">📌 [1단계] 본문 포스팅 (사진/영상 첨부용, 링크 없음 🛡️)</span>
+              <button type="button" class="btn-copy-step" id="btn-copy-threads-body">
+                <span>📋 1단계 본문 복사</span>
+              </button>
+            </div>
+            <textarea id="threads-body-textarea" class="copy-textarea" style="min-height: 140px; margin-bottom: 4px;" placeholder="스레드 본문 포스팅 내용"></textarea>
+            <div style="text-align: right; font-size: 11px; color: var(--text-dim);" id="threads-body-counter">0자</div>
+          </div>
+
+          <!-- 2단계 댓글 -->
+          <div class="threads-step-box">
+            <div class="threads-step-header">
+              <span class="threads-step-title">💬 [2단계] 첫 번째 댓글 (내 글에 답글 달기, 링크 🔗)</span>
+              <button type="button" class="btn-copy-step comment-btn" id="btn-copy-threads-comment">
+                <span>💬 2단계 댓글 복사</span>
+              </button>
+            </div>
+            <textarea id="threads-comment-textarea" class="copy-textarea" style="min-height: 110px; margin-bottom: 4px;" placeholder="스레드 첫 번째 댓글 내용"></textarea>
+            <div style="text-align: right; font-size: 11px; color: var(--text-dim);" id="threads-comment-counter">0자</div>
+          </div>
+
+          <div class="copy-footer-actions">
+            <button type="button" class="btn-regen" id="btn-regen-threads">🔄 이 글만 다시 작성</button>
+            <button type="button" class="btn-header" id="btn-copy-threads-all" style="font-size: 13px; padding: 10px 16px;">
+              <span>📋 전체 일괄 복사</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. 블로그 / 인스타 일반 채널 단일 출력 패널 (naver-blog, ameba-jp, instagram) -->
+        <div id="standard-copy-container" class="section-card" style="margin-bottom: 12px; display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-size: 13px; font-weight: 700; color: var(--primary-light);">📄 원클릭 복붙 텍스트 (수정 가능)</span>
             <span class="char-counter" id="char-counter">0자</span>
@@ -982,7 +1130,8 @@ body {
 
             <!-- 테마 선택 칩 -->
             <div class="theme-selector" style="margin-bottom: 0; padding-bottom: 0;">
-              <div class="theme-chip active" data-theme="modern-dark">모던 다크</div>
+              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 포토 (Dayz스타일)</div>
+              <div class="theme-chip" data-theme="modern-dark">모던 다크</div>
               <div class="theme-chip" data-theme="warm-minimal">웜 베이지</div>
               <div class="theme-chip" data-theme="clean-white">화이트</div>
               <div class="theme-chip" data-theme="vivid-sale">특가 세일</div>
@@ -1165,6 +1314,18 @@ body {
  */
 
 const CardNewsThemes = {
+  'photo-overlay': {
+    name: '📸 인스타 포토 감성 (Dayz 스타일)',
+    bg: '#000000',
+    cardBg: 'rgba(0, 0, 0, 0.4)',
+    primary: '#FFFFFF',
+    secondary: '#F43F5E',
+    textMain: '#FFFFFF',
+    textSub: '#F1F5F9',
+    accentBadge: '#F43F5E',
+    badgeText: '#FFFFFF',
+    borderColor: 'transparent'
+  },
   'modern-dark': {
     name: '모던 다크 (Modern Dark)',
     bg: '#0F172A',
@@ -1227,27 +1388,141 @@ const CardNewsThemes = {
   }
 };
 
-// 원클릭 초간단 테스트용 샘플 데이터 (링크 + 메모)
+// 원클릭 초간단 테스트용 샘플 데이터 (기본 호환용)
 const SampleQuickInputs = [
   {
-    title: '목마사지기 (55% 한정특가)',
-    link: 'https://smartstore.naver.com/sample/products/neck-care',
-    memo: '하루 15분 거북목 승모근 케어, 깃털 무게 145g 온열 기능',
-    name: '무선 온열 넥케어 마사지기'
+    title: '사각 계란말이팬',
+    link: 'https://link.coupang.com/a/sample-eggpan',
+    memo: '똥손도 호텔 조식 비주얼 계란말이 3분 컷! 세라믹 논스틱 코팅이라 기름 조금만 둘러도 스르륵 말림',
+    name: '사각 딥 계란말이팬'
   },
   {
-    title: '시카 수분앰플 (1+1 이벤트)',
-    link: 'https://brand.naver.com/sample/cica-ampoule',
-    memo: '병풀 78% 붉은기 즉각 진정, 속건조 0% 저자극 K-뷰티 앰플',
-    name: '시카 판테놀 리페어 수분 앰플'
+    title: '유리 오일 스프레이',
+    link: 'https://link.coupang.com/a/sample-oilspray',
+    memo: '숟가락으로 식용유 붓다가 기름바다 칼로리 폭탄 맞던 사람 필수템! 안개 분사로 기름 90% 줄여주고 에어프라이어 요리 필수',
+    name: '유리 안개분사 오일 스프레이'
   },
   {
-    title: '세라믹 올인원팬 (주말 특가)',
-    link: 'https://shopping.naver.com/sample/ceramic-pan',
-    memo: 'PFOA 불검출 친환경 코팅, 냄비와 팬 올인원 딥 디자인, 인덕션 호환',
-    name: '세라믹 논스틱 올인원 멀티팬'
+    title: '무선 마늘 다지기',
+    link: 'https://link.coupang.com/a/sample-chopper',
+    memo: '볶음밥/파스타 할 때 눈물 흘리며 칼질 10분 하던 거 버튼 누르면 3초 만에 끝냄! 세척도 물로 슥 헹구면 됨',
+    name: '무선 원터치 미니 야채 마늘 다지기'
   }
 ];
+
+// 🔥 바이럴 검증 추천템 라이브러리 (요리/조리도구, 살림/수납, 자취/삶의질)
+const ViralProductLibrary = {
+  kitchen: [
+    {
+      icon: '🍳',
+      name: '사각 딥 계란말이팬',
+      title: '사각 계란말이팬',
+      coupangSearch: '사각 계란말이팬',
+      link: 'https://link.coupang.com/a/sample-eggpan',
+      memo: '똥손도 호텔 조식 비주얼 계란말이 3분 컷! 세라믹 논스틱 코팅이라 기름 조금만 둘러도 스르륵 말림'
+    },
+    {
+      icon: '💨',
+      name: '유리 안개분사 오일 스프레이',
+      title: '오일 스프레이',
+      coupangSearch: '유리 오일 스프레이',
+      link: 'https://link.coupang.com/a/sample-oilspray',
+      memo: '숟가락으로 식용유 붓다가 기름바다 칼로리 폭탄 맞던 사람 필수템! 안개 분사로 기름 90% 줄여주고 에어프라이어 요리 필수'
+    },
+    {
+      icon: '🔪',
+      name: '무선 원터치 미니 야채 마늘 다지기',
+      title: '무선 마늘 다지기',
+      coupangSearch: '무선 마늘 다지기',
+      link: 'https://link.coupang.com/a/sample-chopper',
+      memo: '볶음밥/파스타 할 때 눈물 흘리며 칼질 10분 하던 거 버튼 누르면 3초 만에 끝냄! 세척도 물로 슥 헹구면 됨'
+    },
+    {
+      icon: '🛡️',
+      name: '기름튐 방지 미세 실리콘 덮개',
+      title: '기름튐 방지 덮개',
+      coupangSearch: '기름튐 방지 덮개',
+      link: 'https://link.coupang.com/a/sample-splatter',
+      memo: '삼겹살이나 볶음 요리할 때 가스레인지 벽면 기름바다 되는 거 100% 차단! 수증기는 빠져나가서 바삭함 유지'
+    },
+    {
+      icon: '🥕',
+      name: '스텐 일체형 만능 채칼 슬라이서',
+      title: '스텐 만능 채칼',
+      coupangSearch: '스텐 만능 채칼',
+      link: 'https://link.coupang.com/a/sample-slicer',
+      memo: '당근라페, 양배추채 10초 만에 식당 퀄리티로 완성! 칼질 서툰 사람도 손 안 다치고 얇게 썰어줌'
+    },
+    {
+      icon: '🍲',
+      name: '세라믹 논스틱 올인원 멀티팬',
+      title: '세라믹 올인원팬',
+      coupangSearch: '세라믹 멀티팬',
+      link: 'https://link.coupang.com/a/sample-multipan',
+      memo: '냄비랑 프라이팬 하나로 합쳐진 딥 디자인! 볶음, 국물, 파스타 다 되고 감성 화이트라 플레이팅 필요 없음'
+    }
+  ],
+  living: [
+    {
+      icon: '🧲',
+      name: '자석 부착형 배수구 실리콘 덮개',
+      title: '배수구 실리콘 덮개',
+      coupangSearch: '배수구 실리콘 덮개',
+      link: 'https://link.coupang.com/a/sample-drain',
+      memo: '싱크대 악취랑 날파리 완벽 차단! 자석으로 1초 탈부착되고 물때 안 끼는 위생 실리콘'
+    },
+    {
+      icon: '🗄️',
+      name: '슬라이딩 싱크대 하부장 2단 수납랙',
+      title: '싱크대 슬라이딩 수납랙',
+      coupangSearch: '싱크대 하부장 슬라이딩 선반',
+      link: 'https://link.coupang.com/a/sample-rack',
+      memo: '어둡고 깊어서 냄비 꺼내기 힘들었던 하부장이 서랍처럼 스르륵 나옴! 공간 2배로 넓어지는 수납 혁명'
+    },
+    {
+      icon: '🧽',
+      name: 'PVA 고밀도 워터블럭 물기제거 스펀지',
+      title: 'PVA 워터블럭',
+      coupangSearch: 'PVA 워터블럭',
+      link: 'https://link.coupang.com/a/sample-waterblock',
+      memo: '욕실 거울, 싱크대 물때 슥 닦으면 물방울 하나 없이 광남! 휴지 낭비 없이 1초 만에 물기 싹 흡수'
+    },
+    {
+      icon: '🔄',
+      name: '360도 회전식 냉장고 양념통 트레이',
+      title: '회전 양념통 트레이',
+      coupangSearch: '회전 양념통 트레이',
+      link: 'https://link.coupang.com/a/sample-rotary',
+      memo: '냉장고 안쪽 깊숙이 박힌 양념통 찾느라 다 꺼낼 필요 없음! 돌리면 1초 만에 나와서 삶의 질 수직상승'
+    }
+  ],
+  lifestyle: [
+    {
+      icon: '💆',
+      name: '무선 온열 넥케어 마사지기',
+      title: '무선 온열 목마사지기',
+      coupangSearch: '무선 온열 목마사지기',
+      link: 'https://link.coupang.com/a/sample-neck',
+      memo: '하루 종일 폰/컴퓨터 보느라 돌덩이 된 승모근 15분 만에 살살 녹여줌! 145g 깃털 무게에 온열 기능 힐링'
+    },
+    {
+      icon: '🗑️',
+      name: '스마트 모션인식 센서 휴지통',
+      title: '스마트 센서 휴지통',
+      coupangSearch: '스마트 센서 휴지통',
+      link: 'https://link.coupang.com/a/sample-trash',
+      memo: '요리하다 손에 양념 묻었을 때 무릎만 갖다 대면 스르륵 열림! 냄새 완벽 밀폐 자취방 필수템'
+    },
+    {
+      icon: '💧',
+      name: '시카 판테놀 리페어 수분 앰플',
+      title: '시카 판테놀 앰플',
+      coupangSearch: '시카 수분 앰플',
+      link: 'https://brand.naver.com/sample/cica-ampoule',
+      memo: '병풀 78% 붉은기 즉각 진정! 속건조 0% 저자극 K-뷰티 대란템 1+1 기획'
+    }
+  ]
+};
 
 // 일본 현지 SNS 문체 및 해시태그 사전
 const JapaneseCopyVocab = {
@@ -1257,18 +1532,23 @@ const JapaneseCopyVocab = {
   }
 };
 
+
 /**
- * generator.js
- * 2030 여성 인플루언서 / 라이프스타일 크리에이터 감성 톤앤매너 카피라이팅 엔진
- * 쿠팡 파트너스, 아마존 재팬, 네이버 스마트스토어 등 링크 맞춤 분석 지원
+ * content_generator.js
+ * 쇼핑몰 플랫폼 감지 및 5대 채널 복붙 카피 생성 모듈
+ * 스레드(Threads) 계정 보호를 위한 [1단계: 본문(영상/사진, 링크 절대 없음)] + [2단계: 첫 댓글(링크 & 정보)] 2단계 분리 구조 탑재
  */
 
 class ContentGenerator {
   constructor() {
-    this.geminiModels = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+    this.geminiModels = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash'
+    ];
   }
 
-  // 쇼핑몰 플랫폼 자동 감지
+  // 쇼핑몰 플랫폼 감지
   detectPlatform(urlStr) {
     if (!urlStr) return 'general';
     const lower = urlStr.toLowerCase();
@@ -1307,6 +1587,45 @@ class ContentGenerator {
     return '화제의 인기 추천템';
   }
 
+  // 스레드 본문 & 댓글 2단계 분리 헬퍼
+  splitThreadsPost(text) {
+    if (!text) return { body: '', comment: '' };
+
+    // 한국어 구분자 검사
+    const koMatch = text.match(/(?:━+\s*)?💬\s*\[2단계[^\n]*\][^\n]*\n(?:[─━-]+\n)?([\s\S]*)$/);
+    if (koMatch) {
+      const comment = koMatch[1].trim();
+      const bodyPart = text.substring(0, koMatch.index);
+      const cleanBody = bodyPart
+        .replace(/^📌\s*\[1단계[^\n]*\][^\n]*\n([─━-]+\n)?/, '')
+        .trim();
+      return { body: cleanBody, comment };
+    }
+
+    // 일본어 구분자 검사
+    const jaMatch = text.match(/(?:━+\s*)?💬\s*【ステップ2[^\n]*】[^\n]*\n(?:[─━-]+\n)?([\s\S]*)$/);
+    if (jaMatch) {
+      const comment = jaMatch[1].trim();
+      const bodyPart = text.substring(0, jaMatch.index);
+      const cleanBody = bodyPart
+        .replace(/^📌\s*【ステップ1[^\n]*】[^\n]*\n([─━-]+\n)?/, '')
+        .trim();
+      return { body: cleanBody, comment };
+    }
+
+    // Gemini 생성 구분자 검사 (===COMMENT===)
+    if (text.includes('===COMMENT===')) {
+      const parts = text.split('===COMMENT===');
+      return {
+        body: parts[0].replace(/^📌[^\n]*\n/, '').trim(),
+        comment: parts[1].replace(/^💬[^\n]*\n/, '').trim()
+      };
+    }
+
+    // fallback
+    return { body: text, comment: '' };
+  }
+
   // 전체 결과 일괄 생성
   async generateAll(product, apiKey = '') {
     const name = this.inferProductName(product);
@@ -1320,7 +1639,7 @@ class ContentGenerator {
     const cardnews_ko = this.generateKoreanCardNews(cleanProduct);
     const cardnews_ja = this.generateJapaneseCardNews(cleanProduct);
 
-    // 2. 텍스트 채널 생성 (여성 말투 기반)
+    // 2. 텍스트 채널 생성
     const channels = ['threads-kr', 'threads-jp', 'naver-blog', 'ameba-jp', 'instagram'];
     const texts = {};
 
@@ -1344,7 +1663,7 @@ class ContentGenerator {
     };
   }
 
-  // 한국어 인스타 카드뉴스 5장 슬라이드 (여성 감성)
+  // 한국어 인스타 카드뉴스 5장 슬라이드
   generateKoreanCardNews(p) {
     const name = p.name;
     const memo = p.memo;
@@ -1354,9 +1673,9 @@ class ContentGenerator {
       {
         slideNum: 1,
         type: 'cover',
-        badge: isCoupang ? '🚀 로켓배송 득템' : 'HOT ITEM 🤍',
-        mainTitle: `${name}\n솔직 찐후기 푼다!`,
-        subTitle: isCoupang ? '내일 바로 도착! 직접 써보고 감탄한 리얼 후기' : '삶의 질 수직상승! 왜 다들 극찬하는지 알겠네 🥹',
+        badge: isCoupang ? '🚀 로켓배송 내돈내산' : 'MY FAVORITE 🤍',
+        mainTitle: `${name}\n솔직하게 써본 후기 ✨`,
+        subTitle: isCoupang ? '내일 바로 도착! 요즘 삶의 질 제대로 올려주는 꿀템' : '써보고 너무 만족스러워서 공유하는 찐추천템 🥹',
         extra: isCoupang ? '로켓배송 무료반품 혜택' : '지금 주문 시 한정 할인 혜택'
       },
       {
@@ -1364,7 +1683,7 @@ class ContentGenerator {
         type: 'problem',
         badge: 'CHECK POINT ㅠㅠ',
         mainTitle: '매일 반복되는 이 불편함\n혹시 참고 계셨나요?',
-        subTitle: `${memo}\n더 이상 참지 말고 하루라도 빨리 바꿔보세용!`,
+        subTitle: `${memo}\n더 이상 참지 말고 하루라도 빨리 바꿔보세요!`,
         extra: 'SNS 대란템'
       },
       {
@@ -1388,13 +1707,13 @@ class ContentGenerator {
         type: 'cta',
         badge: 'SPECIAL EVENT 🎁',
         mainTitle: '놓치면 후회할\n기간 한정 특별 프로모션',
-        subTitle: `${isCoupang ? '로켓배송으로 빠르게 받아보세요!\n' : ''}구매 및 상세 링크는 프로필에서 바로 확인 가능해용!`,
+        subTitle: `${isCoupang ? '로켓배송으로 빠르게 받아보세요!\n' : ''}구매 및 상세 링크는 프로필에서 바로 확인 가능해요!`,
         extra: isCoupang ? '쿠팡 와우회원 추가 할인' : '한정 수량 조기 마감 주의'
       }
     ];
   }
 
-  // 일본어 인스타 카드뉴스 5장 슬라이드 (日本語バージョン・女子力高め)
+  // 일본어 인스타 카드뉴스 5장 슬라이드
   generateJapaneseCardNews(p) {
     const name = p.name;
     const isAmazon = p.platform === 'amazon_jp';
@@ -1443,7 +1762,7 @@ class ContentGenerator {
     ];
   }
 
-  // --- 여성 말투 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
+  // --- 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
   generateLocalTemplate(channel, p) {
     const name = p.name;
     const link = p.link || 'https://example.com';
@@ -1462,83 +1781,103 @@ class ContentGenerator {
       : '';
 
     if (channel === 'threads-kr') {
-      // 1. 한국 스레드 (2030 여성 인플루언서 일상 찐후기체)
-      return `언니들… 나 진짜 이거 써보고 신세계 열렸잖아 🥹🤍
-왜 다들 ${name} 좋다고 난리쳤는지 이제야 완벽 이해함 ㅠㅠ
+      // 1. 한국 스레드: [1단계: 본문 (사진/영상 첨부, 외부 링크 없음! 계정 보호)] + [2단계: 첫 번째 댓글 (링크 & 정보)]
+      return `📌 [1단계: 본문 포스팅에 복붙] (사진/영상 첨부, 외부 링크 없음으로 계정 보호 🛡️)
+─────────────────────
+진짜 이거 써보고 요즘 삶의 질 수직상승했어요 🥹🤍
+SNS에서 다들 극찬하길래 반신반의하면서 들여왔는데
+직접 써보니까 왜 인생템이라고 하는지 바로 납득됨…✨
 
-솔직히 반신반의하면서 샀는데,
 ${memo}
-써보자마자 바로 내 인생템 등극했잖아 👏
 
-${isCoupang ? '🚀 로켓배송이라 주문하고 다음 날 바로 문앞에 와서 더 감동이었음!' : '매일 고생하던 나 자신한테 미안해질 정도로 삶의 질 수직상승템 인정이야 🤍'}
+매일 반복되던 작은 불편함들이 싹 해결돼서
+요즘 하루하루가 너무 편하고 기분 좋은 거 있죠 🫧
+${isCoupang ? '배송도 다음 날 바로 문앞에 와서 기다릴 틈도 없었어요 🚀' : '진작 살 걸 왜 이제야 샀나 싶을 정도!'}
 
-지금 할인 중이라 필요했던 언니들은 얼른 쟁여둬!
-👉 구매 링크: ${link}
+혹시 저처럼 고민해보신 분 계신가요?
+다들 어떻게 해결하고 계신지 댓글로 꿀팁 공유해주세요! 👀💬
 
-궁금한 점 있는 언니들은 댓글 남겨주면 솔직하게 다 알려줄게용 💬💖${coupangDisclaimer}
+#내돈내산 #아이템추천 #삶의질수직상승 #살림템 #꿀템 #일상공유 #인생템
 
-#아이템추천 #내돈내산 #꿀템 #생활꿀팁 #스레드쇼핑 #인생템`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 [2단계: 첫 번째 댓글에 바로 복붙] (업로드 후 내 글에 답글로 등록 🔗)
+─────────────────────
+사진/영상에 나온 [${name}] 상세 정보랑 최저가 링크 물어보시는 분들이 많아서 댓글로 남겨둘게요!
+필요하신 분들은 아래 링크나 프로필 링크에서 확인하실 수 있어요 👇
+🔗 ${link}
+
+혹시 사용감이나 더 궁금한 점 있으시면 편하게 답글 남겨주세요! 솔직하게 다 알려드릴게요 🤍${coupangDisclaimer}`;
     }
 
     if (channel === 'threads-jp') {
-      // 2. 일본 스레드 (일본 2030 여성/OL/인플루언서 바즈 문체)
-      return `正直これ買ってなかったら今年一番後悔してたかも…！🥹🤍
-SNSで話題の『${name}』、実際に使ってみたら想像以上に神アイテムすぎて感動しちゃった💭💕
+      // 2. 일본 스레드: [ステップ1：本文 (動画・写真添付用、リンクなしでアカウント保護)] + [ステップ2：返信コメント (リンク/詳細)]
+      return `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）
+─────────────────────
+これ、正直買ってなかったら今年一番後悔してたかも…！🥹🤍
+SNSや口コミで見かけて気になってたんだけど、
+実際に使ってみたら想像以上に神アイテムすぎて感動しちゃった💭✨
 
-【実際に使ってリアルに感動したポイント👇】
+フォロワーさんにもぜひ知ってほしいお気に入りポイント👇
 ・${memo}
-・毎日のプチストレスがこれ1つでゼロになったの…！
+・毎日の小さなプチストレスがこれ1つでゼロになったの…！
 
-${isAmazon ? '📦 Amazonプライム対応だからすぐ届くのも最高に助かる…！' : 'もっと早く買えばよかった大優勝アイテム🏆'}
-気になってた人はタイムセール含めてぜひチェックしてみてね〜！🤍
+生活の質が爆上がりして、なんでもっと早く買わなかったんだろうって本気で思ってる🤍
 
-🔗 詳細・購入リンクはこちらから👇
-${link}
+これ本当に便利すぎるんだけど、
+みんなのおすすめの愛用品や裏技があればぜひコメントで教えてね！👀💬
 
-質問あれば気軽にコメントしてね🥰 全部お返事します💌${amazonDisclaimer}
+#おすすめ #買ってよかった #便利グッズ #QOL向上 #ライフハック #正直レビュー
 
-#おすすめ #買ってよかった #便利グッズ #QOL向上 #Amazon購入品 #ライフハック #正直レビュー #女子力向上`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬【ステップ2：最初の返信コメント用】（投稿後、自分の投稿にリプライで登録🔗）
+─────────────────────
+動画や写真に出てきた【${name}】の詳細や、私が使っているおすすめ情報はプロフィールのリンクや下記にまとめておいたよ！
+気になった方は今すぐチェックしてみてね👇💕
+🔗 ${link}
+
+質問があれば気軽にコメントしてね🥰 全部お返事します💌${amazonDisclaimer}`;
     }
 
     if (channel === 'naver-blog') {
-      // 3. 네이버 블로그 (친절하고 다정한 2030 여성/새댁 블로거 톤)
+      // 3. 네이버 블로그 (친절하고 감성적인 2030 여성 라이프스타일 블로거 톤)
       return `# [솔직후기] 삶의 질 수직상승! ${name} 내돈내산 직접 써본 장단점 총정리 🤍
 
-안녕하세요 여러분! 일상의 유용한 꿀템을 솔직하게 리뷰하는 블로거예요 🥰✨
+안녕하세요 여러분! 일상의 소소한 행복과 유용한 꿀템을 기록하는 블로그입니다 ☕✨
 
-오늘은 요즘 SNS와 커뮤니티에서 정말 핫하게 떠오르고 있는 **[${name}]**을 직접 내돈내산해서 꼼꼼하게 써본 찐후기를 전해드리려고 해요 💕
-
----
-
-## 📦 첫인상 및 언박싱 🎀
-택배 상자 뜯자마자 감탄했어요! 패키지부터 군더더기 없이 너무 깔끔하고 예뻐서 개봉하자마자 마음에 쏙 들더라구요 🤍 마감 처리도 정말 꼼꼼해서 언박싱하는 내내 기분이 좋아졌답니다.
+오늘은 요즘 SNS에서 정말 자주 보여서 눈여겨보고 있던 **[${name}]**을 직접 내돈내산으로 구매해 사용해 본 솔직한 후기를 남겨보려고 해요 💕
 
 ---
 
-## 💡 실제로 써보고 반해버린 핵심 포인트 ✨
-- **핵심 특징:** ${memo}
-- 며칠간 꾸준히 써보니까 왜 진작 안 샀을까 후회될 정도로 일상이 너무 편해진 거 있죠 ㅠㅠ
-- 솔직히 저 혼자만 알고 있기 너무 아까워서 주변 친구들한테도 엄청 입소문 내고 있어요 🥰
-${isCoupang ? '- **배송:** 쿠팡 로켓배송으로 주문 다음 날 바로 안전하게 수령해서 넘 좋았어용 🚀' : ''}
+## 📦 첫인상 및 패키지 🤍
+배송받자마자 열어봤는데 군더더기 없이 깔끔하고 감성적인 패키지가 너무 마음에 들더라구요 :)
+마감도 꼼꼼하고 전체적인 디테일이 좋아서 개봉할 때부터 기분이 좋아지는 느낌이었어요.
 
 ---
 
-## 🎯 이런 분들께 특히 추천드려요! 💖
-- 매일 반복되는 피로와 번거로움을 싹 날려버리고 싶으신 분들
-- 감성 넘치는 디자인과 탄탄한 품질을 모두 챙기고 싶으신 분들
+## 💡 실제로 써보고 반한 점 & 솔직 후기 ✨
+- **주요 포인트:** ${memo}
+- 직접 며칠간 써보니 '왜 이제야 샀을까' 싶을 정도로 일상의 작은 불편함들을 싹 해결해 주더라구요.
+- 과장 없이 담백하게 말씀드리면, 최근에 산 것들 중에 만족도 1위예요 🤍
+${isCoupang ? '- **배송:** 로켓배송으로 다음 날 아침 문 앞에 바로 도착해서 기다림 없이 쓸 수 있어 넘 편했어요 🚀\n' : ''}
+---
+
+## 🎯 이런 분들께 잘 맞을 것 같아요 :)
+- 매일 반복되는 번거로움을 줄이고 삶의 여유를 챙기고 싶으신 분
+- 실용적이면서도 감성적인 디자인까지 모두 챙기고 싶으신 분
 
 ---
 
-## 💰 구매처 및 할인 정보 바로가기 🛍️
-현재 특별 프로모션 및 할인이 진행 중이니, 관심 있으신 분들은 아래 링크를 통해 알뜰하게 혜택 챙겨보세용!
+## 💰 제품 정보 및 구매 링크 🛍️
+궁금해하실 분들을 위해 제가 구매했던 링크와 상세 정보 남겨둘게요.
+현재 할인 및 프로모션 진행 중이니 필요하신 분들은 참고해보세요 :)
 
-▼ 제품 상세 정보 및 구매 바로가기
+▼ ${name} 상세 정보 바로가기
 ${link}
 
-궁금하신 점이 있으시다면 언제든 편하게 댓글 남겨주세용.
-오늘도 향기롭고 행복한 하루 보내세요! 감사합니다 🥰✨${coupangDisclaimer}
+혹시 더 궁금하신 점이 있다면 언제든 편하게 댓글 남겨주세요 💬
+오늘도 기분 좋은 하루 보내세요! 🤍${coupangDisclaimer}
 
-#${name.replace(/\s+/g, '')} #솔직후기 #내돈내산 #제품추천 #인생템 #살림꿀팁 #일상리뷰`;
+#내돈내산 #솔직후기 #${name.replace(/\s+/g, '')} #아이템추천 #일상기록 #살림꿀팁 #삶의질향상`;
     }
 
     if (channel === 'ameba-jp') {
@@ -1546,60 +1885,61 @@ ${link}
       return `皆様こんにちは🌸
 いつもブログに遊びに来てくださりありがとうございます🥰💕
 
-今日は、SNSや口コミでも大人気でずっと気になっていた
-**【${name}】** を実際に購入して試してみたので、正直にレビューしたいと思います✨
+今日は、SNSや口コミでも話題になっていてずっと気になっていた
+**【${name}】** を実際に使ってみたので、正直にレビューしたいと思います✨
 
 結論から言うと…
-「なんでもっと早く買わなかったんだろう〜！」と感動しちゃうレベルの大満足アイテムでした🥹🤍
+「なんでもっと早く使わなかったんだろう〜！」と感動しちゃうくらい大満足のアイテムでした🥹🤍
 
 ---
 
 ### 🌸 お気に入り＆感動ポイント 🎀
 ・${memo}
-・毎日の暮らしがぐっと快適になって、ストレスが本当に軽くなりました💭
-${isAmazon ? '・Amazonプライム便で注文後すぐに届いたのも助かりました📦💕' : ''}
+・毎日の暮らしがぐっと快適になって、小さなストレスが本当にスッキリ解消されました💭
+${isAmazon ? '・Amazonプライム便で注文後すぐに届いたのもすごく助かりました📦💕' : ''}
 
-私と同じように毎日の家事やお仕事で忙しい女性의 皆様には、
-全力でおすすめしたい神アイテムです🥰✨
+私と同じように毎日の家事やお仕事で忙しい女性の皆様には、
+心からおすすめしたいお気に入りアイテムです🥰✨
 
 ---
 
 ### 🛒 お得なキャンペーン＆購入先 🛍️
-現在、期間限定のお得なキャンペーンが実施されているそうです！
-人気商品のため気になる方はお早めにチェックしてみてくださいね🛒💨
+현재, お得なキャンペーンやセールが実施されているようなので、
+気になっていた方はぜひチェックしてみてくださいね🛒💨
 
 ▶︎ 商品の詳細・公式ページはこちら💕
 ${link}
 
 最後まで読んでくださり、本当にありがとうございました！
-よかったら「いいね」やフォローもポチッとしていただけるととっても嬉しいです🥰✨${amazonDisclaimer}
+よかったら「いいね」やフォローもポチッとしていただけるととっても励みになります🥰✨${amazonDisclaimer}
 
 #アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #Amazon購入品 #暮らしを楽しむ`;
     }
 
     if (channel === 'instagram') {
-      // 5. 인스타그램 피드 (인스타 감성 2030 여성 쇼핑/리뷰 톤)
-      return `✨ 인친님들… 저 드디어 인생템 찾았어요 🥹🤍✨
+      // 5. 인스타그램 피드 (감성적이고 세련된 2030 여성 인플루언서 피드)
+      return `✨ 요즘 제 일상에서 가장 만족스럽게 쓰고 있는 최애템 공유해요 🥹🤍
 ━━━━━━━━━━━━━━━━━
-요즘 SNS에서 대란 난 화제의 바로 그 아이템,
-👉 [${name}] 직접 써본 리얼 찐후기 들고 왔어용 🎀
+눈여겨보고 있다가 드디어 데려온
+👉 [${name}] 직접 써본 솔직 후기 🫧
 
-평소에 겪던 불편함을 싹 해결해줘서
-요즘 매일매일 감탄하면서 쓰고 있는 중이랍니다 🤍
+평소에 은근히 신경 쓰이고 번거로웠던 부분들을
+깔끔하게 해결해 줘서 요즘 매일 손이 가는 아이템이에요 🤍
 
-💡 요거 진짜 물건인 이유 CHECK!
+💡 직접 써보고 느낀 포인트 CHECK
 ✔ ${memo}
-✔ 감성 넘치는 깔끔한 디자인 & 확실한 사용 만족도
-${isCoupang ? '✔ 로켓배송으로 내일 바로 도착해서 힐링 시작 🚀\n' : ''}✔ 갓성비까지 완벽해서 주변에도 열렬히 추천 중 🥰
+✔ 깔끔하고 감성적인 디자인 & 확실한 실용성
+${isCoupang ? '✔ 로켓배송으로 바로 다음 날 도착해서 넘 편함 🚀\n' : ''}✔ 써볼수록 만족스러워서 주변에도 조용히 추천 중 :)
 
-📍 구매 방법
-프로필 링크(@계정명) 클릭 또는 아래 링크에서
-특별 할인가로 바로 만나보실 수 있어용! 🛍️
+📍 구매 정보
+프로필 링크 또는 아래 링크에서
+자세한 정보와 할인가로 확인하실 수 있어요 🛍️
 🔗 ${link}
 
-도움이 되셨다면 [저장🏷️ & 좋아요💖] 꾹 눌러두시고 나중에 꺼내보세용!
+나중에 필요할 때 찾아보시려면 [저장🏷️] 해두시고,
+궁금한 점은 편하게 댓글로 남겨주세요 🤍
 ━━━━━━━━━━━━━━━━━${coupangDisclaimer}
-#${name.replace(/\s+/g, '')} #아이템추천 #내돈내산 #인스타쇼핑 #살림꿀팁 #꿀템추천 #인기템 #선물추천 #인생템 #쇼핑스타그램 #일상템 #득템 #특가정보 #한정특가 #제품리뷰`;
+#${name.replace(/\s+/g, '')} #내돈내산 #아이템추천 #살림템 #꿀템추천 #인스타쇼핑 #일상템 #감성템 #삶의질수직상승 #추천템`;
     }
 
     return '';
@@ -1609,24 +1949,47 @@ ${isCoupang ? '✔ 로켓배송으로 내일 바로 도착해서 힐링 시작 �
   async generateWithGemini(channel, p, apiKey) {
     const isCoupang = p.platform === 'coupang';
     const isAmazon = p.platform === 'amazon_jp';
+    const isThreads = channel === 'threads-kr' || channel === 'threads-jp';
+
+    const threadsRule = `
+CRITICAL ALGORITHM & SAFETY RULE FOR THREADS:
+Threads will algorithmically BAN or severely limit reach (0 views) if external affiliate/promotional links are in the main post!
+Therefore, you MUST format the output in EXACTLY TWO PARTS separated by:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${channel === 'threads-jp' ? '💬【ステップ2：最初の返信コメント用】' : '💬 [2단계: 첫 번째 댓글에 바로 복붙]'}
+
+PART 1 (Main Post / 本文):
+- Engaging personal story, lifestyle hook, recipe or hack, media prompt (photo/video attached).
+- NO EXTERNAL LINKS WHATSOEVER in Part 1!
+- MUST end with an interactive question to drive comments (e.g. "혹시 저처럼 고민해보신 분 계신가요? 댓글로 알려주세요! 👀💬" or "誰か上手く焼ける裏技知らない？👀").
+
+PART 2 (First Comment / 返信コメント):
+- The creator's immediate reply to their own post.
+- Friendly transition ("영상/사진 속 아이템 정보 물어보셔서 남겨둬요!" / "動画・写真に出てきた商品の詳細はプロフィールのリンクや下記にまとめておいたよ！").
+- The product link: ${p.link}
+- The affiliate disclosure: ${isCoupang ? '※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.' : (isAmazon ? '※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。' : '')}
+`;
 
     const prompt = `
-You are an expert female social media influencer & lifestyle e-commerce copywriter.
+You are an expert social media influencer & lifestyle e-commerce copywriter.
 Create a high-converting, ready-to-copy-paste promotional post for [${channel}] for this product:
 - Product Name: ${p.name}
 - Product Link: ${p.link} (Platform: ${p.platform})
 - Core Notes: ${p.memo}
 
-CRITICAL TONE REQUIREMENTS:
-- Tone: Charming, emotional, trendy 20s-30s FEMALE influencer/blogger voice (여성 인플루언서 / 여성 일상 톤앤매너).
-- Korean endings: Use friendly, lovely feminine phrasing like "~했어용", "~인 거 있죠!", "~더라구요 ㅠㅠ", "~했어요 ㅎㅎ", and warm emojis (🤍, 🥹, 💖, ✨, 🎀).
-- Japanese endings: Use authentic Japanese female influencer/OL tone like "~しちゃいました💕", "~してみてね🤍", "~すぎる…！🥹", "みんなもぜひチェックしてみてね🥰".
+CRITICAL TONE & STYLE RULES:
+- Tone: Natural, charming, aesthetic, and emotional 20s-30s FEMALE lifestyle influencer / blogger voice (여성 라이프스타일 인플루언서 / 내돈내산 톤앤매너).
+- STRICT PROHIBITION: NEVER use artificial, cheesy, or forced words like "언니", "언니들", "공주님들". Do NOT address the audience as "언니들".
+- Korean phrasing: Use warm, refined feminine endings like "~했어요 🤍", "~인 거 있죠!", "~더라구요 ㅠㅠ", "~추천드려요 :)", and aesthetic emojis (🤍, 🥹, ✨, 🫧, 🌿, ☕).
+- Japanese phrasing: Use natural, trendy Japanese female influencer/OL tone like "~しちゃいました💕", "~してみてね🤍", "~すぎる…！🥹", "ぜひチェックしてみてね🥰".
 
+${isThreads ? threadsRule : `
 Special Requirements:
 ${isCoupang ? '- Since this is a Coupang link, ensure you append the required Korean affiliate disclosure at the end: "※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다." and naturally mention fast delivery.' : ''}
 ${isAmazon ? '- Since this is an Amazon Japan link, write in natural Japanese social media commerce style and include: "※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。" at the end.' : ''}
+`}
 
-Return ONLY the copy-paste-ready text, without explanations.
+Return ONLY the copy-paste-ready text, without conversational explanations.
 `;
 
     for (const model of this.geminiModels) {
@@ -1661,7 +2024,7 @@ class CardNewsStudio {
     this.slides_ko = [];
     this.slides_ja = [];
     this.currentSlideIndex = 0;
-    this.themeKey = 'modern-dark';
+    this.themeKey = 'photo-overlay';
     this.ratio = '1:1'; // '1:1' (1080x1080) or '4:5' (1080x1350)
     this.userImage = null; // Image object (from image or video capture)
     this.canvas = null;
@@ -1819,8 +2182,15 @@ class CardNewsStudio {
     const height = targetHeight || this.canvas.height;
     const theme = CardNewsThemes[this.themeKey] || CardNewsThemes['modern-dark'];
     const isJP = this.currentLanguage === 'ja';
+    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
 
     if (!ctx || !slide) return;
+
+    // 📸 인스타 포토 감성 테마 (Dayz 스타일: 실사진 전체 배경 + 감성 외곽선 자막)
+    if (this.themeKey === 'photo-overlay') {
+      this.drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP);
+      return;
+    }
 
     // 1. 배경
     ctx.fillStyle = theme.bg;
@@ -1836,7 +2206,6 @@ class CardNewsStudio {
     ctx.save();
     const pad = 80;
     const topY = 90;
-    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
 
     ctx.font = `600 28px ${fontFam}`;
     ctx.fillStyle = theme.textSub;
@@ -1921,6 +2290,128 @@ class CardNewsStudio {
     ctx.fillText(text, x + (badgeW / 2), y + (badgeH / 2));
     ctx.restore();
     return badgeH;
+  }
+
+  // 📸 Dayzhome 스타일: 실사진 전체 배경 + 감성 외곽선 자막 렌더러
+  drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP) {
+    // 1. Fullscreen Image Cover
+    if (this.userImage && this.userImage.complete) {
+      const img = this.userImage;
+      const imgRatio = img.width / img.height;
+      const canvasRatio = width / height;
+      let drawW, drawH, drawX, drawY;
+      if (imgRatio > canvasRatio) {
+        drawH = height;
+        drawW = height * imgRatio;
+        drawX = (width - drawW) / 2;
+        drawY = 0;
+      } else {
+        drawW = width;
+        drawH = width / imgRatio;
+        drawX = 0;
+        drawY = (height - drawH) / 2;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    } else {
+      ctx.fillStyle = '#1c1917';
+      ctx.fillRect(0, 0, width, height);
+      ctx.font = '80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillText('📸', width / 2, height / 2 - 40);
+      ctx.font = '700 30px sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillText('제품 사진을 첨부하면 여기에 풀화면으로 채워집니다', width / 2, height / 2 + 40);
+    }
+
+    // 2. Gradients for text contrast
+    const topGrad = ctx.createLinearGradient(0, 0, 0, 180);
+    topGrad.addColorStop(0, 'rgba(0,0,0,0.45)');
+    topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, width, 180);
+
+    const botGrad = ctx.createLinearGradient(0, height - 380, 0, height);
+    botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    botGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(0, height - 380, width, 380);
+
+    // 3. Top right badge: [광고] or [추천] (인스타 대란 계정 스타일)
+    ctx.save();
+    ctx.textAlign = 'right';
+    ctx.font = `700 24px ${fontFam}`;
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.fillText('[광고]', width - 55, 65);
+    ctx.restore();
+
+    // 4. Outlined text helper (White text with black stroke + shadow)
+    const drawOutlinedText = (text, x, y, font, fill = '#FFFFFF', stroke = 'rgba(0,0,0,0.95)', strokeWidth = 9, align = 'center') => {
+      ctx.save();
+      ctx.font = font;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 3;
+      ctx.lineJoin = 'round';
+      ctx.miterLimit = 2;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = strokeWidth;
+      ctx.strokeText(text, x, y);
+      ctx.fillStyle = fill;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    };
+
+    if (slide.type === 'cover') {
+      // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (dayzhome 표지와 100% 동일)
+      const pad = 65;
+      let startY = height - 160;
+      const titleLines = slide.mainTitle.split('\n');
+
+      for (let i = titleLines.length - 1; i >= 0; i--) {
+        drawOutlinedText(titleLines[i], pad, startY, `900 62px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'left');
+        startY -= 82;
+      }
+
+      const sub = (slide.subTitle || '').split('\n')[0] || 'SNS 화제의 찐후기';
+      drawOutlinedText(sub, pad, startY - 12, `700 32px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 6, 'left');
+    } else {
+      // 2~5번 슬라이드: 화면 정중앙에 2~3줄 감성 자막 (dayzhome 2, 3, 4번 슬라이드와 100% 동일)
+      const centerY = height / 2;
+      const mainLines = (slide.mainTitle || '').split('\n').filter(Boolean);
+      const subLines = (slide.subTitle || '').split('\n').filter(Boolean);
+      const allLines = [...mainLines, ...subLines];
+
+      if (slide.type === 'cta') {
+        allLines.push('👉 제품 정보는 프로필 링크 확인! 🤍');
+      }
+
+      const totalH = allLines.length * 68;
+      let y = centerY - (totalH / 2) + 34;
+
+      allLines.forEach((line) => {
+        const clean = line.replace(/^[✔\d\.\s]+/, '');
+        drawOutlinedText(clean, width / 2, y, `800 44px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 9, 'center');
+        y += 72;
+      });
+    }
+
+    // 하단 인디케이터 점 5개
+    ctx.save();
+    const dotCount = this.slides.length;
+    const dotGap = 22;
+    const totalDotW = (dotCount - 1) * dotGap;
+    const startX = (width - totalDotW) / 2;
+    for (let i = 0; i < dotCount; i++) {
+      ctx.beginPath();
+      ctx.arc(startX + (i * dotGap), height - 45, i === slide.slideNum - 1 ? 7 : 4, 0, Math.PI * 2);
+      ctx.fillStyle = i === slide.slideNum - 1 ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   drawCoverSlide(ctx, width, height, theme, slide, fontFam) {
@@ -2330,6 +2821,18 @@ function startViralMakerApp() {
   const btnCopyText = document.getElementById('btn-copy-text');
   const btnRegenChannel = document.getElementById('btn-regen-channel');
 
+  // Tab 2 - Threads 전용 DOM
+  const threadsContainer = document.getElementById('threads-copy-container');
+  const standardContainer = document.getElementById('standard-copy-container');
+  const threadsBodyTextarea = document.getElementById('threads-body-textarea');
+  const threadsCommentTextarea = document.getElementById('threads-comment-textarea');
+  const threadsBodyCounter = document.getElementById('threads-body-counter');
+  const threadsCommentCounter = document.getElementById('threads-comment-counter');
+  const btnCopyThreadsBody = document.getElementById('btn-copy-threads-body');
+  const btnCopyThreadsComment = document.getElementById('btn-copy-threads-comment');
+  const btnRegenThreads = document.getElementById('btn-regen-threads');
+  const btnCopyThreadsAll = document.getElementById('btn-copy-threads-all');
+
   // Tab 3 (카드뉴스)
   const canvasEl = document.getElementById('cardnews-canvas');
   const canvasWrapper = document.getElementById('canvas-wrapper');
@@ -2368,8 +2871,8 @@ function startViralMakerApp() {
 
   // 채널별 안내 텍스트
   const channelDescriptions = {
-    'threads-kr': '⚡ 한국 스레드(Threads): 구매 링크 자동 포함, 500자 이내 일상 후기체 & 댓글 소통 유도',
-    'threads-jp': '🇯🇵 일본 스레드(Threads JP): 구매 링크 자동 포함, 현지 바즈(バズり) 문체 및 QOL 추천 톤',
+    'threads-kr': '⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 (본문 ➔ 첫 댓글)',
+    'threads-jp': '🇯🇵 일본 스레드(Threads JP): 구매 링크 자동 분리, 계정 보호 2단계 업로드 (本文 ➔ 返信コメント)',
     'naver-blog': '📝 네이버 블로그: 링크 포함, 스마트에디터 최적화 [서론 ➔ 언박싱 ➔ 장점 ➔ 총평/구매링크]',
     'ameba-jp': '🌸 일본 아메바 블로그: 구매 링크 포함, 상냥한 絵文字 문체 & 아메바 인기 해시태그',
     'instagram': '📸 인스타그램 피드: 3줄 불렛포인트, 프로필 링크 CTA 및 인기 해시태그 20선'
@@ -2404,25 +2907,85 @@ function startViralMakerApp() {
     });
   });
 
-  // --- 원클릭 샘플 로드 ---
-  presetChips.forEach(chip => {
-    chip.addEventListener('click', (e) => {
-      e.preventDefault();
-      presetChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
+  // --- 🔥 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 라이브러리 연동 ---
+  const viralItemsContainer = document.getElementById('viral-items-container');
+  const selectedViralTitle = document.getElementById('selected-viral-title');
+  const btnCoupangSearch = document.getElementById('btn-coupang-search');
+  const btnRandomPick = document.getElementById('btn-random-pick');
+  const viralCatBtns = document.querySelectorAll('.viral-cat-btn');
 
-      const index = parseInt(chip.getAttribute('data-preset'), 10);
-      const sample = SampleQuickInputs[index];
-      if (sample) {
-        inputLink.value = sample.link;
-        inputMemo.value = sample.memo;
-        state.product.name = sample.name;
-        state.product.link = sample.link;
-        state.product.memo = sample.memo;
-        showToast(`'${sample.name}' 샘플이 입력되었습니다!`);
-      }
+  let currentViralCat = 'kitchen';
+
+  function applyViralItem(item) {
+    if (!item) return;
+    inputLink.value = item.link;
+    inputMemo.value = item.memo;
+    state.product.name = item.name;
+    state.product.link = item.link;
+    state.product.memo = item.memo;
+
+    if (selectedViralTitle) selectedViralTitle.textContent = item.name;
+    if (btnCoupangSearch) {
+      const q = encodeURIComponent(item.coupangSearch || item.name);
+      btnCoupangSearch.href = `https://www.coupang.com/np/search?component=&q=${q}`;
+    }
+    showToast(`'${item.name}' 꿀템이 세팅되었습니다! 🚀`);
+  }
+
+  function renderViralCategory(catKey) {
+    if (!viralItemsContainer || typeof ViralProductLibrary === 'undefined') return;
+    const items = ViralProductLibrary[catKey] || [];
+    viralItemsContainer.innerHTML = '';
+
+    items.forEach((item, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `preset-chip ${idx === 0 ? 'active' : ''}`;
+      btn.innerHTML = `${item.icon || '✨'} ${item.title || item.name}`;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        viralItemsContainer.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        applyViralItem(item);
+      });
+      viralItemsContainer.appendChild(btn);
+    });
+
+    if (items.length > 0) {
+      applyViralItem(items[0]);
+    }
+  }
+
+  viralCatBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      viralCatBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentViralCat = btn.getAttribute('data-cat') || 'kitchen';
+      renderViralCategory(currentViralCat);
     });
   });
+
+  if (btnRandomPick) {
+    btnRandomPick.addEventListener('click', () => {
+      if (typeof ViralProductLibrary === 'undefined') return;
+      const allCats = Object.keys(ViralProductLibrary);
+      const randCat = allCats[Math.floor(Math.random() * allCats.length)];
+      const items = ViralProductLibrary[randCat];
+      const randItem = items[Math.floor(Math.random() * items.length)];
+
+      viralCatBtns.forEach(b => {
+        if (b.getAttribute('data-cat') === randCat) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      renderViralCategory(randCat);
+      applyViralItem(randItem);
+      showToast(`🎲 랜덤 픽: '${randItem.name}' 추천!`);
+    });
+  }
+
+  // 초기 요리/조리도구 추천템 즉시 렌더링
+  renderViralCategory('kitchen');
 
   // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
@@ -2504,9 +3067,126 @@ function startViralMakerApp() {
     } else {
       text = ContentGenerator.generateLocalTemplate(ch, state.product);
     }
-    copyTextarea.value = text;
-    charCounter.textContent = `${text.length}자`;
-    channelInfoText.textContent = channelDescriptions[ch] || '';
+
+    if (channelInfoText) {
+      channelInfoText.textContent = channelDescriptions[ch] || '';
+    }
+
+    if (ch === 'threads-kr' || ch === 'threads-jp') {
+      if (threadsContainer) threadsContainer.style.display = 'block';
+      if (standardContainer) standardContainer.style.display = 'none';
+
+      const split = ContentGenerator.splitThreadsPost(text);
+      if (threadsBodyTextarea) threadsBodyTextarea.value = split.body;
+      if (threadsCommentTextarea) threadsCommentTextarea.value = split.comment;
+      if (threadsBodyCounter) threadsBodyCounter.textContent = `${split.body.length}자 (사진/영상과 함께 업로드)`;
+      if (threadsCommentCounter) threadsCommentCounter.textContent = `${split.comment.length}자 (내 글에 답글 달기)`;
+    } else {
+      if (threadsContainer) threadsContainer.style.display = 'none';
+      if (standardContainer) standardContainer.style.display = 'block';
+
+      if (copyTextarea) copyTextarea.value = text;
+      if (charCounter) charCounter.textContent = `${text.length}자`;
+    }
+  }
+
+  // 스레드 실시간 입력 동기화
+  if (threadsBodyTextarea && threadsCommentTextarea) {
+    const syncThreadsData = () => {
+      const b = threadsBodyTextarea.value;
+      const c = threadsCommentTextarea.value;
+      if (threadsBodyCounter) threadsBodyCounter.textContent = `${b.length}자 (사진/영상과 함께 업로드)`;
+      if (threadsCommentCounter) threadsCommentCounter.textContent = `${c.length}자 (내 글에 답글 달기)`;
+
+      const isJP = state.activeChannel === 'threads-jp';
+      const combined = isJP
+        ? `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）\n─────────────────────\n${b}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬【ステップ2：最初の返信コメント用】（投稿後、自分の投稿にリプライで登録🔗）\n─────────────────────\n${c}`
+        : `📌 [1단계: 본문 포스팅에 복붙] (사진/영상 첨부, 외부 링크 없음으로 계정 보호 🛡️)\n─────────────────────\n${b}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 [2단계: 첫 번째 댓글에 바로 복붙] (업로드 후 내 글에 답글로 등록 🔗)\n─────────────────────\n${c}`;
+
+      if (state.generatedData && state.generatedData.texts) {
+        state.generatedData.texts[state.activeChannel] = combined;
+      }
+    };
+    threadsBodyTextarea.addEventListener('input', syncThreadsData);
+    threadsCommentTextarea.addEventListener('input', syncThreadsData);
+  }
+
+  // 스레드 1단계 본문 복사
+  if (btnCopyThreadsBody) {
+    btnCopyThreadsBody.addEventListener('click', async () => {
+      const textToCopy = (threadsBodyTextarea.value || '').trim();
+      if (!textToCopy) {
+        showToast('복사할 본문 내용이 없습니다.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+      } catch (e) {
+        threadsBodyTextarea.select();
+        document.execCommand('copy');
+      }
+      showToast('📋 [1단계: 본문] 복사 완료! 사진/영상과 함께 스레드에 업로드하세요 🚀');
+    });
+  }
+
+  // 스레드 2단계 댓글 복사
+  if (btnCopyThreadsComment) {
+    btnCopyThreadsComment.addEventListener('click', async () => {
+      const textToCopy = (threadsCommentTextarea.value || '').trim();
+      if (!textToCopy) {
+        showToast('복사할 댓글 내용이 없습니다.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+      } catch (e) {
+        threadsCommentTextarea.select();
+        document.execCommand('copy');
+      }
+      showToast('💬 [2단계: 댓글] 복사 완료! 방금 올린 스레드 글에 바로 댓글로 붙여넣으세요 🔗');
+    });
+  }
+
+  // 스레드 전체 일괄 복사
+  if (btnCopyThreadsAll) {
+    btnCopyThreadsAll.addEventListener('click', async () => {
+      const fullText = (state.generatedData && state.generatedData.texts && state.generatedData.texts[state.activeChannel]) ||
+        (threadsBodyTextarea.value + '\n\n' + threadsCommentTextarea.value);
+      try {
+        await navigator.clipboard.writeText(fullText);
+      } catch (e) {
+        threadsBodyTextarea.select();
+        document.execCommand('copy');
+      }
+      showToast('📋 스레드 본문+댓글 전체 복사 완료!');
+    });
+  }
+
+  // 스레드 글 재작성
+  if (btnRegenThreads) {
+    btnRegenThreads.addEventListener('click', async () => {
+      const ch = state.activeChannel;
+      btnRegenThreads.disabled = true;
+      btnRegenThreads.textContent = '재작성 중...';
+      try {
+        let newText = '';
+        if (state.geminiKey) {
+          newText = await ContentGenerator.generateWithGemini(ch, state.product, state.geminiKey);
+        } else {
+          newText = ContentGenerator.generateLocalTemplate(ch, state.product);
+        }
+        if (state.generatedData && state.generatedData.texts) {
+          state.generatedData.texts[ch] = newText;
+        }
+        updateCopyTextView();
+        showToast('✨ 스레드 글이 새롭게 재작성되었습니다!');
+      } catch (e) {
+        showToast('재작성 실패: ' + e.message);
+      } finally {
+        btnRegenThreads.disabled = false;
+        btnRegenThreads.textContent = '🔄 이 글만 다시 작성';
+      }
+    });
   }
 
   channelPills.forEach(pill => {

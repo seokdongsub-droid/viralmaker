@@ -10,7 +10,7 @@ class CardNewsStudio {
     this.slides_ko = [];
     this.slides_ja = [];
     this.currentSlideIndex = 0;
-    this.themeKey = 'modern-dark';
+    this.themeKey = 'photo-overlay';
     this.ratio = '1:1'; // '1:1' (1080x1080) or '4:5' (1080x1350)
     this.userImage = null; // Image object (from image or video capture)
     this.canvas = null;
@@ -168,8 +168,15 @@ class CardNewsStudio {
     const height = targetHeight || this.canvas.height;
     const theme = CardNewsThemes[this.themeKey] || CardNewsThemes['modern-dark'];
     const isJP = this.currentLanguage === 'ja';
+    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
 
     if (!ctx || !slide) return;
+
+    // 📸 인스타 포토 감성 테마 (Dayz 스타일: 실사진 전체 배경 + 감성 외곽선 자막)
+    if (this.themeKey === 'photo-overlay') {
+      this.drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP);
+      return;
+    }
 
     // 1. 배경
     ctx.fillStyle = theme.bg;
@@ -185,7 +192,6 @@ class CardNewsStudio {
     ctx.save();
     const pad = 80;
     const topY = 90;
-    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
 
     ctx.font = `600 28px ${fontFam}`;
     ctx.fillStyle = theme.textSub;
@@ -270,6 +276,128 @@ class CardNewsStudio {
     ctx.fillText(text, x + (badgeW / 2), y + (badgeH / 2));
     ctx.restore();
     return badgeH;
+  }
+
+  // 📸 Dayzhome 스타일: 실사진 전체 배경 + 감성 외곽선 자막 렌더러
+  drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP) {
+    // 1. Fullscreen Image Cover
+    if (this.userImage && this.userImage.complete) {
+      const img = this.userImage;
+      const imgRatio = img.width / img.height;
+      const canvasRatio = width / height;
+      let drawW, drawH, drawX, drawY;
+      if (imgRatio > canvasRatio) {
+        drawH = height;
+        drawW = height * imgRatio;
+        drawX = (width - drawW) / 2;
+        drawY = 0;
+      } else {
+        drawW = width;
+        drawH = width / imgRatio;
+        drawX = 0;
+        drawY = (height - drawH) / 2;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    } else {
+      ctx.fillStyle = '#1c1917';
+      ctx.fillRect(0, 0, width, height);
+      ctx.font = '80px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillText('📸', width / 2, height / 2 - 40);
+      ctx.font = '700 30px sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillText('제품 사진을 첨부하면 여기에 풀화면으로 채워집니다', width / 2, height / 2 + 40);
+    }
+
+    // 2. Gradients for text contrast
+    const topGrad = ctx.createLinearGradient(0, 0, 0, 180);
+    topGrad.addColorStop(0, 'rgba(0,0,0,0.45)');
+    topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, width, 180);
+
+    const botGrad = ctx.createLinearGradient(0, height - 380, 0, height);
+    botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    botGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(0, height - 380, width, 380);
+
+    // 3. Top right badge: [광고] or [추천] (인스타 대란 계정 스타일)
+    ctx.save();
+    ctx.textAlign = 'right';
+    ctx.font = `700 24px ${fontFam}`;
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.fillText('[광고]', width - 55, 65);
+    ctx.restore();
+
+    // 4. Outlined text helper (White text with black stroke + shadow)
+    const drawOutlinedText = (text, x, y, font, fill = '#FFFFFF', stroke = 'rgba(0,0,0,0.95)', strokeWidth = 9, align = 'center') => {
+      ctx.save();
+      ctx.font = font;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 3;
+      ctx.lineJoin = 'round';
+      ctx.miterLimit = 2;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = strokeWidth;
+      ctx.strokeText(text, x, y);
+      ctx.fillStyle = fill;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    };
+
+    if (slide.type === 'cover') {
+      // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (dayzhome 표지와 100% 동일)
+      const pad = 65;
+      let startY = height - 160;
+      const titleLines = slide.mainTitle.split('\n');
+
+      for (let i = titleLines.length - 1; i >= 0; i--) {
+        drawOutlinedText(titleLines[i], pad, startY, `900 62px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'left');
+        startY -= 82;
+      }
+
+      const sub = (slide.subTitle || '').split('\n')[0] || 'SNS 화제의 찐후기';
+      drawOutlinedText(sub, pad, startY - 12, `700 32px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 6, 'left');
+    } else {
+      // 2~5번 슬라이드: 화면 정중앙에 2~3줄 감성 자막 (dayzhome 2, 3, 4번 슬라이드와 100% 동일)
+      const centerY = height / 2;
+      const mainLines = (slide.mainTitle || '').split('\n').filter(Boolean);
+      const subLines = (slide.subTitle || '').split('\n').filter(Boolean);
+      const allLines = [...mainLines, ...subLines];
+
+      if (slide.type === 'cta') {
+        allLines.push('👉 제품 정보는 프로필 링크 확인! 🤍');
+      }
+
+      const totalH = allLines.length * 68;
+      let y = centerY - (totalH / 2) + 34;
+
+      allLines.forEach((line) => {
+        const clean = line.replace(/^[✔\d\.\s]+/, '');
+        drawOutlinedText(clean, width / 2, y, `800 44px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 9, 'center');
+        y += 72;
+      });
+    }
+
+    // 하단 인디케이터 점 5개
+    ctx.save();
+    const dotCount = this.slides.length;
+    const dotGap = 22;
+    const totalDotW = (dotCount - 1) * dotGap;
+    const startX = (width - totalDotW) / 2;
+    for (let i = 0; i < dotCount; i++) {
+      ctx.beginPath();
+      ctx.arc(startX + (i * dotGap), height - 45, i === slide.slideNum - 1 ? 7 : 4, 0, Math.PI * 2);
+      ctx.fillStyle = i === slide.slideNum - 1 ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   drawCoverSlide(ctx, width, height, theme, slide, fontFam) {
