@@ -1,9 +1,39 @@
-/**
- * app.js
- * 초간단 제품 링크/미디어 첨부 기반 라이프사이클 및 한/일 복붙용 UI 제어 로직
- */
+// 전역 탭 전환 함수 (어떤 상황에서도 즉시 탭 전환 보장)
+window.switchTab = function(tabId) {
+  const tabViews = document.querySelectorAll('.tab-view');
+  const navItems = document.querySelectorAll('.nav-item');
 
-document.addEventListener('DOMContentLoaded', () => {
+  tabViews.forEach(view => {
+    if (view.id === 'tab-view-' + tabId) {
+      view.classList.add('active');
+    } else {
+      view.classList.remove('active');
+    }
+  });
+
+  navItems.forEach(item => {
+    if (item.getAttribute('data-tab') === tabId) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+
+  try {
+    if (tabId === 'cardnews' && window.CardNewsStudio) {
+      if (window.updateSlideEditInputs) window.updateSlideEditInputs();
+      window.CardNewsStudio.render();
+    } else if (tabId === 'preview' && window.updateSimulator) {
+      window.updateSimulator();
+    }
+  } catch (err) {
+    console.warn('switchTab render error:', err);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function startViralMakerApp() {
   // --- 상태 관리 ---
   const state = {
     activeTab: 'input',
@@ -87,13 +117,19 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- 초기화 ---
-  CardNewsStudio.init(canvasEl, canvasWrapper);
-  if (state.geminiKey) {
+  try {
+    if (canvasEl) CardNewsStudio.init(canvasEl, canvasWrapper);
+  } catch (e) {
+    console.warn('CardNewsStudio init warning:', e);
+  }
+
+  if (state.geminiKey && inputApiKey) {
     inputApiKey.value = state.geminiKey;
   }
 
   // --- 토스트 알림 ---
   function showToast(message) {
+    if (!toastEl) return;
     toastEl.textContent = message;
     toastEl.classList.add('show');
     setTimeout(() => {
@@ -101,45 +137,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2200);
   }
 
-  // --- 탭 전환 ---
-  function switchTab(tabId) {
-    state.activeTab = tabId;
-
-    tabViews.forEach(view => {
-      if (view.id === `tab-view-${tabId}`) {
-        view.classList.add('active');
-      } else {
-        view.classList.remove('active');
-      }
-    });
-
-    navItems.forEach(item => {
-      if (item.getAttribute('data-tab') === tabId) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-
-    if (tabId === 'cardnews') {
-      updateSlideEditInputs();
-      CardNewsStudio.render();
-    } else if (tabId === 'preview') {
-      updateSimulator();
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
+  // navItems 클릭 이벤트
   navItems.forEach(item => {
     item.addEventListener('click', () => {
-      switchTab(item.getAttribute('data-tab'));
+      const tabId = item.getAttribute('data-tab');
+      window.switchTab(tabId);
     });
   });
 
   // --- 원클릭 샘플 로드 ---
   presetChips.forEach(chip => {
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
       presetChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
 
@@ -156,10 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- 사진 / 동영상 첨부 처리 ---
-  uploadBox.addEventListener('click', () => {
-    mediaFileInput.click();
-  });
+  // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
   mediaFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -446,4 +452,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 첫 번째 샘플 로드
   presetChips[0]?.click();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startViralMakerApp);
+} else {
+  startViralMakerApp();
+}

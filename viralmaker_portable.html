@@ -882,14 +882,14 @@ body {
               <span style="font-size: 11px; color: var(--primary-light); font-weight: normal;">(동영상도 첫 프레임 자동 캡처!)</span>
             </label>
             <input type="file" id="product-media-file" accept="image/*,video/*" style="display: none;">
-            <div class="upload-box" id="upload-box">
+            <label for="product-media-file" class="upload-box" id="upload-box" style="display: flex;">
               <img id="upload-preview" class="upload-preview" alt="미리보기">
               <div id="upload-prompt">
                 <div style="font-size: 32px; margin-bottom: 4px;">📷 / 🎥</div>
                 <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">터치하여 사진 또는 동영상 선택</div>
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">스마트폰 갤러리 또는 카메라 촬영 (JPG, PNG, MP4 등)</div>
               </div>
-            </div>
+            </label>
           </div>
 
           <!-- 3. (선택) 간단 메모 / 제품명 -->
@@ -1085,21 +1085,21 @@ body {
 
     <!-- FIXED BOTTOM NAVIGATION BAR -->
     <nav class="bottom-nav">
-      <button type="button" class="nav-item active" data-tab="input">
-        <span class="nav-icon">🛍️</span>
-        <span class="nav-label">간편 입력</span>
+      <button type="button" class="nav-item active" data-tab="input" onclick="window.switchTab('input')">
+        <span class="nav-icon" style="pointer-events: none;">🛍️</span>
+        <span class="nav-label" style="pointer-events: none;">간편 입력</span>
       </button>
-      <button type="button" class="nav-item" data-tab="copy">
-        <span class="nav-icon">✍️</span>
-        <span class="nav-label">복붙 홍보글</span>
+      <button type="button" class="nav-item" data-tab="copy" onclick="window.switchTab('copy')">
+        <span class="nav-icon" style="pointer-events: none;">✍️</span>
+        <span class="nav-label" style="pointer-events: none;">복붙 홍보글</span>
       </button>
-      <button type="button" class="nav-item" data-tab="cardnews">
-        <span class="nav-icon">🎨</span>
-        <span class="nav-label">카드뉴스</span>
+      <button type="button" class="nav-item" data-tab="cardnews" onclick="window.switchTab('cardnews')">
+        <span class="nav-icon" style="pointer-events: none;">🎨</span>
+        <span class="nav-label" style="pointer-events: none;">카드뉴스</span>
       </button>
-      <button type="button" class="nav-item" data-tab="preview">
-        <span class="nav-icon">📱</span>
-        <span class="nav-label">피드 확인</span>
+      <button type="button" class="nav-item" data-tab="preview" onclick="window.switchTab('preview')">
+        <span class="nav-icon" style="pointer-events: none;">📱</span>
+        <span class="nav-label" style="pointer-events: none;">피드 확인</span>
       </button>
     </nav>
 
@@ -1122,15 +1122,15 @@ body {
         </p>
         
         <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=http://192.168.0.9:8080/" alt="QR Code" style="width: 200px; height: 200px; display: block;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://cf186324187968.lhr.life/" alt="QR Code" style="width: 200px; height: 200px; display: block;">
         </div>
 
         <div style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 13px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
-          http://192.168.0.9:8080/
+          https://cf186324187968.lhr.life/
         </div>
 
-        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 16px;">
-          ※ PC와 스마트폰이 같은 와이파이(Wi-Fi)에 연결되어 있어야 합니다.
+        <p style="font-size: 11px; color: var(--success); margin-bottom: 16px;">
+          ✓ 보안 HTTPS 실시간 연결됨 (LTE / 5G / 와이파이 어디서나 접속 가능)
         </p>
 
         <button type="button" class="btn-primary-large" id="btn-close-qr-modal" style="padding: 12px;">확인 완료</button>
@@ -1157,12 +1157,1566 @@ body {
 
   </div>
 
-  <!-- 캐시 방지 (핸드폰 새로고침 시 즉각 최신 버전 반영) -->
+  <!-- Scripts -->
   <script>
-    const buildVer = Date.now();
-    ['js/templates.js', 'js/generator.js', 'js/cardnews.js', 'js/app.js'].forEach(file => {
-      document.write('<script src="' + file + '?v=' + buildVer + '"><\/script>');
+/**
+ * templates.js
+ * 카드뉴스 테마, 샘플 데이터, 한국어/일본어 카드뉴스 슬라이드 및 복붙용 템플릿 사전
+ */
+
+const CardNewsThemes = {
+  'modern-dark': {
+    name: '모던 다크 (Modern Dark)',
+    bg: '#0F172A',
+    cardBg: '#1E293B',
+    primary: '#38BDF8',
+    secondary: '#818CF8',
+    textMain: '#FFFFFF',
+    textSub: '#94A3B8',
+    accentBadge: '#F43F5E',
+    badgeText: '#FFFFFF',
+    borderColor: '#334155'
+  },
+  'warm-minimal': {
+    name: '감성 웜 베이지 (Warm Minimal)',
+    bg: '#FAF7F2',
+    cardBg: '#FFFFFF',
+    primary: '#B45309',
+    secondary: '#D97706',
+    textMain: '#292524',
+    textSub: '#78716C',
+    accentBadge: '#B45309',
+    badgeText: '#FFFFFF',
+    borderColor: '#E7E5E4'
+  },
+  'clean-white': {
+    name: '스튜디오 화이트 (Clean Studio)',
+    bg: '#F8FAFC',
+    cardBg: '#FFFFFF',
+    primary: '#2563EB',
+    secondary: '#3B82F6',
+    textMain: '#0F172A',
+    textSub: '#64748B',
+    accentBadge: '#2563EB',
+    badgeText: '#FFFFFF',
+    borderColor: '#E2E8F0'
+  },
+  'vivid-sale': {
+    name: '비비드 특가 (Vivid Sale)',
+    bg: '#18181B',
+    cardBg: '#27272A',
+    primary: '#FACC15',
+    secondary: '#FB923C',
+    textMain: '#FFFFFF',
+    textSub: '#E4E4E7',
+    accentBadge: '#EF4444',
+    badgeText: '#FFFFFF',
+    borderColor: '#3F3F46'
+  },
+  'japanese-zen': {
+    name: '재팬 젠 감성 (Japanese Zen)',
+    bg: '#F4F5F0',
+    cardBg: '#FFFFFF',
+    primary: '#475569',
+    secondary: '#64748B',
+    textMain: '#1E293B',
+    textSub: '#64748B',
+    accentBadge: '#E11D48',
+    badgeText: '#FFFFFF',
+    borderColor: '#E2E8F0'
+  }
+};
+
+// 원클릭 초간단 테스트용 샘플 데이터 (링크 + 메모)
+const SampleQuickInputs = [
+  {
+    title: '목마사지기 (55% 한정특가)',
+    link: 'https://smartstore.naver.com/sample/products/neck-care',
+    memo: '하루 15분 거북목 승모근 케어, 깃털 무게 145g 온열 기능',
+    name: '무선 온열 넥케어 마사지기'
+  },
+  {
+    title: '시카 수분앰플 (1+1 이벤트)',
+    link: 'https://brand.naver.com/sample/cica-ampoule',
+    memo: '병풀 78% 붉은기 즉각 진정, 속건조 0% 저자극 K-뷰티 앰플',
+    name: '시카 판테놀 리페어 수분 앰플'
+  },
+  {
+    title: '세라믹 올인원팬 (주말 특가)',
+    link: 'https://shopping.naver.com/sample/ceramic-pan',
+    memo: 'PFOA 불검출 친환경 코팅, 냄비와 팬 올인원 딥 디자인, 인덕션 호환',
+    name: '세라믹 논스틱 올인원 멀티팬'
+  }
+];
+
+// 일본 현지 SNS 문체 및 해시태그 사전
+const JapaneseCopyVocab = {
+  hashtagsJP: {
+    threads: ['#おすすめ', '#買ってよかった', '#便利グッズ', '#QOL向上', '#ライフハック', '#正直レビュー'],
+    ameba: ['#アメブロ', '#購入品紹介', '#正直レビュー', '#便利アイテム', '#プチプラ', '#お気に入り', '#暮らしを楽しむ']
+  }
+};
+
+/**
+ * generator.js
+ * 쿠팡(Coupang) 파트너스, 아마존 재팬(Amazon JP), 네이버 스마트스토어 등 
+ * 쇼핑 플랫폼 링크 자동 분석 및 공정위/현지 제휴 문구 자동 삽입 지원
+ */
+
+class ContentGenerator {
+  constructor() {
+    this.geminiModels = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+  }
+
+  // 플랫폼 감지 (쿠팡, 아마존재팬, 스마트스토어 등)
+  detectPlatform(urlStr) {
+    if (!urlStr) return 'general';
+    const lower = urlStr.toLowerCase();
+    if (lower.includes('coupang.com') || lower.includes('link.coupang.com')) {
+      return 'coupang';
+    }
+    if (lower.includes('amazon.co.jp') || lower.includes('amzn.to') || lower.includes('amzn.asia')) {
+      return 'amazon_jp';
+    }
+    if (lower.includes('smartstore.naver.com') || lower.includes('brand.naver.com') || lower.includes('shopping.naver.com')) {
+      return 'smartstore';
+    }
+    if (lower.includes('tenping.kr')) {
+      return 'tenping';
+    }
+    return 'general';
+  }
+
+  // 제품 링크와 간단 메모에서 제품명 추론
+  inferProductName(product) {
+    if (product.name && product.name.trim()) return product.name.trim();
+    if (product.memo && product.memo.trim()) {
+      const firstLine = product.memo.split(/[\n,]/)[0].trim();
+      if (firstLine.length > 0 && firstLine.length <= 25) return firstLine;
+    }
+    if (product.link) {
+      try {
+        const url = new URL(product.link);
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        if (pathParts.length > 0) {
+          const last = decodeURIComponent(pathParts[pathParts.length - 1]).replace(/[-_]/g, ' ');
+          if (last.length >= 2 && last.length <= 25) return last;
+        }
+      } catch (e) {}
+    }
+    return '화제의 인기 추천템';
+  }
+
+  // 전체 결과 일괄 생성
+  async generateAll(product, apiKey = '') {
+    const name = this.inferProductName(product);
+    const link = product.link || 'https://link.com';
+    const memo = product.memo || '삶의 질을 높여주는 필수 추천 아이템';
+    const platform = this.detectPlatform(link);
+
+    const cleanProduct = { ...product, name, link, memo, platform };
+
+    // 1. 카드뉴스 슬라이드 생성 (한국어 / 일본어 2버전)
+    const cardnews_ko = this.generateKoreanCardNews(cleanProduct);
+    const cardnews_ja = this.generateJapaneseCardNews(cleanProduct);
+
+    // 2. 텍스트 채널 생성
+    const channels = ['threads-kr', 'threads-jp', 'naver-blog', 'ameba-jp', 'instagram'];
+    const texts = {};
+
+    for (const ch of channels) {
+      try {
+        if (apiKey && apiKey.trim()) {
+          texts[ch] = await this.generateWithGemini(ch, cleanProduct, apiKey.trim());
+        } else {
+          texts[ch] = this.generateLocalTemplate(ch, cleanProduct);
+        }
+      } catch (err) {
+        texts[ch] = this.generateLocalTemplate(ch, cleanProduct);
+      }
+    }
+
+    return {
+      cardnews_ko,
+      cardnews_ja,
+      texts,
+      product: cleanProduct
+    };
+  }
+
+  // 한국어 인스타 카드뉴스 5장 슬라이드
+  generateKoreanCardNews(p) {
+    const name = p.name;
+    const memo = p.memo;
+    const isCoupang = p.platform === 'coupang';
+
+    return [
+      {
+        slideNum: 1,
+        type: 'cover',
+        badge: isCoupang ? '🚀 로켓배송 특가' : 'HOT ITEM 🔥',
+        mainTitle: `${name}\n솔직 찐후기`,
+        subTitle: isCoupang ? '내일 바로 도착! 직접 써보고 감탄한 리얼 후기' : '삶의 질 수직상승! 왜 다들 극찬하는지 알겠네',
+        extra: isCoupang ? '로켓배송 무료반품 혜택' : '지금 주문 시 한정 할인 혜택'
+      },
+      {
+        slideNum: 2,
+        type: 'problem',
+        badge: 'CHECK POINT 🤔',
+        mainTitle: '매일 반복되는 이 불편함\n혹시 겪고 계신가요?',
+        subTitle: `${memo}\n더 이상 참지 말고 하루라도 빨리 바꿔보세요!`,
+        extra: 'SNS 대란템'
+      },
+      {
+        slideNum: 3,
+        type: 'solution',
+        badge: 'SOLUTION 💡',
+        mainTitle: `${name}\n하나로 고민 완전 해결!`,
+        subTitle: `✔ 누구나 체감하는 확실한 실사용 만족도\n✔ 완성도 높은 디자인과 뛰어난 편의성`,
+        extra: '직접 써보면 감탄 나오는 확실한 효과'
+      },
+      {
+        slideNum: 4,
+        type: 'detail',
+        badge: '핵심 포인트 3가지 🔍',
+        mainTitle: '디테일이 다른 이유',
+        subTitle: `1. 믿고 쓰는 안전하고 탄탄한 품질\n2. 일상 속 편리함을 극대화한 설계\n3. 후기가 증명하는 독보적인 가성비`,
+        extra: '재구매율이 높은 이유가 있습니다'
+      },
+      {
+        slideNum: 5,
+        type: 'cta',
+        badge: 'SPECIAL EVENT 🎁',
+        mainTitle: '놓치면 후회할\n기간 한정 특별 프로모션',
+        subTitle: `${isCoupang ? '로켓배송으로 빠르게 받아보세요!\n' : ''}구매 및 상세 링크는 프로필에서 바로 확인 가능합니다.`,
+        extra: isCoupang ? '쿠팡 와우회원 추가 할인' : '한정 수량 조기 마감 주의'
+      }
+    ];
+  }
+
+  // 일본어 인스타 카드뉴스 5장 슬라이드 (日本語バージョン)
+  generateJapaneseCardNews(p) {
+    const name = p.name;
+    const isAmazon = p.platform === 'amazon_jp';
+
+    return [
+      {
+        slideNum: 1,
+        type: 'cover',
+        badge: isAmazon ? 'Amazonベストセラー 🔥' : '大バズり中 🔥',
+        mainTitle: `【SNSで話題】\n${name}\n本音レビュー！`,
+        subTitle: isAmazon ? 'Amazonで即買い！QOL爆上がり確定アイテム🥹' : 'QOL爆上がり確定！もっと早く買えばよかった🥹',
+        extra: isAmazon ? 'プライム対応・翌日配送 📦' : '大人気のため売り切れ注意⚠️'
+      },
+      {
+        slideNum: 2,
+        type: 'problem',
+        badge: 'こんなお悩みありませんか？🤔',
+        mainTitle: '毎日のプチストレス\n我慢していませんか？',
+        subTitle: '「もっと快適に過ごしたい…」\n日常の悩みをこれ1つでスッキリ解消！',
+        extra: '見逃せないチェックポイント'
+      },
+      {
+        slideNum: 3,
+        type: 'solution',
+        badge: 'お悩み解決 💡',
+        mainTitle: `${name}\nで暮らしが変わる！`,
+        subTitle: '✔ 圧倒的な使いやすさと満足度\n✔ 一度使ったらもう手放せない便利さ',
+        extra: 'リアルな口コミでも大絶賛✨'
+      },
+      {
+        slideNum: 4,
+        type: 'detail',
+        badge: '選ばれる3つの理由 🔍',
+        mainTitle: '使って実感した\n決定的なポイント',
+        subTitle: '1. デザイン性と機能性の両立\n2. 誰でも簡単＆快適に使える設計\n3. 圧倒的な高コスパで大満足',
+        extra: 'リピート率が高い納得のクオリティ'
+      },
+      {
+        slideNum: 5,
+        type: 'cta',
+        badge: 'お得情報 🎁',
+        mainTitle: '今だけの特別チャンス！\n限定キャンペーン中',
+        subTitle: isAmazon ? 'Amazonタイムセール中！\n詳細はプロフィールのリンクから🔗✨' : '気になったら今すぐチェック！\n詳細はプロフィールのリンクから🔗✨',
+        extra: '在庫限りのためお早めに！'
+      }
+    ];
+  }
+
+  // --- 복붙용 로컬 템플릿 생성 엔진 ---
+  generateLocalTemplate(channel, p) {
+    const name = p.name;
+    const link = p.link || 'https://example.com';
+    const memo = p.memo || '삶의 질을 높여주는 필수 추천 아이템';
+    const isCoupang = p.platform === 'coupang';
+    const isAmazon = p.platform === 'amazon_jp';
+
+    // 쿠팡 파트너스 공정위 문구
+    const coupangDisclaimer = isCoupang 
+      ? '\n\n※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.' 
+      : '';
+
+    // 아마존 어소시에이트 공정위 문구
+    const amazonDisclaimer = isAmazon 
+      ? '\n\n※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。' 
+      : '';
+
+    if (channel === 'threads-kr') {
+      // 1. 한국 스레드 (복붙용)
+      return `나 진짜 이거 써보고 신세계 열림… 🥹
+왜 다들 ${name} 좋다고 난리였는지 이제야 알겠네.
+
+솔직히 반신반의하면서 샀는데,
+${memo}
+써보자마자 바로 인생템 등극함 👏
+
+${isCoupang ? '🚀 로켓배송이라 주문하고 다음 날 바로 도착해서 더 좋았음!' : '삶의 질 수직상승 템으로 강력 추천합니다.'}
+
+지금 할인 중이라 필요했던 사람들은 얼른 챙겨둬!
+👉 구매 링크: ${link}
+
+궁금한 점 있으면 댓글 남겨주면 솔직하게 알려드림! 💬${coupangDisclaimer}
+
+#아이템추천 #내돈내산 #꿀템 #생활꿀팁 #스레드쇼핑`;
+    }
+
+    if (channel === 'threads-jp') {
+      // 2. 일본 스레드 (복붙용 - バズり構文)
+      return `正直これ買わなかったら今年一番後悔してた…！🥹
+SNSで話題の『${name}』、実際に使ってみたら想像以上の神アイテムだった件。
+
+【実際に使って感動したポイント】
+・${memo}
+・毎日のプチストレスがこれ1つでゼロになった💭
+
+${isAmazon ? '📦 Amazonプライム対応だからすぐ届くのも最高…！' : 'もっと早く買えばよかった大優勝アイテム🏆'}
+気になってた人はタイムセール含めてチェックしてみてね！
+
+🔗 詳細・購入リンクはこちら👇
+${link}
+
+質問あれば気軽にコメントしてね〜！✨${amazonDisclaimer}
+
+#おすすめ #買ってよかった #便利グッズ #QOL向上 #Amazon購入品 #ライフハック #正直レビュー`;
+    }
+
+    if (channel === 'naver-blog') {
+      // 3. 네이버 블로그 (복붙용)
+      return `# [솔직후기] 삶의 질 수직상승! ${name} 내돈내산 장단점 및 실사용 리뷰
+
+안녕하세요! 유용한 일상 꿀템을 솔직하게 리뷰하는 블로거입니다. 😊
+
+오늘은 요즘 SNS와 커뮤니티에서 정말 핫하게 떠오르고 있는 **[${name}]**을 직접 사용해보고 느낀 솔직한 후기를 전해드리려고 합니다.
+
+---
+
+## 📦 첫인상 및 언박싱
+패키지부터 군더더기 없이 깔끔하고 고급스러운 느낌이라 개봉하자마자 마음에 쏙 들었습니다. 마감 처리도 아주 깔끔하고 첫인상부터 신경을 많이 쓴 제품이라는 게 확 느껴지더라고요.
+
+---
+
+## 💡 실제로 써보고 느낀 핵심 포인트
+- **핵심 특징:** ${memo}
+- 며칠간 꾸준히 사용해보니 기존에 겪던 번거로움과 불편함이 싹 사라졌습니다.
+- 주변 지인들에게도 자신 있게 추천할 수 있을 만큼 만족도가 아주 높았습니다.
+${isCoupang ? '- **배송:** 쿠팡 로켓배송으로 주문 다음 날 바로 안전하게 수령했습니다.' : ''}
+
+---
+
+## 🎯 이런 분들께 강력 추천합니다!
+- 매일 번거롭고 피로한 일상을 조금이라도 더 편하게 바꾸고 싶으신 분
+- 가성비와 탄탄한 품질을 모두 갖춘 갓성비 템을 찾으시는 분
+
+---
+
+## 💰 구매처 및 할인 정보 바로가기
+현재 특별 프로모션 및 할인이 진행 중이니, 관심 있으신 분들은 아래 링크를 통해 혜택 확인해보세요!
+
+▼ 제품 상세 정보 및 구매 바로가기
+${link}
+
+궁금한 점이 있으시다면 언제든 편하게 댓글 남겨주세요.
+오늘도 기분 좋은 하루 보내세요! 감사합니다. ✨${coupangDisclaimer}
+
+#${name.replace(/\s+/g, '')} #솔직후기 #내돈내산 #제품추천 #인생템 #살림꿀팁`;
+    }
+
+    if (channel === 'ameba-jp') {
+      // 4. 일본 아메바 블로그 (복붙용 - 絵文字 & 상냥한 일본어)
+      return `こんにちは！✨
+いつもブログを読んでいただきありがとうございます🥰
+
+今日は、SNSや口コミでも大人気でずっと気になっていた
+**【${name}】** を実際に購入して試してみたので、正直にレポートしたいと思います💕
+
+結論から言うと…
+「なんでもっと早く買わなかったんだろう！」と感動するレベルの大満足アイテムでした🥹✨
+
+---
+
+### 🌸 お気に入り＆感動ポイント
+・${memo}
+・毎日の暮らしがぐっと快適になって、ストレスが激減しました💭
+${isAmazon ? '・Amazonプライム便で注文後すぐに届いたのも助かりました📦💕' : ''}
+
+私と同じように毎日の家事やお仕事で忙しい方には、
+全力でおすすめしたい神アイテムです✨
+
+---
+
+### 🛒 お得なキャンペーン＆購入先
+現在、期間限定のお得なキャンペーンが実施されているそうです！
+人気商品のため気になる方はお早めにチェックしてみてくださいね🛒💨
+
+▶︎ 商品の詳細・公式ページはこちら💕
+${link}
+
+最後まで読んでいただき、本当にありがとうございました！
+よかったら「いいね」やフォローもよろしくお願いします🥰${amazonDisclaimer}
+
+#アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #Amazon購入品 #暮らしを楽しむ`;
+    }
+
+    if (channel === 'instagram') {
+      // 5. 인스타그램 피드 (복붙용)
+      return `✨ 삶의 질 200% 올려주는 화제의 필수템 발견! ✨
+━━━━━━━━━━━━━━━━━
+요즘 SNS에서 난리 난 바로 그 제품,
+👉 [${name}] 직접 써본 리얼 솔직 후기!
+
+평소에 겪던 불편함을 싹 해결해줘서
+매일매일 감탄하면서 쓰고 있어요 🤍
+
+💡 핵심 포인트 CHECK!
+✔ ${memo}
+✔ 완성도 높은 디자인 & 확실한 사용 만족도
+${isCoupang ? '✔ 로켓배송으로 내일 바로 도착 🚀\n' : ''}✔ 갓성비까지 완벽한 인생 추천템
+
+📍 구매 방법
+프로필 링크(@계정명) 클릭 또는 아래 링크에서
+특별 할인가로 바로 구매하실 수 있습니다! 🛍️
+🔗 ${link}
+
+도움이 되셨다면 [저장🏷️] 해두고 나중에 꺼내보세요!
+━━━━━━━━━━━━━━━━━${coupangDisclaimer}
+#${name.replace(/\s+/g, '')} #아이템추천 #내돈내산 #인스타쇼핑 #살림꿀팁 #꿀템추천 #인기템 #선물추천 #인생템 #쇼핑스타그램 #일상템 #득템 #특가정보 #한정특가 #제품리뷰`;
+    }
+
+    return '';
+  }
+
+  // --- Gemini API (고급 튜닝) ---
+  async generateWithGemini(channel, p, apiKey) {
+    const isCoupang = p.platform === 'coupang';
+    const isAmazon = p.platform === 'amazon_jp';
+
+    const prompt = `
+You are a top-tier global social media copywriter.
+Create a ready-to-copy-paste promotional post for [${channel}] for this product:
+- Product Name: ${p.name}
+- Product Link: ${p.link} (Platform: ${p.platform})
+- Core Notes: ${p.memo}
+
+Special Requirements:
+${isCoupang ? '- Since this is a Coupang link, ensure you append the required Korean affiliate disclosure at the end: "※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다." and naturally mention fast delivery.' : ''}
+${isAmazon ? '- Since this is an Amazon Japan link, write in natural Japanese social media commerce style and include: "※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。" at the end.' : ''}
+
+Strict rules:
+1. Native language: ${channel.includes('-jp') ? 'Natural Japanese with native creator phrasing and emojis' : 'Natural Korean with native viral creator tone'}.
+2. Ensure the link (${p.link}) is placed naturally in the call-to-action section.
+3. Return ONLY the copy-paste-ready text, without explanations.
+`;
+
+    for (const model of this.geminiModels) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text && text.trim()) return text.trim();
+        }
+      } catch (e) {}
+    }
+    return this.generateLocalTemplate(channel, p);
+  }
+}
+
+window.ContentGenerator = new ContentGenerator();
+
+/**
+ * cardnews.js
+ * 인스타그램 쇼핑 카드뉴스 렌더링 엔진 (한국어/일본어 2개 언어 실시간 전환 지원)
+ * 이미지 및 동영상(Video 프레임 캡처) 지원
+ */
+
+class CardNewsStudio {
+  constructor() {
+    this.currentLanguage = 'ko'; // 'ko' or 'ja'
+    this.slides_ko = [];
+    this.slides_ja = [];
+    this.currentSlideIndex = 0;
+    this.themeKey = 'modern-dark';
+    this.ratio = '1:1'; // '1:1' (1080x1080) or '4:5' (1080x1350)
+    this.userImage = null; // Image object (from image or video capture)
+    this.canvas = null;
+    this.ctx = null;
+    this.previewContainer = null;
+  }
+
+  init(canvasElement, previewContainer) {
+    this.canvas = canvasElement;
+    this.ctx = this.canvas.getContext('2d');
+    this.previewContainer = previewContainer;
+
+    // 기본 초기 슬라이드
+    this.slides_ko = [
+      { slideNum: 1, type: 'cover', badge: 'HOT ITEM 🔥', mainTitle: '삶의 질 수직상승!\n추천 아이템 솔직 후기', subTitle: 'SNS 대란템 직접 써보고 남기는 찐후기', extra: '지금 구매 시 특별 할인 혜택' },
+      { slideNum: 2, type: 'problem', badge: 'CHECK LIST 🤔', mainTitle: '매일 반복되는 불편함\n혹시 겪고 계신가요?', subTitle: '바쁜 일상 속 피로와 스트레스,\n더 이상 참지 마세요!', extra: '현대인 필수 체크 포인트' },
+      { slideNum: 3, type: 'solution', badge: 'SOLUTION 💡', mainTitle: '이 제품 하나로\n고민 완전 해결!', subTitle: '✔ 독보적인 프리미엄 핵심 기능\n✔ 확실한 실사용 만족도', extra: '직접 써보면 감탄 나오는 효과' },
+      { slideNum: 4, type: 'detail', badge: '핵심 포인트 3가지 🔍', mainTitle: '디테일이 다른 이유', subTitle: '1. 초경량 & 뛰어난 휴대성\n2. 누구나 간편한 조작\n3. 안전하고 탄탄한 내구성', extra: '후기가 증명하는 완성도' },
+      { slideNum: 5, type: 'cta', badge: 'SPECIAL EVENT 🎁', mainTitle: '놓치면 후회할\n기간 한정 프로모션!', subTitle: '지금 특별 할인가로 만나보세요!\n구매는 프로필 링크를 확인하세요.', extra: '재고 소진 시 조기 마감' }
+    ];
+
+    this.slides_ja = [
+      { slideNum: 1, type: 'cover', badge: '大バズり中 🔥', mainTitle: '【SNSで話題】\n神アイテム本音レビュー！', subTitle: 'QOL爆上がり確定！もっと早く買えばよかった🥹', extra: '大人気のため売り切れ注意⚠️' },
+      { slideNum: 2, type: 'problem', badge: 'こんなお悩みありませんか？🤔', mainTitle: '毎日のプチストレス\n我慢していませんか？', subTitle: '「もっと快適に過ごしたい…」\n日常の悩みをこれ1つでスッキリ解消！', extra: '見逃せないチェックポイント' },
+      { slideNum: 3, type: 'solution', badge: 'お悩み解決 💡', mainTitle: 'これ1つで\n暮らしが変わる！', subTitle: '✔ 圧倒的な使いやすさと満足度\n✔ 一度使ったらもう手放せない便利さ', extra: 'リアルな口コミでも大絶賛✨' },
+      { slideNum: 4, type: 'detail', badge: '選ばれる3つの理由 🔍', mainTitle: '使って実感した\n決定的なポイント', subTitle: '1. デザイン性と機能性の両立\n2. 誰でも簡単＆快適に使える設計\n3. 圧倒的な高コスパで大満足', extra: 'リピート率が高い納得のクオリティ' },
+      { slideNum: 5, type: 'cta', badge: 'お得情報 🎁', mainTitle: '今だけの特別チャンス！\n限定キャンペーン中', subTitle: '気になったら今すぐチェック！\n詳細はプロフィールのリンクから🔗✨', extra: '在庫限りのためお早めに！' }
+    ];
+
+    this.updateCanvasDimensions();
+    this.render();
+  }
+
+  get slides() {
+    return this.currentLanguage === 'ja' ? this.slides_ja : this.slides_ko;
+  }
+
+  set slides(val) {
+    if (this.currentLanguage === 'ja') {
+      this.slides_ja = val;
+    } else {
+      this.slides_ko = val;
+    }
+  }
+
+  setGeneratedSlides(slidesKo, slidesJa) {
+    if (slidesKo) this.slides_ko = slidesKo;
+    if (slidesJa) this.slides_ja = slidesJa;
+    this.currentSlideIndex = 0;
+    this.render();
+  }
+
+  setLanguage(lang) {
+    this.currentLanguage = lang;
+    this.render();
+  }
+
+  setTheme(themeKey) {
+    if (CardNewsThemes[themeKey]) {
+      this.themeKey = themeKey;
+      this.render();
+    }
+  }
+
+  setRatio(ratio) {
+    this.ratio = ratio;
+    this.updateCanvasDimensions();
+    this.render();
+  }
+
+  updateCanvasDimensions() {
+    if (this.ratio === '4:5') {
+      this.canvas.width = 1080;
+      this.canvas.height = 1350;
+    } else {
+      this.canvas.width = 1080;
+      this.canvas.height = 1080;
+    }
+  }
+
+  // 이미지 또는 비디오 프레임 DataURL 등록
+  setUserMedia(dataUrl) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      this.userImage = img;
+      this.render();
+    };
+    img.src = dataUrl;
+  }
+
+  // 동영상 파일에서 썸네일 자동 캡처
+  captureVideoFrame(videoFile, onReady) {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.src = URL.createObjectURL(videoFile);
+    video.muted = true;
+    video.playsInline = true;
+
+    video.onloadeddata = () => {
+      video.currentTime = Math.min(0.5, video.duration / 2);
+    };
+
+    video.onseeked = () => {
+      const capCanvas = document.createElement('canvas');
+      capCanvas.width = video.videoWidth || 720;
+      capCanvas.height = video.videoHeight || 720;
+      const capCtx = capCanvas.getContext('2d');
+      capCtx.drawImage(video, 0, 0, capCanvas.width, capCanvas.height);
+      const dataUrl = capCanvas.toDataURL('image/jpeg', 0.9);
+      this.setUserMedia(dataUrl);
+      if (onReady) onReady(dataUrl);
+    };
+  }
+
+  getCurrentSlide() {
+    const list = this.slides;
+    return list[this.currentSlideIndex] || list[0];
+  }
+
+  updateCurrentSlide(data) {
+    const cur = this.getCurrentSlide();
+    if (cur) {
+      if (data.badge !== undefined) cur.badge = data.badge;
+      if (data.mainTitle !== undefined) cur.mainTitle = data.mainTitle;
+      if (data.subTitle !== undefined) cur.subTitle = data.subTitle;
+      if (data.extra !== undefined) cur.extra = data.extra;
+      this.render();
+    }
+  }
+
+  nextSlide() {
+    if (this.currentSlideIndex < this.slides.length - 1) {
+      this.currentSlideIndex++;
+      this.render();
+      return true;
+    }
+    return false;
+  }
+
+  prevSlide() {
+    if (this.currentSlideIndex > 0) {
+      this.currentSlideIndex--;
+      this.render();
+      return true;
+    }
+    return false;
+  }
+
+  // --- 메인 렌더링 루프 ---
+  render(targetCtx = null, targetSlide = null, targetWidth = null, targetHeight = null) {
+    const ctx = targetCtx || this.ctx;
+    const slide = targetSlide || this.getCurrentSlide();
+    const width = targetWidth || this.canvas.width;
+    const height = targetHeight || this.canvas.height;
+    const theme = CardNewsThemes[this.themeKey] || CardNewsThemes['modern-dark'];
+    const isJP = this.currentLanguage === 'ja';
+
+    if (!ctx || !slide) return;
+
+    // 1. 배경
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(0, 0, width, height);
+
+    const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+    bgGrad.addColorStop(0, 'rgba(255, 255, 255, 0.04)');
+    bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0.15)');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. 상단 헤더
+    ctx.save();
+    const pad = 80;
+    const topY = 90;
+    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
+
+    ctx.font = `600 28px ${fontFam}`;
+    ctx.fillStyle = theme.textSub;
+    ctx.textAlign = 'left';
+    ctx.fillText(isJP ? 'RECOMMENDED ITEM ✦' : 'PICK ITEM ✦', pad, topY);
+
+    const curStr = String(slide.slideNum).padStart(2, '0');
+    const totalStr = String(this.slides.length).padStart(2, '0');
+    ctx.textAlign = 'right';
+    ctx.font = `700 28px ${fontFam}`;
+    ctx.fillStyle = theme.primary;
+    ctx.fillText(`${curStr} `, width - pad - 45, topY);
+    ctx.fillStyle = theme.textSub;
+    ctx.fillText(`/ ${totalStr}`, width - pad, topY);
+    ctx.restore();
+
+    // 3. 슬라이드 본문
+    if (slide.type === 'cover') {
+      this.drawCoverSlide(ctx, width, height, theme, slide, fontFam);
+    } else if (slide.type === 'problem') {
+      this.drawProblemSlide(ctx, width, height, theme, slide, fontFam);
+    } else if (slide.type === 'solution' || slide.type === 'detail') {
+      this.drawContentSlide(ctx, width, height, theme, slide, fontFam);
+    } else if (slide.type === 'cta') {
+      this.drawCtaSlide(ctx, width, height, theme, slide, fontFam);
+    } else {
+      this.drawContentSlide(ctx, width, height, theme, slide, fontFam);
+    }
+
+    // 4. 하단 인디케이터
+    this.drawFooter(ctx, width, height, theme, slide, fontFam, isJP);
+  }
+
+  drawFooter(ctx, width, height, theme, slide, fontFam, isJP) {
+    ctx.save();
+    const bottomY = height - 80;
+    const pad = 80;
+    const dotCount = this.slides.length;
+    const dotRadius = 6;
+    const dotGap = 18;
+
+    for (let i = 0; i < dotCount; i++) {
+      ctx.beginPath();
+      const x = pad + (i * dotGap);
+      ctx.arc(x, bottomY, dotRadius, 0, Math.PI * 2);
+      if (i === slide.slideNum - 1) {
+        ctx.fillStyle = theme.primary;
+        ctx.fill();
+      } else {
+        ctx.fillStyle = theme.borderColor;
+        ctx.fill();
+      }
+    }
+
+    ctx.textAlign = 'right';
+    ctx.font = `600 26px ${fontFam}`;
+    ctx.fillStyle = theme.textSub;
+    if (slide.slideNum < this.slides.length) {
+      ctx.fillText(isJP ? 'スワイプして次へ ➔' : '옆으로 넘겨보기 ➔', width - pad, bottomY + 4);
+    } else {
+      ctx.fillStyle = theme.accentBadge;
+      ctx.fillText(isJP ? 'プロフリンクからチェック🔗' : '프로필 링크에서 확인 ✨', width - pad, bottomY + 4);
+    }
+    ctx.restore();
+  }
+
+  drawBadge(ctx, text, x, y, theme, fontFam) {
+    ctx.save();
+    ctx.font = `800 26px ${fontFam}`;
+    const textWidth = ctx.measureText(text).width;
+    const padX = 24;
+    const badgeW = textWidth + (padX * 2);
+    const badgeH = 48;
+
+    this.roundRect(ctx, x, y, badgeW, badgeH, 24);
+    ctx.fillStyle = theme.accentBadge;
+    ctx.fill();
+
+    ctx.fillStyle = theme.badgeText;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x + (badgeW / 2), y + (badgeH / 2));
+    ctx.restore();
+    return badgeH;
+  }
+
+  drawCoverSlide(ctx, width, height, theme, slide, fontFam) {
+    const pad = 80;
+    let curY = 170;
+
+    if (slide.badge) {
+      this.drawBadge(ctx, slide.badge, pad, curY, theme, fontFam);
+      curY += 80;
+    }
+
+    ctx.save();
+    ctx.font = `900 66px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const titleLines = slide.mainTitle.split('\n');
+    titleLines.forEach(line => {
+      ctx.fillText(line, pad, curY);
+      curY += 82;
     });
+
+    curY += 10;
+    ctx.font = `500 30px ${fontFam}`;
+    ctx.fillStyle = theme.textSub;
+    ctx.fillText(slide.subTitle, pad, curY);
+    curY += 55;
+    ctx.restore();
+
+    const imgBoxX = pad;
+    const imgBoxY = curY + 20;
+    const imgBoxW = width - (pad * 2);
+    const imgBoxH = height - imgBoxY - 140;
+
+    this.drawImageContainer(ctx, imgBoxX, imgBoxY, imgBoxW, imgBoxH, theme);
+  }
+
+  drawProblemSlide(ctx, width, height, theme, slide, fontFam) {
+    const pad = 80;
+    let curY = 200;
+
+    if (slide.badge) {
+      this.drawBadge(ctx, slide.badge, pad, curY, theme, fontFam);
+      curY += 90;
+    }
+
+    ctx.save();
+    ctx.font = `900 64px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const titleLines = slide.mainTitle.split('\n');
+    titleLines.forEach(line => {
+      ctx.fillText(line, pad, curY);
+      curY += 82;
+    });
+
+    curY += 40;
+    const cardW = width - (pad * 2);
+    const cardH = height - curY - 160;
+    this.roundRect(ctx, pad, curY, cardW, cardH, 28);
+    ctx.fillStyle = theme.cardBg;
+    ctx.fill();
+    ctx.strokeStyle = theme.borderColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    let textY = curY + 60;
+    ctx.font = `600 36px ${fontFam}`;
+    ctx.fillStyle = theme.primary;
+    ctx.fillText(this.currentLanguage === 'ja' ? '⚠ チェックリスト' : '⚠ 문제점 체크', pad + 50, textY);
+    textY += 65;
+
+    ctx.font = `500 34px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    const subLines = slide.subTitle.split('\n');
+    subLines.forEach(line => {
+      this.wrapText(ctx, line, pad + 50, textY, cardW - 100, 52);
+      textY += 60;
+    });
+
+    if (slide.extra) {
+      textY += 40;
+      ctx.font = `700 30px ${fontFam}`;
+      ctx.fillStyle = theme.accentBadge;
+      ctx.fillText(`👉 ${slide.extra}`, pad + 50, textY);
+    }
+    ctx.restore();
+  }
+
+  drawContentSlide(ctx, width, height, theme, slide, fontFam) {
+    const pad = 80;
+    let curY = 180;
+
+    if (slide.badge) {
+      this.drawBadge(ctx, slide.badge, pad, curY, theme, fontFam);
+      curY += 90;
+    }
+
+    ctx.save();
+    ctx.font = `900 60px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const titleLines = slide.mainTitle.split('\n');
+    titleLines.forEach(line => {
+      ctx.fillText(line, pad, curY);
+      curY += 76;
+    });
+
+    curY += 35;
+    const cardW = width - (pad * 2);
+    const cardH = height - curY - 160;
+    this.roundRect(ctx, pad, curY, cardW, cardH, 28);
+    ctx.fillStyle = theme.cardBg;
+    ctx.fill();
+    ctx.strokeStyle = theme.borderColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    let itemY = curY + 60;
+    const lines = slide.subTitle.split('\n').filter(Boolean);
+
+    lines.forEach((line) => {
+      this.roundRect(ctx, pad + 40, itemY - 6, 44, 44, 12);
+      ctx.fillStyle = theme.primary;
+      ctx.fill();
+
+      ctx.font = `700 24px ${fontFam}`;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✓', pad + 62, itemY + 16);
+
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.font = `600 34px ${fontFam}`;
+      ctx.fillStyle = theme.textMain;
+      this.wrapText(ctx, line.replace(/^[✔\d\.\s]+/, ''), pad + 105, itemY, cardW - 160, 48);
+
+      itemY += 100;
+    });
+
+    if (slide.extra) {
+      itemY += 20;
+      ctx.font = `600 30px ${fontFam}`;
+      ctx.fillStyle = theme.textSub;
+      ctx.fillText(`💡 ${slide.extra}`, pad + 45, itemY);
+    }
+    ctx.restore();
+  }
+
+  drawCtaSlide(ctx, width, height, theme, slide, fontFam) {
+    const pad = 80;
+    let curY = 200;
+
+    if (slide.badge) {
+      this.drawBadge(ctx, slide.badge, pad, curY, theme, fontFam);
+      curY += 90;
+    }
+
+    ctx.save();
+    ctx.font = `900 64px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const titleLines = slide.mainTitle.split('\n');
+    titleLines.forEach(line => {
+      ctx.fillText(line, pad, curY);
+      curY += 80;
+    });
+
+    curY += 40;
+    const boxW = width - (pad * 2);
+    const boxH = height - curY - 160;
+
+    const grad = ctx.createLinearGradient(pad, curY, pad + boxW, curY + boxH);
+    grad.addColorStop(0, theme.cardBg);
+    grad.addColorStop(1, theme.bg);
+    this.roundRect(ctx, pad, curY, boxW, boxH, 32);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = theme.accentBadge;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    let contentY = curY + 70;
+    ctx.font = `800 44px ${fontFam}`;
+    ctx.fillStyle = theme.primary;
+    ctx.fillText('SPECIAL OFFER 🎁', pad + 50, contentY);
+    contentY += 75;
+
+    ctx.font = `600 36px ${fontFam}`;
+    ctx.fillStyle = theme.textMain;
+    const subLines = slide.subTitle.split('\n');
+    subLines.forEach(line => {
+      this.wrapText(ctx, line, pad + 50, contentY, boxW - 100, 52);
+      contentY += 60;
+    });
+
+    contentY += 40;
+    const btnW = boxW - 100;
+    const btnH = 80;
+    this.roundRect(ctx, pad + 50, contentY, btnW, btnH, 20);
+    ctx.fillStyle = theme.accentBadge;
+    ctx.fill();
+
+    ctx.font = `800 32px ${fontFam}`;
+    ctx.fillStyle = theme.badgeText;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const ctaBtnText = this.currentLanguage === 'ja' ? 'プロフィールのリンクから今すぐ購入 ➔' : '프로필 링크에서 바로 확인하기 ➔';
+    ctx.fillText(ctaBtnText, pad + 50 + (btnW / 2), contentY + (btnH / 2));
+    ctx.restore();
+  }
+
+  drawImageContainer(ctx, x, y, w, h, theme) {
+    ctx.save();
+    this.roundRect(ctx, x, y, w, h, 28);
+    ctx.clip();
+
+    if (this.userImage && this.userImage.complete) {
+      const img = this.userImage;
+      const imgRatio = img.width / img.height;
+      const boxRatio = w / h;
+      let drawW, drawH, drawX, drawY;
+
+      if (imgRatio > boxRatio) {
+        drawH = h;
+        drawW = h * imgRatio;
+        drawX = x + (w - drawW) / 2;
+        drawY = y;
+      } else {
+        drawW = w;
+        drawH = w / imgRatio;
+        drawX = x;
+        drawY = y + (h - drawH) / 2;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      const shadowGrad = ctx.createLinearGradient(x, y + h - 120, x, y + h);
+      shadowGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      shadowGrad.addColorStop(1, 'rgba(0,0,0,0.6)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(x, y, w, h);
+    } else {
+      ctx.fillStyle = theme.cardBg;
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = theme.borderColor;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '80px sans-serif';
+      ctx.fillStyle = theme.primary;
+      ctx.fillText('🛍️', x + (w / 2), y + (h / 2) - 35);
+
+      ctx.font = '700 32px sans-serif';
+      ctx.fillStyle = theme.textMain;
+      ctx.fillText(this.currentLanguage === 'ja' ? '商品画像・動画を添付してください' : '제품 사진이나 영상을 첨부해보세요!', x + (w / 2), y + (h / 2) + 40);
+
+      ctx.font = '500 24px sans-serif';
+      ctx.fillStyle = theme.textSub;
+      ctx.fillText(this.currentLanguage === 'ja' ? 'スマホのアルバムから選択' : '스마트폰 사진첩에서 터치하여 선택', x + (w / 2), y + (h / 2) + 85);
+    }
+    ctx.restore();
+  }
+
+  wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    if (!text) return;
+    const words = text.split('');
+    let line = '';
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n];
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && n > 0) {
+        ctx.fillText(line, x, y);
+        line = words[n];
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, y);
+  }
+
+  roundRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  downloadCurrentSlide() {
+    const link = document.createElement('a');
+    link.download = `CardNews_${this.currentLanguage}_Slide_${this.currentSlideIndex + 1}.png`;
+    link.href = this.canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  async downloadAllSlides() {
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = this.canvas.width;
+    offCanvas.height = this.canvas.height;
+    const offCtx = offCanvas.getContext('2d');
+
+    for (let i = 0; i < this.slides.length; i++) {
+      const slide = this.slides[i];
+      this.render(offCtx, slide, offCanvas.width, offCanvas.height);
+      const link = document.createElement('a');
+      link.download = `CardNews_${this.currentLanguage}_Slide_${i + 1}.png`;
+      link.href = offCanvas.toDataURL('image/png');
+      link.click();
+      await new Promise(r => setTimeout(r, 400));
+    }
+  }
+
+  getCurrentDataUrl() {
+    return this.canvas.toDataURL('image/png');
+  }
+}
+
+window.CardNewsStudio = new CardNewsStudio();
+
+// 전역 탭 전환 함수 (어떤 상황에서도 즉시 탭 전환 보장)
+window.switchTab = function(tabId) {
+  const tabViews = document.querySelectorAll('.tab-view');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  tabViews.forEach(view => {
+    if (view.id === 'tab-view-' + tabId) {
+      view.classList.add('active');
+    } else {
+      view.classList.remove('active');
+    }
+  });
+
+  navItems.forEach(item => {
+    if (item.getAttribute('data-tab') === tabId) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+
+  try {
+    if (tabId === 'cardnews' && window.CardNewsStudio) {
+      if (window.updateSlideEditInputs) window.updateSlideEditInputs();
+      window.CardNewsStudio.render();
+    } else if (tabId === 'preview' && window.updateSimulator) {
+      window.updateSimulator();
+    }
+  } catch (err) {
+    console.warn('switchTab render error:', err);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function startViralMakerApp() {
+  // --- 상태 관리 ---
+  const state = {
+    activeTab: 'input',
+    activeChannel: 'threads-kr',
+    generatedData: null,
+    product: {
+      link: 'https://smartstore.naver.com/sample/products/neck-care',
+      memo: '하루 15분 거북목 승모근 케어, 깃털 무게 145g 온열 기능',
+      name: '무선 온열 넥케어 마사지기',
+      mediaSrc: null
+    },
+    geminiKey: localStorage.getItem('social_promo_gemini_key') || ''
+  };
+
+  // --- DOM 캐싱 ---
+  const tabViews = document.querySelectorAll('.tab-view');
+  const navItems = document.querySelectorAll('.nav-item');
+  const toastEl = document.getElementById('toast-msg');
+
+  // Tab 1 (간편 입력)
+  const inputLink = document.getElementById('product-link');
+  const inputMemo = document.getElementById('product-memo');
+  const mediaFileInput = document.getElementById('product-media-file');
+  const uploadBox = document.getElementById('upload-box');
+  const uploadPreview = document.getElementById('upload-preview');
+  const uploadPrompt = document.getElementById('upload-prompt');
+  const btnGenerateAll = document.getElementById('btn-generate-all');
+  const presetChips = document.querySelectorAll('.preset-chip');
+
+  // Tab 2 (복붙 홍보글)
+  const channelPills = document.querySelectorAll('.channel-pill');
+  const copyTextarea = document.getElementById('copy-textarea');
+  const charCounter = document.getElementById('char-counter');
+  const channelInfoText = document.getElementById('channel-info-text');
+  const btnCopyText = document.getElementById('btn-copy-text');
+  const btnRegenChannel = document.getElementById('btn-regen-channel');
+
+  // Tab 3 (카드뉴스)
+  const canvasEl = document.getElementById('cardnews-canvas');
+  const canvasWrapper = document.getElementById('canvas-wrapper');
+  const btnLangKo = document.getElementById('btn-lang-ko');
+  const btnLangJa = document.getElementById('btn-lang-ja');
+  const ratioBtns = document.querySelectorAll('.ratio-btn');
+  const themeChips = document.querySelectorAll('.theme-chip');
+  const btnPrevSlide = document.getElementById('btn-prev-slide');
+  const btnNextSlide = document.getElementById('btn-next-slide');
+  const slideIndicatorText = document.getElementById('slide-indicator-text');
+  const inputSlideBadge = document.getElementById('slide-edit-badge');
+  const inputSlideTitle = document.getElementById('slide-edit-title');
+  const inputSlideSubtitle = document.getElementById('slide-edit-subtitle');
+  const btnDownloadSlide = document.getElementById('btn-download-slide');
+  const btnDownloadAll = document.getElementById('btn-download-all');
+  const btnMobileSave = document.getElementById('btn-mobile-save');
+
+  // Tab 4 (시뮬레이터)
+  const instaSimImage = document.getElementById('insta-sim-image');
+  const instaSimCaption = document.getElementById('insta-sim-caption');
+
+  // 모달들
+  const modalMobileSave = document.getElementById('modal-mobile-save');
+  const modalSaveImage = document.getElementById('modal-save-image');
+  const btnCloseModal = document.getElementById('btn-close-modal');
+
+  const modalQr = document.getElementById('modal-qr');
+  const btnOpenQrModal = document.getElementById('btn-open-qr-modal');
+  const btnCloseQrModal = document.getElementById('btn-close-qr-modal');
+
+  const modalApiKey = document.getElementById('modal-api-key');
+  const inputApiKey = document.getElementById('input-gemini-key');
+  const btnOpenApiModal = document.getElementById('btn-open-api-modal');
+  const btnSaveApiKey = document.getElementById('btn-save-api-key');
+  const btnCloseApiModal = document.getElementById('btn-close-api-modal');
+
+  // 채널별 안내 텍스트
+  const channelDescriptions = {
+    'threads-kr': '⚡ 한국 스레드(Threads): 구매 링크 자동 포함, 500자 이내 일상 후기체 & 댓글 소통 유도',
+    'threads-jp': '🇯🇵 일본 스레드(Threads JP): 구매 링크 자동 포함, 현지 바즈(バズり) 문체 및 QOL 추천 톤',
+    'naver-blog': '📝 네이버 블로그: 링크 포함, 스마트에디터 최적화 [서론 ➔ 언박싱 ➔ 장점 ➔ 총평/구매링크]',
+    'ameba-jp': '🌸 일본 아메바 블로그: 구매 링크 포함, 상냥한 絵文字 문체 & 아메바 인기 해시태그',
+    'instagram': '📸 인스타그램 피드: 3줄 불렛포인트, 프로필 링크 CTA 및 인기 해시태그 20선'
+  };
+
+  // --- 초기화 ---
+  try {
+    if (canvasEl) CardNewsStudio.init(canvasEl, canvasWrapper);
+  } catch (e) {
+    console.warn('CardNewsStudio init warning:', e);
+  }
+
+  if (state.geminiKey && inputApiKey) {
+    inputApiKey.value = state.geminiKey;
+  }
+
+  // --- 토스트 알림 ---
+  function showToast(message) {
+    if (!toastEl) return;
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 2200);
+  }
+
+  // navItems 클릭 이벤트
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const tabId = item.getAttribute('data-tab');
+      window.switchTab(tabId);
+    });
+  });
+
+  // --- 원클릭 샘플 로드 ---
+  presetChips.forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      presetChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      const index = parseInt(chip.getAttribute('data-preset'), 10);
+      const sample = SampleQuickInputs[index];
+      if (sample) {
+        inputLink.value = sample.link;
+        inputMemo.value = sample.memo;
+        state.product.name = sample.name;
+        state.product.link = sample.link;
+        state.product.memo = sample.memo;
+        showToast(`'${sample.name}' 샘플이 입력되었습니다!`);
+      }
+    });
+  });
+
+  // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
+
+  mediaFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type.startsWith('video/')) {
+      showToast('🎬 동영상 썸네일 프레임을 추출하는 중...');
+      CardNewsStudio.captureVideoFrame(file, (dataUrl) => {
+        state.product.mediaSrc = dataUrl;
+        uploadPreview.src = dataUrl;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+        showToast('동영상 썸네일이 카드뉴스에 적용되었습니다! 🎥');
+      });
+    } else if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        state.product.mediaSrc = dataUrl;
+        uploadPreview.src = dataUrl;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+
+        CardNewsStudio.setUserMedia(dataUrl);
+        showToast('제품 사진이 카드뉴스에 적용되었습니다! 🖼️');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // --- 1초 일괄 생성 실행 ---
+  btnGenerateAll.addEventListener('click', async () => {
+    const link = inputLink.value.trim();
+    const memo = inputMemo.value.trim();
+
+    if (!link) {
+      showToast('⚠️ 제품 링크(URL)를 입력해주세요.');
+      inputLink.focus();
+      return;
+    }
+
+    state.product.link = link;
+    state.product.memo = memo;
+
+    btnGenerateAll.disabled = true;
+    const origHtml = btnGenerateAll.innerHTML;
+    btnGenerateAll.innerHTML = '<span>⚡ 복붙용 글 & 한/일 카드뉴스 생성 중...</span>';
+
+    try {
+      const results = await ContentGenerator.generateAll(state.product, state.geminiKey);
+      state.generatedData = results;
+
+      // 카드뉴스 슬라이드 적용 (한국어 & 일본어 모두 세팅)
+      CardNewsStudio.setGeneratedSlides(results.cardnews_ko, results.cardnews_ja);
+
+      // 복붙 글 업데이트
+      updateCopyTextView();
+
+      showToast('🎉 복붙용 글과 한/일 카드뉴스가 완성되었습니다!');
+      switchTab('copy');
+
+    } catch (err) {
+      console.error(err);
+      showToast('생성 중 오류가 발생했습니다: ' + err.message);
+    } finally {
+      btnGenerateAll.disabled = false;
+      btnGenerateAll.innerHTML = origHtml;
+    }
+  });
+
+  // --- Tab 2: 복붙 글 뷰 갱신 ---
+  function updateCopyTextView() {
+    const ch = state.activeChannel;
+    let text = '';
+    if (state.generatedData && state.generatedData.texts && state.generatedData.texts[ch]) {
+      text = state.generatedData.texts[ch];
+    } else {
+      text = ContentGenerator.generateLocalTemplate(ch, state.product);
+    }
+    copyTextarea.value = text;
+    charCounter.textContent = `${text.length}자`;
+    channelInfoText.textContent = channelDescriptions[ch] || '';
+  }
+
+  channelPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      channelPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      state.activeChannel = pill.getAttribute('data-channel');
+      updateCopyTextView();
+    });
+  });
+
+  copyTextarea.addEventListener('input', () => {
+    charCounter.textContent = `${copyTextarea.value.length}자`;
+    if (state.generatedData && state.generatedData.texts) {
+      state.generatedData.texts[state.activeChannel] = copyTextarea.value;
+    }
+  });
+
+  // 원클릭 복사
+  btnCopyText.addEventListener('click', async () => {
+    const textToCopy = copyTextarea.value;
+    if (!textToCopy) {
+      showToast('복사할 내용이 없습니다.');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
+    } catch (err) {
+      copyTextarea.select();
+      document.execCommand('copy');
+      showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
+    }
+  });
+
+  // 이 글만 다시 작성
+  btnRegenChannel.addEventListener('click', async () => {
+    const ch = state.activeChannel;
+    btnRegenChannel.disabled = true;
+    btnRegenChannel.textContent = '재작성 중...';
+
+    try {
+      let newText = '';
+      if (state.geminiKey) {
+        newText = await ContentGenerator.generateWithGemini(ch, state.product, state.geminiKey);
+      } else {
+        newText = ContentGenerator.generateLocalTemplate(ch, state.product);
+      }
+      if (state.generatedData && state.generatedData.texts) {
+        state.generatedData.texts[ch] = newText;
+      }
+      copyTextarea.value = newText;
+      charCounter.textContent = `${newText.length}자`;
+      showToast('✨ 새롭게 재작성되었습니다!');
+    } catch (e) {
+      showToast('재작성 실패: ' + e.message);
+    } finally {
+      btnRegenChannel.disabled = false;
+      btnRegenChannel.textContent = '🔄 이 글만 다시 작성';
+    }
+  });
+
+  // --- Tab 3: 카드뉴스 언어 전환 (한국어 vs 일본어) ---
+  btnLangKo.addEventListener('click', () => {
+    btnLangKo.style.background = 'var(--primary)';
+    btnLangKo.style.color = '#fff';
+    btnLangJa.style.background = 'none';
+    btnLangJa.style.color = 'var(--text-muted)';
+    CardNewsStudio.setLanguage('ko');
+    updateSlideEditInputs();
+    showToast('🇰🇷 한국어 카드뉴스로 전환되었습니다.');
+  });
+
+  btnLangJa.addEventListener('click', () => {
+    btnLangJa.style.background = 'var(--primary)';
+    btnLangJa.style.color = '#fff';
+    btnLangKo.style.background = 'none';
+    btnLangKo.style.color = 'var(--text-muted)';
+    CardNewsStudio.setLanguage('ja');
+    updateSlideEditInputs();
+    showToast('🇯🇵 日本語 카드뉴스로 전환되었습니다.');
+  });
+
+  function updateSlideEditInputs() {
+    const curSlide = CardNewsStudio.getCurrentSlide();
+    if (curSlide) {
+      inputSlideBadge.value = curSlide.badge || '';
+      inputSlideTitle.value = curSlide.mainTitle || '';
+      inputSlideSubtitle.value = curSlide.subTitle || '';
+
+      const total = CardNewsStudio.slides.length;
+      const curNum = CardNewsStudio.currentSlideIndex + 1;
+      slideIndicatorText.textContent = `슬라이드 ${curNum} / ${total}`;
+
+      btnPrevSlide.disabled = curNum === 1;
+      btnNextSlide.disabled = curNum === total;
+    }
+  }
+
+  [inputSlideBadge, inputSlideTitle, inputSlideSubtitle].forEach(input => {
+    input.addEventListener('input', () => {
+      CardNewsStudio.updateCurrentSlide({
+        badge: inputSlideBadge.value,
+        mainTitle: inputSlideTitle.value,
+        subTitle: inputSlideSubtitle.value
+      });
+    });
+  });
+
+  btnPrevSlide.addEventListener('click', () => {
+    CardNewsStudio.prevSlide();
+    updateSlideEditInputs();
+  });
+
+  btnNextSlide.addEventListener('click', () => {
+    CardNewsStudio.nextSlide();
+    updateSlideEditInputs();
+  });
+
+  ratioBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      ratioBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      CardNewsStudio.setRatio(btn.getAttribute('data-ratio'));
+    });
+  });
+
+  themeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      themeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      CardNewsStudio.setTheme(chip.getAttribute('data-theme'));
+    });
+  });
+
+  btnDownloadSlide.addEventListener('click', () => {
+    CardNewsStudio.downloadCurrentSlide();
+    showToast('현재 슬라이드가 다운로드되었습니다 📥');
+  });
+
+  btnDownloadAll.addEventListener('click', async () => {
+    showToast('전체 5장 슬라이드 일괄 다운로드를 시작합니다...');
+    await CardNewsStudio.downloadAllSlides();
+    showToast('전체 5장 다운로드 완료! 🎉');
+  });
+
+  btnMobileSave.addEventListener('click', () => {
+    modalSaveImage.src = CardNewsStudio.getCurrentDataUrl();
+    modalMobileSave.classList.add('active');
+  });
+
+  btnCloseModal.addEventListener('click', () => {
+    modalMobileSave.classList.remove('active');
+  });
+
+  modalMobileSave.addEventListener('click', (e) => {
+    if (e.target === modalMobileSave) modalMobileSave.classList.remove('active');
+  });
+
+  // --- QR 코드 모달 제어 ---
+  btnOpenQrModal.addEventListener('click', () => {
+    modalQr.classList.add('active');
+  });
+
+  btnCloseQrModal.addEventListener('click', () => {
+    modalQr.classList.remove('active');
+  });
+
+  modalQr.addEventListener('click', (e) => {
+    if (e.target === modalQr) modalQr.classList.remove('active');
+  });
+
+  // --- Tab 4: 피드 시뮬레이터 ---
+  function updateSimulator() {
+    instaSimImage.src = CardNewsStudio.getCurrentDataUrl();
+    const text = state.generatedData?.texts?.['instagram'] || ContentGenerator.generateLocalTemplate('instagram', state.product);
+    instaSimCaption.textContent = text;
+  }
+
+  // --- Gemini API 모달 ---
+  btnOpenApiModal.addEventListener('click', () => {
+    modalApiKey.classList.add('active');
+  });
+
+  btnCloseApiModal.addEventListener('click', () => {
+    modalApiKey.classList.remove('active');
+  });
+
+  btnSaveApiKey.addEventListener('click', () => {
+    const key = inputApiKey.value.trim();
+    state.geminiKey = key;
+    if (key) {
+      localStorage.setItem('social_promo_gemini_key', key);
+      showToast('Gemini AI 키가 저장되었습니다! 🤖');
+    } else {
+      localStorage.removeItem('social_promo_gemini_key');
+      showToast('기본 스마트 모드로 전환되었습니다.');
+    }
+    modalApiKey.classList.remove('active');
+  });
+
+  // 첫 번째 샘플 로드
+  presetChips[0]?.click();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startViralMakerApp);
+} else {
+  startViralMakerApp();
+}
+
   </script>
 </body>
 </html>
