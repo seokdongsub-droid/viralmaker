@@ -847,7 +847,7 @@ function startViralMakerApp() {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.3_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.5_' + Date.now();
     });
   }
 
