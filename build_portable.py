@@ -40,7 +40,7 @@ inlined_scripts = f"""<script>
 {cardnews_js}
 {app_js}
 </script>"""
-html = re.sub(script_pattern, inlined_scripts, html, flags=re.DOTALL)
+html = re.sub(script_pattern, lambda m: inlined_scripts, html, flags=re.DOTALL)
 
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
