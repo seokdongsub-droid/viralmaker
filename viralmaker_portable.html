@@ -4720,17 +4720,20 @@ function startViralMakerApp() {
         mainTitle: inputSlideTitle.value,
         subTitle: inputSlideSubtitle.value
       });
+      if (typeof updateSimulator === 'function') updateSimulator();
     });
   });
 
   btnPrevSlide.addEventListener('click', () => {
     CardNewsStudio.prevSlide();
     updateSlideEditInputs();
+    if (typeof updateSimulator === 'function') updateSimulator();
   });
 
   btnNextSlide.addEventListener('click', () => {
     CardNewsStudio.nextSlide();
     updateSlideEditInputs();
+    if (typeof updateSimulator === 'function') updateSimulator();
   });
 
   ratioBtns.forEach(btn => {
@@ -4738,6 +4741,7 @@ function startViralMakerApp() {
       ratioBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       CardNewsStudio.setRatio(btn.getAttribute('data-ratio'));
+      if (typeof updateSimulator === 'function') updateSimulator();
     });
   });
 
@@ -4746,6 +4750,7 @@ function startViralMakerApp() {
       themeChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       CardNewsStudio.setTheme(chip.getAttribute('data-theme'));
+      if (typeof updateSimulator === 'function') updateSimulator();
     });
   });
 
@@ -4842,10 +4847,17 @@ function startViralMakerApp() {
 
   // --- Tab 4: 피드 시뮬레이터 ---
   function updateSimulator() {
-    instaSimImage.src = CardNewsStudio.getCurrentDataUrl();
-    const text = state.generatedData?.texts?.['instagram'] || ContentGenerator.generateLocalTemplate('instagram', state.product);
-    instaSimCaption.textContent = text;
+    if (!instaSimImage || typeof CardNewsStudio === 'undefined') return;
+    try {
+      instaSimImage.src = CardNewsStudio.getCurrentDataUrl();
+      const text = state.generatedData?.texts?.['instagram'] || (typeof ContentGenerator !== 'undefined' ? ContentGenerator.generateLocalTemplate('instagram', state.product) : '');
+      if (instaSimCaption) instaSimCaption.textContent = text;
+    } catch (e) {
+      console.warn('updateSimulator error:', e);
+    }
   }
+  window.updateSimulator = updateSimulator;
+  window.updateSlideEditInputs = updateSlideEditInputs;
 
   // --- Gemini API 모달 ---
   btnOpenApiModal.addEventListener('click', () => {
