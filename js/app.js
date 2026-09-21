@@ -53,7 +53,12 @@ function startViralMakerApp() {
   const navItems = document.querySelectorAll('.nav-item');
   const toastEl = document.getElementById('toast-msg');
 
-  // Tab 1 (간편 입력)
+  // Tab 1 (2-Way 모드 스위처 & 입력)
+  const btnModePreset = document.getElementById('btn-mode-preset');
+  const btnModeCustom = document.getElementById('btn-mode-custom');
+  const panelModePreset = document.getElementById('panel-mode-preset');
+  const panelModeCustom = document.getElementById('panel-mode-custom');
+
   const inputLink = document.getElementById('product-link');
   const inputMemo = document.getElementById('product-memo');
   const mediaFileInput = document.getElementById('product-media-file');
@@ -106,6 +111,11 @@ function startViralMakerApp() {
   const instaSimCaption = document.getElementById('insta-sim-caption');
 
   // 모달들
+  const modalGuide = document.getElementById('modal-guide');
+  const btnOpenGuideModal = document.getElementById('btn-open-guide-modal');
+  const btnCloseGuideModal = document.getElementById('btn-close-guide-modal');
+  const btnConfirmGuide = document.getElementById('btn-confirm-guide');
+
   const modalMobileSave = document.getElementById('modal-mobile-save');
   const modalSaveImage = document.getElementById('modal-save-image');
   const btnCloseModal = document.getElementById('btn-close-modal');
@@ -275,6 +285,24 @@ function startViralMakerApp() {
 
   // 초기 요리/조리도구 추천템 즉시 렌더링
   renderViralCategory('kitchen');
+
+  // --- 🎯 2-Way 입력 모드 전환 (1초 추천템 vs 내 상품 링크) ---
+  if (btnModePreset && btnModeCustom && panelModePreset && panelModeCustom) {
+    btnModePreset.addEventListener('click', () => {
+      btnModePreset.classList.add('active');
+      btnModeCustom.classList.remove('active');
+      panelModePreset.style.display = 'block';
+      panelModeCustom.style.display = 'none';
+    });
+
+    btnModeCustom.addEventListener('click', () => {
+      btnModeCustom.classList.add('active');
+      btnModePreset.classList.remove('active');
+      panelModeCustom.style.display = 'block';
+      panelModePreset.style.display = 'none';
+      if (inputLink) inputLink.focus();
+    });
+  }
 
   // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
@@ -635,13 +663,37 @@ function startViralMakerApp() {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.2_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.3_' + Date.now();
     });
   }
 
-  btnCloseModal.addEventListener('click', () => {
-    modalMobileSave.classList.remove('active');
-  });
+  // --- 초보자 30초 사용법 가이드 모달 제어 ---
+  if (modalGuide) {
+    if (btnOpenGuideModal) {
+      btnOpenGuideModal.addEventListener('click', () => {
+        modalGuide.classList.add('active');
+      });
+    }
+    if (btnCloseGuideModal) {
+      btnCloseGuideModal.addEventListener('click', () => {
+        modalGuide.classList.remove('active');
+      });
+    }
+    if (btnConfirmGuide) {
+      btnConfirmGuide.addEventListener('click', () => {
+        modalGuide.classList.remove('active');
+      });
+    }
+    modalGuide.addEventListener('click', (e) => {
+      if (e.target === modalGuide) modalGuide.classList.remove('active');
+    });
+  }
+
+  if (btnCloseModal && modalMobileSave) {
+    btnCloseModal.addEventListener('click', () => {
+      modalMobileSave.classList.remove('active');
+    });
+  }
 
   if (btnQuickChangePhoto) {
     btnQuickChangePhoto.addEventListener('click', () => {
@@ -649,22 +701,30 @@ function startViralMakerApp() {
     });
   }
 
-  modalMobileSave.addEventListener('click', (e) => {
-    if (e.target === modalMobileSave) modalMobileSave.classList.remove('active');
-  });
+  if (modalMobileSave) {
+    modalMobileSave.addEventListener('click', (e) => {
+      if (e.target === modalMobileSave) modalMobileSave.classList.remove('active');
+    });
+  }
 
   // --- QR 코드 모달 제어 ---
-  btnOpenQrModal.addEventListener('click', () => {
-    modalQr.classList.add('active');
-  });
+  if (btnOpenQrModal && modalQr) {
+    btnOpenQrModal.addEventListener('click', () => {
+      modalQr.classList.add('active');
+    });
+  }
 
-  btnCloseQrModal.addEventListener('click', () => {
-    modalQr.classList.remove('active');
-  });
+  if (btnCloseQrModal && modalQr) {
+    btnCloseQrModal.addEventListener('click', () => {
+      modalQr.classList.remove('active');
+    });
+  }
 
-  modalQr.addEventListener('click', (e) => {
-    if (e.target === modalQr) modalQr.classList.remove('active');
-  });
+  if (modalQr) {
+    modalQr.addEventListener('click', (e) => {
+      if (e.target === modalQr) modalQr.classList.remove('active');
+    });
+  }
 
   // --- Tab 4: 피드 시뮬레이터 ---
   function updateSimulator() {
