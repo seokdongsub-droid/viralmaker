@@ -23,8 +23,7 @@ window.switchTab = function(tabId) {
     if (tabId === 'cardnews' && window.CardNewsStudio) {
       if (window.updateSlideEditInputs) window.updateSlideEditInputs();
       window.CardNewsStudio.render();
-    } else if (tabId === 'preview' && window.updateSimulator) {
-      window.updateSimulator();
+      if (window.updateSimulator) window.updateSimulator();
     }
   } catch (err) {
     console.warn('switchTab render error:', err);

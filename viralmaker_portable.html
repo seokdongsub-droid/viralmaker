@@ -1688,10 +1688,10 @@ body {
           </div>
         </div>
 
-        <!-- 카드뉴스 이동 안내 -->
+        <!-- 3단계 숏폼·카드뉴스 이동 안내 -->
         <div style="text-align: center; margin-top: 14px;">
-          <button type="button" class="btn-header" style="width: 100%; justify-content: center; padding: 12px; background: var(--bg-card); font-size: 13px;" onclick="document.querySelector('.nav-item[data-tab=\'cardnews\']').click();">
-            <span>🎨 인스타·틱톡·네이버클립 카드 이미지 확인하러 가기 ➔</span>
+          <button type="button" class="btn-header" style="width: 100%; justify-content: center; padding: 12px; background: var(--bg-card); font-size: 13px;" onclick="window.switchTab('cardnews');">
+            <span>📸 3단계: 숏폼·카드뉴스 이미지 저장하러 가기 ➔</span>
           </button>
         </div>
 
@@ -1820,71 +1820,63 @@ body {
             </div>
 
           </div>
+        <!-- 📱 (선택) 인스타그램 실제 업로드 피드 미리보기 -->
+        <details class="advanced-settings-card" style="margin-top: 14px;" ontoggle="if (this.open && window.updateSimulator) window.updateSimulator();">
+          <summary class="advanced-settings-summary">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span>📱 인스타 피드 미리보기</span>
+              <span class="tag-optional">선택사항</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-dim);">터치하여 피드 확인 ▼</span>
+          </summary>
+          <div style="padding-top: 12px;">
+            <p class="section-desc" style="margin-bottom: 12px;">완성된 카드뉴스와 링크가 포함된 본문 글이 인스타그램 피드에서 어떻게 보이는지 실시간으로 시뮬레이션합니다.</p>
+            
+            <!-- Instagram Feed Mockup -->
+            <div class="insta-simulator">
+              <div class="insta-header">
+                <div class="insta-profile">
+                  <div class="insta-avatar">
+                    <div class="insta-avatar-inner">🛍️</div>
+                  </div>
+                  <div class="insta-name">my_shopping_store</div>
+                </div>
+                <div style="color: #64748B; font-weight: bold;">•••</div>
+              </div>
+
+              <img id="insta-sim-image" class="insta-image-preview" alt="피드 미리보기">
+
+              <div class="insta-actions-bar">
+                <div style="display: flex; gap: 14px;">
+                  <span>❤️</span> <span>💬</span> <span>🚀</span>
+                </div>
+                <div><span>🏷️</span></div>
+              </div>
+
+              <div class="insta-caption-box" id="insta-sim-caption">
+                인스타그램 캡션 텍스트가 여기에 표시됩니다.
+              </div>
+            </div>
+          </div>
         </details>
 
       </section>
 
-      <!-- ============================================== -->
-      <!-- TAB 4: 피드 시뮬레이터 (Preview) -->
-      <!-- ============================================== -->
-      <section id="tab-view-preview" class="tab-view">
-        <div class="section-title" style="margin-bottom: 8px;">
-          <span>📱 인스타그램 실제 업로드 시뮬레이션</span>
-        </div>
-        <p class="section-desc">완성된 카드뉴스와 링크가 포함된 본문 글이 인스타 피드에서 어떻게 보이는지 실시간으로 확인해보세요.</p>
-
-        <!-- Instagram Feed Mockup -->
-        <div class="insta-simulator">
-          <div class="insta-header">
-            <div class="insta-profile">
-              <div class="insta-avatar">
-                <div class="insta-avatar-inner">🛍️</div>
-              </div>
-              <div class="insta-name">my_shopping_store</div>
-            </div>
-            <div style="color: #64748B; font-weight: bold;">•••</div>
-          </div>
-
-          <img id="insta-sim-image" class="insta-image-preview" alt="피드 미리보기">
-
-          <div class="insta-actions-bar">
-            <div style="display: flex; gap: 14px;">
-              <span>❤️</span> <span>💬</span> <span>🚀</span>
-            </div>
-            <div><span>🏷️</span></div>
-          </div>
-
-          <div class="insta-caption-box" id="insta-sim-caption">
-            인스타그램 캡션 텍스트가 여기에 표시됩니다.
-          </div>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <button type="button" class="btn-primary-large" onclick="document.querySelector('.nav-item[data-tab=\'copy\']').click();">
-            <span>📋 복붙 텍스트 복사하러 가기</span>
-          </button>
-        </div>
-      </section>
-
     </main>
 
-    <!-- FIXED BOTTOM NAVIGATION BAR -->
+    <!-- FIXED BOTTOM NAVIGATION BAR (3단계 직관적 원패스 워크플로우) -->
     <nav class="bottom-nav">
       <button type="button" class="nav-item active" data-tab="input" onclick="window.switchTab('input')">
         <span class="nav-icon" style="pointer-events: none;">🛍️</span>
-        <span class="nav-label" style="pointer-events: none;">간편 입력</span>
+        <span class="nav-label" style="pointer-events: none;">1. 상품 선택</span>
       </button>
       <button type="button" class="nav-item" data-tab="copy" onclick="window.switchTab('copy')">
         <span class="nav-icon" style="pointer-events: none;">✍️</span>
-        <span class="nav-label" style="pointer-events: none;">복붙 홍보글</span>
+        <span class="nav-label" style="pointer-events: none;">2. 채널별 글 복사</span>
       </button>
       <button type="button" class="nav-item" data-tab="cardnews" onclick="window.switchTab('cardnews')">
-        <span class="nav-icon" style="pointer-events: none;">🎨</span>
-        <span class="nav-label" style="pointer-events: none;">카드뉴스</span>
-      </button>
-      <button type="button" class="nav-item" data-tab="preview" onclick="window.switchTab('preview')">
-        <span class="nav-icon" style="pointer-events: none;">📱</span>
-        <span class="nav-label" style="pointer-events: none;">피드 확인</span>
+        <span class="nav-icon" style="pointer-events: none;">📸</span>
+        <span class="nav-label" style="pointer-events: none;">3. 숏폼·카드뉴스</span>
       </button>
     </nav>
 
@@ -1910,14 +1902,14 @@ body {
             <div class="step-num-bubble">2</div>
             <div class="step-content">
               <strong class="step-title">[✨ 1초 만에 완성하기] 큰 버튼 터치</strong>
-              <p class="step-desc">단 한 번의 터치로 스레드/인스타/블로그 맞춤 홍보글과 5장 분량의 카드뉴스가 즉시 만들어집니다.</p>
+              <p class="step-desc">단 한 번의 터치로 스레드/인스타/블로그 맞춤 홍보글과 5장 분량의 숏폼 카드뉴스가 즉시 만들어집니다.</p>
             </div>
           </div>
           <div class="guide-step-card">
             <div class="step-num-bubble">3</div>
             <div class="step-content">
               <strong class="step-title">복붙하고 [📱 사진첩 저장] 누르면 끝!</strong>
-              <p class="step-desc">[✍️ 복붙 홍보글] 탭에서 [📋 원클릭 복사]하고, [🎨 카드뉴스] 탭에서 [📱 내 폰 사진첩에 바로 저장]을 누르면 스마트폰 갤러리에 쏙 들어갑니다.</p>
+              <p class="step-desc">[✍️ 2. 채널별 글 복사] 탭에서 원하는 채널 문구를 복사하고, [📸 3. 숏폼·카드뉴스] 탭에서 [📱 내 폰 사진첩에 바로 저장]을 누르면 스마트폰 갤러리에 쏙 들어갑니다.</p>
             </div>
           </div>
         </div>
@@ -3851,8 +3843,7 @@ window.switchTab = function(tabId) {
     if (tabId === 'cardnews' && window.CardNewsStudio) {
       if (window.updateSlideEditInputs) window.updateSlideEditInputs();
       window.CardNewsStudio.render();
-    } else if (tabId === 'preview' && window.updateSimulator) {
-      window.updateSimulator();
+      if (window.updateSimulator) window.updateSimulator();
     }
   } catch (err) {
     console.warn('switchTab render error:', err);
