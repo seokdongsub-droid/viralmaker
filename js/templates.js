@@ -51,14 +51,14 @@ const AffiliatePlatforms = {
   },
   toss: {
     id: 'toss',
-    name: '토스 공동구매 (토스쇼핑)',
-    shortName: '토스',
+    name: '토스쇼핑 (쉐어링크)',
+    shortName: '토스쇼핑',
     icon: '⚡',
     color: '#0064FF',
-    badgeText: '⚡ 토스 공동구매 특가',
-    deliveryBenefit: '토스페이 포인트 적립 & 오늘만 파격 초특가 찬스!',
-    disclaimer: '※ 본 게시물은 토스 공동구매/제휴 프로모션 링크를 포함하고 있으며, 소정의 수수료를 제공받을 수 있습니다.',
-    searchUrl: (q) => `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q)}`
+    badgeText: '⚡ 토스쇼핑 쉐어링크 핫딜',
+    deliveryBenefit: '토스쇼핑 단독 특가 & 토스페이 포인트 추가 적립 혜택!',
+    disclaimer: '※ 본 게시물은 토스쇼핑 쉐어링크/제휴 활동의 일환으로 일정 혜택을 제공받을 수 있습니다.',
+    searchUrl: (q) => `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q + ' 토스쇼핑')}`
   },
   smartstore: {
     id: 'smartstore',
@@ -345,12 +345,12 @@ const ViralProductLibrary = {
   lifestyle: [
     {
       icon: '⚡',
-      name: '토스공구 1초 원터치 무선 진공 밀폐 포장기',
-      title: '토스공구 무선 진공포장기',
+      name: '토스쇼핑 1초 원터치 무선 진공 밀폐 포장기',
+      title: '토스쇼핑 무선 진공포장기',
       search: '원터치 무선 진공포장기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/vacuum-sealer',
-      memo: '남은 식재료, 과자봉지 1초 만에 공기 싹 빼서 완벽 밀봉! 토스 공구로 50% 파격 특가 떴을 때 쟁여야 할 가성비 끝판왕'
+      memo: '남은 식재료, 과자봉지 1초 만에 공기 싹 빼서 완벽 밀봉! 토스쇼핑 쉐어링크 특가 떴을 때 쟁여야 할 가성비 끝판왕'
     },
     {
       icon: '💆',
