@@ -1,5 +1,16 @@
 @echo off
-title ViralMaker v2.2 자동 배포
-cd /d "%~dp0"
-python update_github.py
-
+cd /d "M:\Antigravity"
+echo [1/3] Building portable HTML...
+python build_portable.py
+echo [2/3] Adding and committing files...
+git add -A
+git commit -m "ViralMaker v2.2 update"
+echo [3/3] Pushing to GitHub origin main...
+git push origin main --force
+echo.
+echo ========================================================
+echo SUCCESS: Deployed to GitHub Pages!
+echo URL: https://seokdongsub-droid.github.io/viralmaker/?v=2.2
+echo ========================================================
+echo.
+pause

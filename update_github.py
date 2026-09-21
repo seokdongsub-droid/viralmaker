@@ -2,6 +2,13 @@ import subprocess
 import sys
 import os
 
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 os.chdir(r"m:\Antigravity")
 
 print("=" * 55)
@@ -31,6 +38,11 @@ try:
     print("\n[4/4] 깃허브 서버로 안전 전송 중 (Push)...")
     push_res = subprocess.run(["git", "push", "origin", "main", "--force"], capture_output=True, text=True)
 
+    with open(r"m:\Antigravity\git_push_result.txt", "w", encoding="utf-8") as rf:
+        rf.write(f"ReturnCode: {push_res.returncode}\n")
+        rf.write(f"STDOUT:\n{push_res.stdout}\n")
+        rf.write(f"STDERR:\n{push_res.stderr}\n")
+
     if push_res.returncode == 0:
         print("\n" + "=" * 55)
         print("✅ [성공] 깃허브 업로드가 완벽하게 성공했습니다!")
@@ -47,6 +59,8 @@ try:
         print("=" * 55)
 
 except Exception as e:
+    with open(r"m:\Antigravity\git_push_result.txt", "w", encoding="utf-8") as rf:
+        rf.write(f"EXCEPTION: {e}\n")
     print(f"\n❌ 실행 중 오류 발생: {e}")
 
 input("\n종료하려면 엔터(Enter) 키를 누르세요...")
