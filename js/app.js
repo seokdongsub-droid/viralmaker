@@ -67,6 +67,15 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
+  // AI 비전 분석 DOM
+  const visionActionPanel = document.getElementById('vision-action-panel');
+  const btnVisionAnalyze = document.getElementById('btn-vision-analyze');
+  const visionLoading = document.getElementById('vision-loading');
+  const visionResult = document.getElementById('vision-result');
+  const visionDetectedCat = document.getElementById('vision-detected-cat');
+  const visionDetectedTitle = document.getElementById('vision-detected-title');
+  const visionDetectedFeatures = document.getElementById('vision-detected-features');
+
   // Tab 2 (복붙 홍보글)
   const channelPills = document.querySelectorAll('.channel-pill');
   const copyTextarea = document.getElementById('copy-textarea');
@@ -223,7 +232,7 @@ function startViralMakerApp() {
     { id: 'ohou', label: '오늘의집 🏠', colorClass: 'ohou', sampleDomain: 'ohou.se/productions/' },
     { id: 'kurly', label: '마켓컬리 💜', colorClass: 'kurly', sampleDomain: 'www.kurly.com/goods/' },
     { id: 'oasis', label: '오아시스 🌱', colorClass: 'oasis', sampleDomain: 'www.oasis.co.kr/product/detail/' },
-    { id: 'toss', label: '토스공구 ⚡', colorClass: 'toss', sampleDomain: 'toss.im/p/' },
+    { id: 'toss', label: '토스쇼핑 ⚡', colorClass: 'toss', sampleDomain: 'toss.im/p/' },
     { id: 'smartstore', label: '네이버 🛍️', colorClass: 'smartstore', sampleDomain: 'smartstore.naver.com/sample/' }
   ];
 
@@ -436,10 +445,79 @@ function startViralMakerApp() {
 
         CardNewsStudio.setUserMedia(dataUrl);
         showToast('제품 사진이 카드뉴스에 적용되었습니다! 🖼️');
+
+        // AI 비전 분석 버튼 활성화
+        if (visionActionPanel) {
+          visionActionPanel.style.display = 'block';
+          if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+          if (visionResult) visionResult.style.display = 'none';
+        }
       };
       reader.readAsDataURL(file);
     }
   });
+
+  // --- AI 비전 분석 버튼 클릭 이벤트 ---
+  if (btnVisionAnalyze) {
+    btnVisionAnalyze.addEventListener('click', async () => {
+      if (!state.product.mediaSrc) {
+        showToast('⚠️ 먼저 제품 사진이나 상세페이지 캡처를 선택해주세요.');
+        return;
+      }
+
+      if (!state.geminiKey) {
+        showToast('💡 AI 이미지 분석을 위해 무료 Gemini API 키를 먼저 입력해주세요! 🔑');
+        if (modalApiKey) modalApiKey.classList.add('active');
+        return;
+      }
+
+      btnVisionAnalyze.disabled = true;
+      btnVisionAnalyze.style.display = 'none';
+      if (visionLoading) visionLoading.style.display = 'flex';
+      if (visionResult) visionResult.style.display = 'none';
+
+      try {
+        const analysis = await ContentGenerator.analyzeProductImageWithVision(state.product.mediaSrc, state.geminiKey);
+
+        if (analysis.productName) {
+          state.product.name = analysis.productName;
+          if (selectedViralTitle) selectedViralTitle.textContent = analysis.productName;
+        }
+        if (analysis.viralMemo) {
+          state.product.memo = analysis.viralMemo;
+          if (inputMemo) inputMemo.value = analysis.viralMemo;
+        }
+
+        if (visionResult) {
+          visionResult.style.display = 'flex';
+          if (visionDetectedTitle) visionDetectedTitle.textContent = analysis.productName;
+          if (visionDetectedCat) visionDetectedCat.textContent = `카테고리: ${analysis.suggestedCategory || 'kitchen'}`;
+          if (visionDetectedFeatures && analysis.keyFeatures) {
+            visionDetectedFeatures.innerHTML = analysis.keyFeatures.map(f => `<div>• ${f}</div>`).join('') + 
+              `<div style="margin-top: 6px; color: var(--text-main); font-style: italic;">"${analysis.viralMemo}"</div>`;
+          }
+        }
+
+        state.generatedData = null;
+        if (typeof updateCopyTextView === 'function') {
+          updateCopyTextView();
+        }
+
+        showToast(`✨ '${analysis.productName}' 분석 완료! 제품명과 장점이 자동 입력되었습니다. 🎉`);
+
+        if (btnGenerateAll) {
+          btnGenerateAll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch (err) {
+        console.error('Vision analysis error:', err);
+        showToast('❌ 이미지 분석 실패: ' + err.message);
+        btnVisionAnalyze.style.display = 'flex';
+      } finally {
+        btnVisionAnalyze.disabled = false;
+        if (visionLoading) visionLoading.style.display = 'none';
+      }
+    });
+  }
 
   // --- 1초 일괄 생성 실행 ---
   btnGenerateAll.addEventListener('click', async () => {

@@ -1416,6 +1416,103 @@ body {
   margin: 0;
 }
 
+/* AI Vision Analysis Components */
+.btn-vision-analyze {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.15);
+}
+
+.btn-vision-analyze:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 18px rgba(168, 85, 247, 0.3);
+  border-color: rgba(236, 72, 153, 0.6);
+}
+
+.vision-btn-icon {
+  font-size: 20px;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 6px #f43f5e); }
+}
+
+.vision-btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.vision-btn-text strong {
+  font-size: 13px;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.vision-btn-text span {
+  font-size: 10.5px;
+  color: #cbd5e1;
+}
+
+.vision-loading-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  font-size: 11.5px;
+  color: #a5b4fc;
+}
+
+.vision-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: vision-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes vision-spin {
+  to { transform: rotate(360deg); }
+}
+
+.vision-result-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vision-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #34d399;
+}
+
 </style>
 </head>
 <body>
@@ -1569,6 +1666,34 @@ body {
               <div style="font-size: 11px; color: var(--text-muted);">스마트폰 갤러리 또는 카메라 촬영</div>
             </div>
           </label>
+
+          <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 활성화) -->
+          <div id="vision-action-panel" style="display: none; margin-top: 10px;">
+            <button type="button" class="btn-vision-analyze" id="btn-vision-analyze">
+              <span class="vision-btn-icon">✨</span>
+              <div class="vision-btn-text">
+                <strong>AI 사진·상세페이지 분석하기</strong>
+                <span>제품명 & 3대 핵심 장점 1초 자동 추출 ➔</span>
+              </div>
+            </button>
+            <div id="vision-loading" class="vision-loading-box" style="display: none;">
+              <div class="vision-spinner"></div>
+              <span>🤖 AI가 상세페이지 이미지를 분석하고 있습니다... (제품명/장점 추출 중)</span>
+            </div>
+            <div id="vision-result" class="vision-result-card" style="display: none;">
+              <div class="vision-result-header">
+                <span>✨ AI 비전 분석 완료!</span>
+                <span id="vision-detected-cat" class="platform-pill" style="font-size: 10px;"></span>
+              </div>
+              <div class="vision-result-body">
+                <div style="font-size: 12px; margin-bottom: 4px;">
+                  <strong style="color: #fff;">감지된 제품:</strong> <span id="vision-detected-title" style="color: var(--primary-light); font-weight: 700;"></span>
+                </div>
+                <div id="vision-detected-features" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 메인 일괄 생성 버튼 -->
@@ -2377,9 +2502,9 @@ const JapaneseCopyVocab = {
 
 
 /**
- * content_generator.js
- * 쇼핑몰 플랫폼 감지 및 5대 채널 복붙 카피 생성 모듈
- * 스레드(Threads) 계정 보호를 위한 [1단계: 본문(영상/사진, 링크 절대 없음)] + [2단계: 첫 댓글(링크 & 정보)] 2단계 분리 구조 탑재
+ * generator.js (ContentGeneratorEngine)
+ * 쇼핑몰 플랫폼 감지, 5대 채널 복붙 카피 생성 및 Gemini Vision AI 이미지 분석 모듈
+ * 스레드(Threads) 계정 보호를 위한 [1단계: 본문] + [2단계: 첫 댓글] 2단계 분리 구조 탑재
  */
 
 class ContentGeneratorEngine {
@@ -2477,7 +2602,6 @@ class ContentGeneratorEngine {
       };
     }
 
-    // fallback
     return { body: text, comment: '' };
   }
 
@@ -2486,7 +2610,9 @@ class ContentGeneratorEngine {
     const name = this.inferProductName(product);
     const link = product.link || 'https://link.com';
     const memo = product.memo || '삶의 질을 높여주는 필수 추천 아이템';
-    const platform = this.detectPlatform(link);
+    const platform = (product.platform && product.platform !== 'general') 
+      ? product.platform 
+      : this.detectPlatform(link);
 
     const cleanProduct = { ...product, name, link, memo, platform };
 
@@ -2585,7 +2711,46 @@ class ContentGeneratorEngine {
         slideNum: 1,
         type: 'cover',
         badge: isAmazon ? 'Amazonベストセラー 🔥' : '大バズり中 🤍',
-        mainTitle: `【SNSで話題】\n${name}\n本音レビ�  // --- 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
+        mainTitle: `【SNSで話題】\n${name}\n本音レビュー！`,
+        subTitle: isAmazon ? 'Amazonで即買い！QOL爆上がり確定アイテム🥹' : 'QOL爆上がり確定！もっと早く買えばよかった🥹💕',
+        extra: isAmazon ? 'プライム対応・翌日配送 📦' : '大人気のため売り切れ注意⚠️'
+      },
+      {
+        slideNum: 2,
+        type: 'problem',
+        badge: 'こんなお悩みありませんか？💭',
+        mainTitle: '毎日のプチストレス\n我慢していませんか？',
+        subTitle: '「もっと快適に過ごしたい…」\n日常の悩みをこれ1つでスッキリ解消！',
+        extra: '見逃せないチェックポイント'
+      },
+      {
+        slideNum: 3,
+        type: 'solution',
+        badge: 'お悩み解決 💡',
+        mainTitle: `${name}\nで暮らしが変わる！`,
+        subTitle: '✔ 圧倒的な使いやすさと満足度\n✔ 一度使ったらもう手放せない便利さ',
+        extra: 'リアルな口コミでも大絶賛✨'
+      },
+      {
+        slideNum: 4,
+        type: 'detail',
+        badge: '選ばれる3つの理由 🔍',
+        mainTitle: '使って実感した\n決定的なポイント',
+        subTitle: '1. デザイン性と機能性の両立\n2. 誰でも簡単＆快適に使える設計\n3. 圧倒的な高コスパで大満足',
+        extra: 'リピート率が高い納得のクオリティ'
+      },
+      {
+        slideNum: 5,
+        type: 'cta',
+        badge: 'お得情報 🎁',
+        mainTitle: '今だけの特別チャンス！\n限定キャンペーン中',
+        subTitle: isAmazon ? 'Amazonタイムセール中！\n詳細はプロフィールのリンクから🔗✨' : '気になったら今すぐチェック！\n詳細はプロフィールのリンクから🔗✨',
+        extra: '在庫限りのためお早めに！'
+      }
+    ];
+  }
+
+  // --- 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
   generateLocalTemplate(channel, p) {
     const name = p.name;
     const link = p.link || 'https://example.com';
@@ -2606,7 +2771,7 @@ class ContentGeneratorEngine {
     } else if (platId === 'oasis') {
       platformExperience = '오아시스 새벽배송으로 친환경 산지직송 안심하고 바로 받아봤어요 🌱✨';
     } else if (platId === 'toss') {
-      platformExperience = '토스 공동구매로 특가 떴을 때 알뜰하게 쟁여서 가성비 만족도 200%예요 ⚡';
+      platformExperience = '토스쇼핑에서 특가 떴을 때 쉐어링크 타고 알뜰하게 쟁여서 가성비 만족도 200%예요 ⚡';
     } else if (platId === 'smartstore') {
       platformExperience = '네이버 도착보장으로 안전하고 빠르게 도착해서 찐만족 중이에요 📦';
     }
@@ -2619,7 +2784,7 @@ class ContentGeneratorEngine {
       : '';
 
     if (channel === 'threads-kr') {
-      // 1. 한국 스레드: [1단계: 본문 (사진/영상 첨부, 외부 링크 없음! 계정 보호)] + [2단계: 첫 번째 댓글 (링크 & 정보)]
+      // 1. 한국 스레드: [1단계: 본문] + [2단계: 첫 번째 댓글]
       return `📌 [1단계: 본문 포스팅에 복붙] (사진/영상 첨부, 외부 링크 없음으로 계정 보호 🛡️)
 ─────────────────────
 진짜 이거 써보고 요즘 삶의 질 수직상승했어요 🥹🤍
@@ -2648,77 +2813,70 @@ ${platformExperience}
     }
 
     if (channel === 'threads-jp') {
-      // 2. 일본 스레드: [ステップ1：本文 (動画・写真添付用、リンクなしでアカウント保護)] + [ステップ2：返信コメント (リンク/詳細)]
-      return `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）
+      // 2. 일본 스레드
+      return `📌【ステップ1：本文にコピペ】（写真・動画添付、外部リンク一切なしでアカウント保護 🛡️）
 ─────────────────────
-これ、正直買ってなかったら今年一番後悔してたかも…！🥹🤍
-SNSや口コミで見かけて気になってたんだけど、
-実際に使ってみたら想像以上に神アイテムすぎて感動しちゃった💭✨
+これ使い始めてから、毎日のプチストレスが本当にゼロになった🥹🤍
+SNSでめちゃくちゃバズってて気になってたんだけど、
+もっと早く買えばよかった…！完全にQOL爆上がりアイテム✨
 
-フォロワーさんにもぜひ知ってほしいお気に入りポイント👇
-・${memo}
-・毎日の小さなプチストレスがこれ1つでゼロになったの…！
+${memo}
 
-生活の質が爆上がりして、なんでもっと早く買わなかったんだろうって本気で思ってる🤍
+毎日の生活がぐっと快適になって、小さなイライラもスッキリ解消💭
+デザインも可愛くてお気に入り🫧
 
-これ本当に便利すぎるんだけど、
-みんなのおすすめの愛用品や裏技があればぜひコメントで教えてね！👀💬
+みんなはこういう便利グッズ使ってる？
+おすすめあったらぜひコメントで教えてね〜！👀💬
 
-#おすすめ #買ってよかった #便利グッズ #QOL向上 #ライフハック #正直レビュー
+#買ってよかった #おすすめ #QOL向上 #便利グッズ #ライフハック #正直レビュー #暮らしを楽しむ
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💬【ステップ2：最初の返信コメント用】（投稿後、自分の投稿にリプライで登録🔗）
+💬【ステップ2：最初の返信コメントにコピペ】（投稿後、自分の投稿にリプライ 🔗）
 ─────────────────────
-動画や写真に出てきた【${name}】の詳細や、私が使っているおすすめ情報はプロフィールのリンクや下記にまとめておいたよ！
-気になった方は今すぐチェックしてみてね👇💕
+写真・動画に出てきた【${name}】の詳細やお得な購入先リンクをまとめておきました！
+気になった方はこちらからチェックしてみてね👇💕
 🔗 ${link}
 
-質問があれば気軽にコメントしてね🥰 全部お返事します💌${amazonDisclaimer}`;
+使ってみた感想や質問があれば、お気軽にコメントしてね🥰${amazonDisclaimer}`;
     }
 
     if (channel === 'naver-blog') {
-      // 3. 네이버 블로그 (친절하고 감성적인 2030 여성 라이프스타일 블로거 톤)
-      return `# [솔직후기] 삶의 질 수직상승! ${name} 내돈내산 직접 써본 장단점 총정리 🤍
+      // 3. 네이버 블로그 (스마트에디터 ONE 서식)
+      return `안녕하세요 여러분! 오늘도 기분 좋은 하루 보내고 계신가요? 🤍
+오늘은 요즘 제 삶의 질을 200% 수직상승시켜 준 찐추천템,
+**[${name}]** 솔직 내돈내산 후기를 들고 왔어요! ✨
 
-안녕하세요 여러분! 일상의 소소한 행복과 유용한 꿀템을 기록하는 블로그입니다 ☕✨
-
-오늘은 요즘 SNS에서 정말 자주 보여서 눈여겨보고 있던 **[${name}]**을 직접 내돈내산으로 구매해 사용해 본 솔직한 후기를 남겨보려고 해요 💕
-
----
-
-## 📦 첫인상 및 패키지 🤍
-배송받자마자 열어봤는데 군더더기 없이 깔끔하고 감성적인 패키지가 너무 마음에 들더라구요 :)
-마감도 꼼꼼하고 전체적인 디테일이 좋아서 개봉할 때부터 기분이 좋아지는 느낌이었어요.
+SNS에서 워낙 입소문이 자자해서 반신반의하며 데려왔는데,
+결론부터 말씀드리면 "진작 살 걸 왜 이제야 샀나" 싶을 만큼 대만족 중인 아이템이에요 🥹
 
 ---
 
-## 💡 실제로 써보고 반한 점 & 솔직 후기 ✨
-- **주요 포인트:** ${memo}
-- 직접 며칠간 써보니 '왜 이제야 샀을까' 싶을 정도로 일상의 작은 불편함들을 싹 해결해 주더라구요.
-- 과장 없이 담백하게 말씀드리면, 최근에 산 것들 중에 만족도 1위예요 🤍
-${plat && plat.deliveryBenefit ? `- **배송/구매:** ${plat.deliveryBenefit}\n` : ''}---
+### ✨ 직접 써보고 반한 핵심 포인트!
 
-## 🎯 이런 분들께 잘 맞을 것 같아요 :)
-- 매일 반복되는 번거로움을 줄이고 삶의 여유를 챙기고 싶으신 분
-- 실용적이면서도 감성적인 디자인까지 모두 챙기고 싶으신 분
+✔ **${memo}**
+✔ 작은 디테일까지 신경 쓴 깔끔한 마감과 디자인
+✔ ${platformExperience}
+
+평소에 은근히 신경 쓰이고 번거로웠던 부분들을 싹 해결해 주니까
+일상 속 피로감이 확 줄어들고 능률도 훨씬 올라가더라구요 :)
 
 ---
 
-## 💰 제품 정보 및 구매 링크 🛍️
-궁금해하실 분들을 위해 제가 구매했던 링크와 상세 정보 남겨둘게요.
-현재 할인 및 프로모션 진행 중이니 필요하신 분들은 참고해보세요 :)
+### 🛍️ 최저가 구매처 & 혜택 정보 공유
 
-▼ ${name} 상세 정보 바로가기
-${link}
+많은 분들이 댓글로 구매처 문의를 주셔서 바로가기 링크 남겨둘게요!
+자세한 스펙이나 현재 진행 중인 할인 프로모션은 아래 공식 링크에서 확인하실 수 있어요 👇
 
-혹시 더 궁금하신 점이 있다면 언제든 편하게 댓글 남겨주세요 💬
-오늘도 기분 좋은 하루 보내세요! 🤍${platDisclaimer}
+👉 [${name}] 최저가 바로가기
+🔗 ${link}
 
-#내돈내산 #솔직후기 #${name.replace(/\s+/g, '')} #아이템추천 #일상기록 #살림꿀팁 #삶의질향상`;
+직접 꼼꼼히 써보고 솔직하게 작성한 후기인 만큼,
+비슷한 고민을 하고 계셨던 분들께 작은 도움이 되었으면 좋겠습니다!
+도움이 되셨다면 공감과 이웃 추가 부탁드려요 🤍${platDisclaimer}`;
     }
 
     if (channel === 'ameba-jp') {
-      // 4. 일본 아메바 블로그 (사랑스럽고 다정한 일본 여성 블로거 톤)
+      // 4. 일본 아메바 블로그
       return `皆様こんにちは🌸
 いつもブログに遊びに来てくださりありがとうございます🥰💕
 
@@ -2750,11 +2908,11 @@ ${link}
 最後まで読んでくださり、本当にありがとうございました！
 よかったら「いいね」やフォローもポチッとしていただけるととっても励みになります🥰✨${amazonDisclaimer}
 
-#アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #Amazon購入品 #暮らしを楽しむ`;
+#アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #暮らしを楽しむ`;
     }
 
     if (channel === 'instagram') {
-      // 5. 인스타그램 피드 (감성적이고 세련된 2030 여성 인플루언서 피드)
+      // 5. 인스타그램 피드
       return `✨ 요즘 제 일상에서 가장 만족스럽게 쓰고 있는 최애템 공유해요 🥹🤍
 ━━━━━━━━━━━━━━━━━
 눈여겨보고 있다가 드디어 데려온
@@ -2766,7 +2924,7 @@ ${link}
 💡 직접 써보고 느낀 포인트 CHECK
 ✔ ${memo}
 ✔ 깔끔하고 감성적인 디자인 & 확실한 실용성
-${plat && plat.deliveryBenefit ? `✔ ${plat.deliveryBenefit}\n` : ''}✔ 써볼수록 만족스러워서 주변에도 조용히 추천 중 :)
+✔ 써볼수록 만족스러워서 주변에도 조용히 추천 중 :)
 
 📍 구매 정보
 프로필 링크 또는 아래 링크에서
@@ -2780,142 +2938,9 @@ ${plat && plat.deliveryBenefit ? `✔ ${plat.deliveryBenefit}\n` : ''}✔ 써볼
     }
 
     return '';
-  }�真添付用、リンクなしでアカウント保護)] + [ステップ2：返信コメント (リンク/詳細)]
-      return `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）
-─────────────────────
-これ、正直買ってなかったら今年一番後悔してたかも…！🥹🤍
-SNSや口コミで見かけて気になってたんだけど、
-実際に使ってみたら想像以上に神アイテムすぎて感動しちゃった💭✨
-
-フォロワーさんにもぜひ知ってほしいお気に入りポイント👇
-・${memo}
-・毎日の小さなプチストレスがこれ1つでゼロになったの…！
-
-生活の質が爆上がりして、なんでもっと早く買わなかったんだろうって本気で思ってる🤍
-
-これ本当に便利すぎるんだけど、
-みんなのおすすめの愛用品や裏技があればぜひコメントで教えてね！👀💬
-
-#おすすめ #買ってよかった #便利グッズ #QOL向上 #ライフハック #正直レビュー
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💬【ステップ2：最初の返信コメント用】（投稿後、自分の投稿にリプライで登録🔗）
-─────────────────────
-動画や写真に出てきた【${name}】の詳細や、私が使っているおすすめ情報はプロフィールのリンクや下記にまとめておいたよ！
-気になった方は今すぐチェックしてみてね👇💕
-🔗 ${link}
-
-質問があれば気軽にコメントしてね🥰 全部お返事します💌${amazonDisclaimer}`;
-    }
-
-    if (channel === 'naver-blog') {
-      // 3. 네이버 블로그 (친절하고 감성적인 2030 여성 라이프스타일 블로거 톤)
-      return `# [솔직후기] 삶의 질 수직상승! ${name} 내돈내산 직접 써본 장단점 총정리 🤍
-
-안녕하세요 여러분! 일상의 소소한 행복과 유용한 꿀템을 기록하는 블로그입니다 ☕✨
-
-오늘은 요즘 SNS에서 정말 자주 보여서 눈여겨보고 있던 **[${name}]**을 직접 내돈내산으로 구매해 사용해 본 솔직한 후기를 남겨보려고 해요 💕
-
----
-
-## 📦 첫인상 및 패키지 🤍
-배송받자마자 열어봤는데 군더더기 없이 깔끔하고 감성적인 패키지가 너무 마음에 들더라구요 :)
-마감도 꼼꼼하고 전체적인 디테일이 좋아서 개봉할 때부터 기분이 좋아지는 느낌이었어요.
-
----
-
-## 💡 실제로 써보고 반한 점 & 솔직 후기 ✨
-- **주요 포인트:** ${memo}
-- 직접 며칠간 써보니 '왜 이제야 샀을까' 싶을 정도로 일상의 작은 불편함들을 싹 해결해 주더라구요.
-- 과장 없이 담백하게 말씀드리면, 최근에 산 것들 중에 만족도 1위예요 🤍
-${isCoupang ? '- **배송:** 로켓배송으로 다음 날 아침 문 앞에 바로 도착해서 기다림 없이 쓸 수 있어 넘 편했어요 🚀\n' : ''}
----
-
-## 🎯 이런 분들께 잘 맞을 것 같아요 :)
-- 매일 반복되는 번거로움을 줄이고 삶의 여유를 챙기고 싶으신 분
-- 실용적이면서도 감성적인 디자인까지 모두 챙기고 싶으신 분
-
----
-
-## 💰 제품 정보 및 구매 링크 🛍️
-궁금해하실 분들을 위해 제가 구매했던 링크와 상세 정보 남겨둘게요.
-현재 할인 및 프로모션 진행 중이니 필요하신 분들은 참고해보세요 :)
-
-▼ ${name} 상세 정보 바로가기
-${link}
-
-혹시 더 궁금하신 점이 있다면 언제든 편하게 댓글 남겨주세요 💬
-오늘도 기분 좋은 하루 보내세요! 🤍${coupangDisclaimer}
-
-#내돈내산 #솔직후기 #${name.replace(/\s+/g, '')} #아이템추천 #일상기록 #살림꿀팁 #삶의질향상`;
-    }
-
-    if (channel === 'ameba-jp') {
-      // 4. 일본 아메바 블로그 (사랑스럽고 다정한 일본 여성 블로거 톤)
-      return `皆様こんにちは🌸
-いつもブログに遊びに来てくださりありがとうございます🥰💕
-
-今日は、SNSや口コミでも話題になっていてずっと気になっていた
-**【${name}】** を実際に使ってみたので、正直にレビューしたいと思います✨
-
-結論から言うと…
-「なんでもっと早く使わなかったんだろう〜！」と感動しちゃうくらい大満足のアイテムでした🥹🤍
-
----
-
-### 🌸 お気に入り＆感動ポイント 🎀
-・${memo}
-・毎日の暮らしがぐっと快適になって、小さなストレスが本当にスッキリ解消されました💭
-${isAmazon ? '・Amazonプライム便で注文後すぐに届いたのもすごく助かりました📦💕' : ''}
-
-私と同じように毎日の家事やお仕事で忙しい女性の皆様には、
-心からおすすめしたいお気に入りアイテムです🥰✨
-
----
-
-### 🛒 お得なキャンペーン＆購入先 🛍️
-현재, お得なキャンペーンやセールが実施されているようなので、
-気になっていた方はぜひチェックしてみてくださいね🛒💨
-
-▶︎ 商品の詳細・公式ページはこちら💕
-${link}
-
-最後まで読んでくださり、本当にありがとうございました！
-よかったら「いいね」やフォローもポチッとしていただけるととっても励みになります🥰✨${amazonDisclaimer}
-
-#アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #Amazon購入品 #暮らしを楽しむ`;
-    }
-
-    if (channel === 'instagram') {
-      // 5. 인스타그램 피드 (감성적이고 세련된 2030 여성 인플루언서 피드)
-      return `✨ 요즘 제 일상에서 가장 만족스럽게 쓰고 있는 최애템 공유해요 🥹🤍
-━━━━━━━━━━━━━━━━━
-눈여겨보고 있다가 드디어 데려온
-👉 [${name}] 직접 써본 솔직 후기 🫧
-
-평소에 은근히 신경 쓰이고 번거로웠던 부분들을
-깔끔하게 해결해 줘서 요즘 매일 손이 가는 아이템이에요 🤍
-
-💡 직접 써보고 느낀 포인트 CHECK
-✔ ${memo}
-✔ 깔끔하고 감성적인 디자인 & 확실한 실용성
-${isCoupang ? '✔ 로켓배송으로 바로 다음 날 도착해서 넘 편함 🚀\n' : ''}✔ 써볼수록 만족스러워서 주변에도 조용히 추천 중 :)
-
-📍 구매 정보
-프로필 링크 또는 아래 링크에서
-자세한 정보와 할인가로 확인하실 수 있어요 🛍️
-🔗 ${link}
-
-나중에 필요할 때 찾아보시려면 [저장🏷️] 해두시고,
-궁금한 점은 편하게 댓글로 남겨주세요 🤍
-━━━━━━━━━━━━━━━━━${coupangDisclaimer}
-#${name.replace(/\s+/g, '')} #내돈내산 #아이템추천 #살림템 #꿀템추천 #인스타쇼핑 #일상템 #감성템 #삶의질수직상승 #추천템`;
-    }
-
-    return '';
   }
 
-  // --- Gemini API (고급 튜닝) ---
+  // --- Gemini API (고급 텍스트 튜닝) ---
   async generateWithGemini(channel, p, apiKey) {
     const isCoupang = p.platform === 'coupang';
     const isAmazon = p.platform === 'amazon_jp';
@@ -2977,6 +3002,91 @@ Return ONLY the copy-paste-ready text, without conversational explanations.
       } catch (e) {}
     }
     return this.generateLocalTemplate(channel, p);
+  }
+
+  // --- 📸 Gemini Vision (제품 사진 / 상세페이지 캡처 AI 분석) ---
+  async analyzeProductImageWithVision(dataUrl, apiKey) {
+    if (!apiKey || !apiKey.trim()) {
+      throw new Error('Gemini API 키가 필요합니다.');
+    }
+    if (!dataUrl || !dataUrl.includes(',')) {
+      throw new Error('유효한 이미지 데이터가 없습니다.');
+    }
+
+    const [header, base64Data] = dataUrl.split(',');
+    const mimeMatch = header.match(/data:([^;]+);base64/);
+    const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+
+    const visionPrompt = `
+당신은 대한민국 1등 커머스 바이럴 마케터이자 전문 카피라이터입니다.
+제공된 이미지는 온라인 쇼핑몰(쿠팡, 오늘의집, 마켓컬리, 오아시스마켓, 토스쇼핑, 네이버 스마트스토어 등)의 [실제 제품 사진]이거나 [상세페이지 캡처 스크린샷]입니다.
+
+이 이미지를 정밀 분석하여 스레드, 블로그, 인스타그램 카드뉴스 제작에 바로 사용할 수 있도록 다음 JSON 형식으로만 응답해 주세요:
+
+{
+  "productName": "가장 부르기 쉽고 직관적인 핵심 제품명 (예: 무선 온열 넥케어 마사지기, 저당 굴소스, 슬라이딩 싱크대 수납랙 등 2~5단어)",
+  "keyFeatures": [
+    "핵심 장점/스펙 1 (구체적 숫자나 주요 성분, 효능)",
+    "핵심 장점/스펙 2 (실제 사용 시 해결해주는 불편함/고통)",
+    "핵심 장점/스펙 3 (감성, 가성비 또는 만족도 포인트)"
+  ],
+  "viralMemo": "SNS에서 실제 사용자가 감탄하며 쓴 듯한 생생한 내돈내산 2~3줄 후킹 메모 (불렛 없이 자연스러운 구어체: ~해서 대박, ~라 삶의 질 수직상승 등)",
+  "suggestedCategory": "kitchen 또는 living 또는 lifestyle"
+}
+
+반드시 다른 부연설명 없이 순수 JSON만 출력하세요.
+`;
+
+    for (const model of this.geminiModels) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: visionPrompt },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data
+                  }
+                }
+              ]
+            }],
+            generationConfig: {
+              temperature: 0.2,
+              response_mime_type: "application/json"
+            }
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            let cleanJson = rawText.trim();
+            if (cleanJson.startsWith('```json')) {
+              cleanJson = cleanJson.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+            } else if (cleanJson.startsWith('```')) {
+              cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+            }
+            const parsed = JSON.parse(cleanJson);
+            return {
+              success: true,
+              productName: parsed.productName || '화제의 인기 추천템',
+              keyFeatures: parsed.keyFeatures || [],
+              viralMemo: parsed.viralMemo || (parsed.keyFeatures ? parsed.keyFeatures.join(', ') : ''),
+              suggestedCategory: parsed.suggestedCategory || 'kitchen'
+            };
+          }
+        }
+      } catch (e) {
+        console.warn(`Vision model ${model} failed:`, e);
+      }
+    }
+
+    throw new Error('AI 비전 분석에 실패했습니다. API 키와 네트워크 연결을 확인해주세요.');
   }
 }
 
@@ -3887,6 +3997,15 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
+  // AI 비전 분석 DOM
+  const visionActionPanel = document.getElementById('vision-action-panel');
+  const btnVisionAnalyze = document.getElementById('btn-vision-analyze');
+  const visionLoading = document.getElementById('vision-loading');
+  const visionResult = document.getElementById('vision-result');
+  const visionDetectedCat = document.getElementById('vision-detected-cat');
+  const visionDetectedTitle = document.getElementById('vision-detected-title');
+  const visionDetectedFeatures = document.getElementById('vision-detected-features');
+
   // Tab 2 (복붙 홍보글)
   const channelPills = document.querySelectorAll('.channel-pill');
   const copyTextarea = document.getElementById('copy-textarea');
@@ -4043,7 +4162,7 @@ function startViralMakerApp() {
     { id: 'ohou', label: '오늘의집 🏠', colorClass: 'ohou', sampleDomain: 'ohou.se/productions/' },
     { id: 'kurly', label: '마켓컬리 💜', colorClass: 'kurly', sampleDomain: 'www.kurly.com/goods/' },
     { id: 'oasis', label: '오아시스 🌱', colorClass: 'oasis', sampleDomain: 'www.oasis.co.kr/product/detail/' },
-    { id: 'toss', label: '토스공구 ⚡', colorClass: 'toss', sampleDomain: 'toss.im/p/' },
+    { id: 'toss', label: '토스쇼핑 ⚡', colorClass: 'toss', sampleDomain: 'toss.im/p/' },
     { id: 'smartstore', label: '네이버 🛍️', colorClass: 'smartstore', sampleDomain: 'smartstore.naver.com/sample/' }
   ];
 
@@ -4256,10 +4375,79 @@ function startViralMakerApp() {
 
         CardNewsStudio.setUserMedia(dataUrl);
         showToast('제품 사진이 카드뉴스에 적용되었습니다! 🖼️');
+
+        // AI 비전 분석 버튼 활성화
+        if (visionActionPanel) {
+          visionActionPanel.style.display = 'block';
+          if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+          if (visionResult) visionResult.style.display = 'none';
+        }
       };
       reader.readAsDataURL(file);
     }
   });
+
+  // --- AI 비전 분석 버튼 클릭 이벤트 ---
+  if (btnVisionAnalyze) {
+    btnVisionAnalyze.addEventListener('click', async () => {
+      if (!state.product.mediaSrc) {
+        showToast('⚠️ 먼저 제품 사진이나 상세페이지 캡처를 선택해주세요.');
+        return;
+      }
+
+      if (!state.geminiKey) {
+        showToast('💡 AI 이미지 분석을 위해 무료 Gemini API 키를 먼저 입력해주세요! 🔑');
+        if (modalApiKey) modalApiKey.classList.add('active');
+        return;
+      }
+
+      btnVisionAnalyze.disabled = true;
+      btnVisionAnalyze.style.display = 'none';
+      if (visionLoading) visionLoading.style.display = 'flex';
+      if (visionResult) visionResult.style.display = 'none';
+
+      try {
+        const analysis = await ContentGenerator.analyzeProductImageWithVision(state.product.mediaSrc, state.geminiKey);
+
+        if (analysis.productName) {
+          state.product.name = analysis.productName;
+          if (selectedViralTitle) selectedViralTitle.textContent = analysis.productName;
+        }
+        if (analysis.viralMemo) {
+          state.product.memo = analysis.viralMemo;
+          if (inputMemo) inputMemo.value = analysis.viralMemo;
+        }
+
+        if (visionResult) {
+          visionResult.style.display = 'flex';
+          if (visionDetectedTitle) visionDetectedTitle.textContent = analysis.productName;
+          if (visionDetectedCat) visionDetectedCat.textContent = `카테고리: ${analysis.suggestedCategory || 'kitchen'}`;
+          if (visionDetectedFeatures && analysis.keyFeatures) {
+            visionDetectedFeatures.innerHTML = analysis.keyFeatures.map(f => `<div>• ${f}</div>`).join('') + 
+              `<div style="margin-top: 6px; color: var(--text-main); font-style: italic;">"${analysis.viralMemo}"</div>`;
+          }
+        }
+
+        state.generatedData = null;
+        if (typeof updateCopyTextView === 'function') {
+          updateCopyTextView();
+        }
+
+        showToast(`✨ '${analysis.productName}' 분석 완료! 제품명과 장점이 자동 입력되었습니다. 🎉`);
+
+        if (btnGenerateAll) {
+          btnGenerateAll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch (err) {
+        console.error('Vision analysis error:', err);
+        showToast('❌ 이미지 분석 실패: ' + err.message);
+        btnVisionAnalyze.style.display = 'flex';
+      } finally {
+        btnVisionAnalyze.disabled = false;
+        if (visionLoading) visionLoading.style.display = 'none';
+      }
+    });
+  }
 
   // --- 1초 일괄 생성 실행 ---
   btnGenerateAll.addEventListener('click', async () => {

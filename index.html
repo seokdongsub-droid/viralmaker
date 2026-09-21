@@ -168,6 +168,34 @@
               <div style="font-size: 11px; color: var(--text-muted);">스마트폰 갤러리 또는 카메라 촬영</div>
             </div>
           </label>
+
+          <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 활성화) -->
+          <div id="vision-action-panel" style="display: none; margin-top: 10px;">
+            <button type="button" class="btn-vision-analyze" id="btn-vision-analyze">
+              <span class="vision-btn-icon">✨</span>
+              <div class="vision-btn-text">
+                <strong>AI 사진·상세페이지 분석하기</strong>
+                <span>제품명 & 3대 핵심 장점 1초 자동 추출 ➔</span>
+              </div>
+            </button>
+            <div id="vision-loading" class="vision-loading-box" style="display: none;">
+              <div class="vision-spinner"></div>
+              <span>🤖 AI가 상세페이지 이미지를 분석하고 있습니다... (제품명/장점 추출 중)</span>
+            </div>
+            <div id="vision-result" class="vision-result-card" style="display: none;">
+              <div class="vision-result-header">
+                <span>✨ AI 비전 분석 완료!</span>
+                <span id="vision-detected-cat" class="platform-pill" style="font-size: 10px;"></span>
+              </div>
+              <div class="vision-result-body">
+                <div style="font-size: 12px; margin-bottom: 4px;">
+                  <strong style="color: #fff;">감지된 제품:</strong> <span id="vision-detected-title" style="color: var(--primary-light); font-weight: 700;"></span>
+                </div>
+                <div id="vision-detected-features" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 메인 일괄 생성 버튼 -->
@@ -572,10 +600,10 @@
 
   </div>
 
-  <!-- Scripts (캐시 방지 v2.3 적용) -->
-  <script src="js/templates.js?v=2.3"></script>
-  <script src="js/content_generator.js?v=2.3"></script>
-  <script src="js/cardnews.js?v=2.3"></script>
-  <script src="js/app.js?v=2.3"></script>
+  <!-- Scripts (캐시 방지 v2.5 적용) -->
+  <script src="js/templates.js?v=2.5"></script>
+  <script src="js/generator.js?v=2.5"></script>
+  <script src="js/cardnews.js?v=2.5"></script>
+  <script src="js/app.js?v=2.5"></script>
 </body>
 </html>
