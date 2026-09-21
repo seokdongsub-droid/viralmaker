@@ -13,17 +13,29 @@ class ContentGeneratorEngine {
     ];
   }
 
-  // 쇼핑몰 플랫폼 감지
+  // 쇼핑몰 플랫폼 감지 (쿠팡, 오늘의집, 마켓컬리, 오아시스, 토스, 네이버 스마트스토어, 아마존 등)
   detectPlatform(urlStr) {
     if (!urlStr) return 'general';
     const lower = urlStr.toLowerCase();
     if (lower.includes('coupang.com') || lower.includes('link.coupang.com')) {
       return 'coupang';
     }
+    if (lower.includes('ohou.se') || lower.includes('todayhouse')) {
+      return 'ohou';
+    }
+    if (lower.includes('kurly.com')) {
+      return 'kurly';
+    }
+    if (lower.includes('oasis.co.kr')) {
+      return 'oasis';
+    }
+    if (lower.includes('toss.im') || lower.includes('tossbank.com') || lower.includes('toss.app') || lower.includes('toss')) {
+      return 'toss';
+    }
     if (lower.includes('amazon.co.jp') || lower.includes('amzn.to') || lower.includes('amzn.asia')) {
       return 'amazon_jp';
     }
-    if (lower.includes('smartstore.naver.com') || lower.includes('brand.naver.com') || lower.includes('shopping.naver.com')) {
+    if (lower.includes('smartstore.naver.com') || lower.includes('brand.naver.com') || lower.includes('shopping.naver.com') || lower.includes('naver.com')) {
       return 'smartstore';
     }
     if (lower.includes('tenping.kr')) {
@@ -132,16 +144,23 @@ class ContentGeneratorEngine {
   generateKoreanCardNews(p) {
     const name = p.name;
     const memo = p.memo;
-    const isCoupang = p.platform === 'coupang';
+    const platId = p.platform || 'general';
+    const plat = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId]) 
+      ? AffiliatePlatforms[platId] 
+      : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['general'] : null);
+
+    const badge = plat ? plat.badgeText : 'MY FAVORITE 🤍';
+    const benefit = plat ? plat.deliveryBenefit : '써보고 너무 만족스러워서 공유하는 찐추천템 🥹';
+    const shortName = plat ? plat.shortName : '특가';
 
     return [
       {
         slideNum: 1,
         type: 'cover',
-        badge: isCoupang ? '🚀 로켓배송 내돈내산' : 'MY FAVORITE 🤍',
+        badge: badge,
         mainTitle: `${name}\n솔직하게 써본 후기 ✨`,
-        subTitle: isCoupang ? '내일 바로 도착! 요즘 삶의 질 제대로 올려주는 꿀템' : '써보고 너무 만족스러워서 공유하는 찐추천템 🥹',
-        extra: isCoupang ? '로켓배송 무료반품 혜택' : '지금 주문 시 한정 할인 혜택'
+        subTitle: benefit,
+        extra: `${shortName} 혜택 놓치지 마세요`
       },
       {
         slideNum: 2,
@@ -172,8 +191,8 @@ class ContentGeneratorEngine {
         type: 'cta',
         badge: 'SPECIAL EVENT 🎁',
         mainTitle: '놓치면 후회할\n기간 한정 특별 프로모션',
-        subTitle: `${isCoupang ? '로켓배송으로 빠르게 받아보세요!\n' : ''}구매 및 상세 링크는 프로필에서 바로 확인 가능해요!`,
-        extra: isCoupang ? '쿠팡 와우회원 추가 할인' : '한정 수량 조기 마감 주의'
+        subTitle: `${shortName} 혜택으로 빠르게 만나보세요!\n구매 및 상세 링크는 프로필/첫댓글에서 바로 확인 가능해요!`,
+        extra: '한정 수량 조기 마감 주의'
       }
     ];
   }
@@ -188,59 +207,35 @@ class ContentGeneratorEngine {
         slideNum: 1,
         type: 'cover',
         badge: isAmazon ? 'Amazonベストセラー 🔥' : '大バズり中 🤍',
-        mainTitle: `【SNSで話題】\n${name}\n本音レビュー！`,
-        subTitle: isAmazon ? 'Amazonで即買い！QOL爆上がり確定アイテム🥹' : 'QOL爆上がり確定！もっと早く買えばよかった🥹💕',
-        extra: isAmazon ? 'プライム対応・翌日配送 📦' : '大人気のため売り切れ注意⚠️'
-      },
-      {
-        slideNum: 2,
-        type: 'problem',
-        badge: 'こんなお悩みありませんか？💭',
-        mainTitle: '毎日のプチストレス\n我慢していませんか？',
-        subTitle: '「もっと快適に過ごしたい…」\n日常の悩みをこれ1つでスッキリ解消！',
-        extra: '見逃せないチェックポイント'
-      },
-      {
-        slideNum: 3,
-        type: 'solution',
-        badge: 'お悩み解決 💡',
-        mainTitle: `${name}\nで暮らしが変わる！`,
-        subTitle: '✔ 圧倒的な使いやすさと満足度\n✔ 一度使ったらもう手放せない便利さ',
-        extra: 'リアルな口コミでも大絶賛✨'
-      },
-      {
-        slideNum: 4,
-        type: 'detail',
-        badge: '選ばれる3つの理由 🔍',
-        mainTitle: '使って実感した\n決定的なポイント',
-        subTitle: '1. デザイン性と機能性の両立\n2. 誰でも簡単＆快適に使える設計\n3. 圧倒的な高コスパで大満足',
-        extra: 'リピート率が高い納得のクオリティ'
-      },
-      {
-        slideNum: 5,
-        type: 'cta',
-        badge: 'お得情報 🎁',
-        mainTitle: '今だけの特別チャンス！\n限定キャンペーン中',
-        subTitle: isAmazon ? 'Amazonタイムセール中！\n詳細はプロフィールのリンクから🔗✨' : '気になったら今すぐチェック！\n詳細はプロフィールのリンクから🔗✨',
-        extra: '在庫限りのためお早めに！'
-      }
-    ];
-  }
-
-  // --- 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
+        mainTitle: `【SNSで話題】\n${name}\n本音レビ�  // --- 5대 채널 복붙용 로컬 템플릿 생성 엔진 ---
   generateLocalTemplate(channel, p) {
     const name = p.name;
     const link = p.link || 'https://example.com';
     const memo = p.memo || '삶의 질을 높여주는 필수 추천 아이템';
-    const isCoupang = p.platform === 'coupang';
-    const isAmazon = p.platform === 'amazon_jp';
+    const platId = p.platform || 'general';
+    const plat = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId]) 
+      ? AffiliatePlatforms[platId] 
+      : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['general'] : null);
 
-    // 쿠팡 파트너스 공정위 문구
-    const coupangDisclaimer = isCoupang 
-      ? '\n\n※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.' 
-      : '';
+    // 플랫폼별 자연스러운 배송/구매 감탄 문구
+    let platformExperience = '진작 살 걸 왜 이제야 샀나 싶을 정도!';
+    if (platId === 'coupang') {
+      platformExperience = '배송도 로켓으로 다음 날 바로 문앞에 와서 기다릴 틈도 없었어요 🚀';
+    } else if (platId === 'ohou') {
+      platformExperience = '오늘의집에서 꼼꼼히 후기 보고 골랐는데 인테리어도 안 해치고 감성 폭발이에요 🏠🤍';
+    } else if (platId === 'kurly') {
+      platformExperience = '컬리 샛별배송으로 새벽에 신선하게 도착해서 아침부터 기분 좋게 언박싱했어요 💜';
+    } else if (platId === 'oasis') {
+      platformExperience = '오아시스 새벽배송으로 친환경 산지직송 안심하고 바로 받아봤어요 🌱✨';
+    } else if (platId === 'toss') {
+      platformExperience = '토스 공동구매로 특가 떴을 때 알뜰하게 쟁여서 가성비 만족도 200%예요 ⚡';
+    } else if (platId === 'smartstore') {
+      platformExperience = '네이버 도착보장으로 안전하고 빠르게 도착해서 찐만족 중이에요 📦';
+    }
 
-    // 아마존 어소시에이트 공정위 문구
+    // 플랫폼별 공정위 문구 (쿠팡, 오늘의집, 컬리, 오아시스, 토스, 스마트스토어 등)
+    const platDisclaimer = (plat && plat.disclaimer) ? `\n\n${plat.disclaimer}` : '';
+    const isAmazon = platId === 'amazon_jp';
     const amazonDisclaimer = isAmazon 
       ? '\n\n※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。' 
       : '';
@@ -257,7 +252,7 @@ ${memo}
 
 매일 반복되던 작은 불편함들이 싹 해결돼서
 요즘 하루하루가 너무 편하고 기분 좋은 거 있죠 🫧
-${isCoupang ? '배송도 다음 날 바로 문앞에 와서 기다릴 틈도 없었어요 🚀' : '진작 살 걸 왜 이제야 샀나 싶을 정도!'}
+${platformExperience}
 
 혹시 저처럼 고민해보신 분 계신가요?
 다들 어떻게 해결하고 계신지 댓글로 꿀팁 공유해주세요! 👀💬
@@ -271,11 +266,143 @@ ${isCoupang ? '배송도 다음 날 바로 문앞에 와서 기다릴 틈도 없
 필요하신 분들은 아래 링크나 프로필 링크에서 확인하실 수 있어요 👇
 🔗 ${link}
 
-혹시 사용감이나 더 궁금한 점 있으시면 편하게 답글 남겨주세요! 솔직하게 다 알려드릴게요 🤍${coupangDisclaimer}`;
+혹시 사용감이나 더 궁금한 점 있으시면 편하게 답글 남겨주세요! 솔직하게 다 알려드릴게요 🤍${platDisclaimer}`;
     }
 
     if (channel === 'threads-jp') {
       // 2. 일본 스레드: [ステップ1：本文 (動画・写真添付用、リンクなしでアカウント保護)] + [ステップ2：返信コメント (リンク/詳細)]
+      return `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）
+─────────────────────
+これ、正直買ってなかったら今年一番後悔してたかも…！🥹🤍
+SNSや口コミで見かけて気になってたんだけど、
+実際に使ってみたら想像以上に神アイテムすぎて感動しちゃった💭✨
+
+フォロワーさんにもぜひ知ってほしいお気に入りポイント👇
+・${memo}
+・毎日の小さなプチストレスがこれ1つでゼロになったの…！
+
+生活の質が爆上がりして、なんでもっと早く買わなかったんだろうって本気で思ってる🤍
+
+これ本当に便利すぎるんだけど、
+みんなのおすすめの愛用品や裏技があればぜひコメントで教えてね！👀💬
+
+#おすすめ #買ってよかった #便利グッズ #QOL向上 #ライフハック #正直レビュー
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬【ステップ2：最初の返信コメント用】（投稿後、自分の投稿にリプライで登録🔗）
+─────────────────────
+動画や写真に出てきた【${name}】の詳細や、私が使っているおすすめ情報はプロフィールのリンクや下記にまとめておいたよ！
+気になった方は今すぐチェックしてみてね👇💕
+🔗 ${link}
+
+質問があれば気軽にコメントしてね🥰 全部お返事します💌${amazonDisclaimer}`;
+    }
+
+    if (channel === 'naver-blog') {
+      // 3. 네이버 블로그 (친절하고 감성적인 2030 여성 라이프스타일 블로거 톤)
+      return `# [솔직후기] 삶의 질 수직상승! ${name} 내돈내산 직접 써본 장단점 총정리 🤍
+
+안녕하세요 여러분! 일상의 소소한 행복과 유용한 꿀템을 기록하는 블로그입니다 ☕✨
+
+오늘은 요즘 SNS에서 정말 자주 보여서 눈여겨보고 있던 **[${name}]**을 직접 내돈내산으로 구매해 사용해 본 솔직한 후기를 남겨보려고 해요 💕
+
+---
+
+## 📦 첫인상 및 패키지 🤍
+배송받자마자 열어봤는데 군더더기 없이 깔끔하고 감성적인 패키지가 너무 마음에 들더라구요 :)
+마감도 꼼꼼하고 전체적인 디테일이 좋아서 개봉할 때부터 기분이 좋아지는 느낌이었어요.
+
+---
+
+## 💡 실제로 써보고 반한 점 & 솔직 후기 ✨
+- **주요 포인트:** ${memo}
+- 직접 며칠간 써보니 '왜 이제야 샀을까' 싶을 정도로 일상의 작은 불편함들을 싹 해결해 주더라구요.
+- 과장 없이 담백하게 말씀드리면, 최근에 산 것들 중에 만족도 1위예요 🤍
+${plat && plat.deliveryBenefit ? `- **배송/구매:** ${plat.deliveryBenefit}\n` : ''}---
+
+## 🎯 이런 분들께 잘 맞을 것 같아요 :)
+- 매일 반복되는 번거로움을 줄이고 삶의 여유를 챙기고 싶으신 분
+- 실용적이면서도 감성적인 디자인까지 모두 챙기고 싶으신 분
+
+---
+
+## 💰 제품 정보 및 구매 링크 🛍️
+궁금해하실 분들을 위해 제가 구매했던 링크와 상세 정보 남겨둘게요.
+현재 할인 및 프로모션 진행 중이니 필요하신 분들은 참고해보세요 :)
+
+▼ ${name} 상세 정보 바로가기
+${link}
+
+혹시 더 궁금하신 점이 있다면 언제든 편하게 댓글 남겨주세요 💬
+오늘도 기분 좋은 하루 보내세요! 🤍${platDisclaimer}
+
+#내돈내산 #솔직후기 #${name.replace(/\s+/g, '')} #아이템추천 #일상기록 #살림꿀팁 #삶의질향상`;
+    }
+
+    if (channel === 'ameba-jp') {
+      // 4. 일본 아메바 블로그 (사랑스럽고 다정한 일본 여성 블로거 톤)
+      return `皆様こんにちは🌸
+いつもブログに遊びに来てくださりありがとうございます🥰💕
+
+今日は、SNSや口コミでも話題になっていてずっと気になっていた
+**【${name}】** を実際に使ってみたので、正直にレビューしたいと思います✨
+
+結論から言うと…
+「なんでもっと早く使わなかったんだろう〜！」と感動しちゃうくらい大満足のアイテムでした🥹🤍
+
+---
+
+### 🌸 お気に入り＆感動ポイント 🎀
+・${memo}
+・毎日の暮らしがぐっと快適になって、小さなストレスが本当にスッキリ解消されました💭
+${isAmazon ? '・Amazonプライム便で注文後すぐに届いたのもすごく助かりました📦💕' : ''}
+
+私と同じように毎日の家事やお仕事で忙しい女性の皆様には、
+心からおすすめしたいお気に入りアイテムです🥰✨
+
+---
+
+### 🛒 お得なキャンペーン＆購入先 🛍️
+現在、お得なキャンペーンやセールが実施されているようなので、
+気になっていた方はぜひチェックしてみてくださいね🛒💨
+
+▶︎ 商品の詳細・公式ページはこちら💕
+${link}
+
+最後まで読んでくださり、本当にありがとうございました！
+よかったら「いいね」やフォローもポチッとしていただけるととっても励みになります🥰✨${amazonDisclaimer}
+
+#アメブロ #購入品紹介 #正直レビュー #便利アイテム #プチプラ #お気に入り #Amazon購入品 #暮らしを楽しむ`;
+    }
+
+    if (channel === 'instagram') {
+      // 5. 인스타그램 피드 (감성적이고 세련된 2030 여성 인플루언서 피드)
+      return `✨ 요즘 제 일상에서 가장 만족스럽게 쓰고 있는 최애템 공유해요 🥹🤍
+━━━━━━━━━━━━━━━━━
+눈여겨보고 있다가 드디어 데려온
+👉 [${name}] 직접 써본 솔직 후기 🫧
+
+평소에 은근히 신경 쓰이고 번거로웠던 부분들을
+깔끔하게 해결해 줘서 요즘 매일 손이 가는 아이템이에요 🤍
+
+💡 직접 써보고 느낀 포인트 CHECK
+✔ ${memo}
+✔ 깔끔하고 감성적인 디자인 & 확실한 실용성
+${plat && plat.deliveryBenefit ? `✔ ${plat.deliveryBenefit}\n` : ''}✔ 써볼수록 만족스러워서 주변에도 조용히 추천 중 :)
+
+📍 구매 정보
+프로필 링크 또는 아래 링크에서
+자세한 정보와 할인가로 확인하실 수 있어요 🛍️
+🔗 ${link}
+
+나중에 필요할 때 찾아보시려면 [저장🏷️] 해두시고,
+궁금한 점은 편하게 댓글로 남겨주세요 🤍
+━━━━━━━━━━━━━━━━━${platDisclaimer}
+#${name.replace(/\s+/g, '')} #내돈내산 #아이템추천 #살림템 #꿀템추천 #인스타쇼핑 #일상템 #감성템 #삶의질수직상승 #추천템`;
+    }
+
+    return '';
+  }�真添付用、リンクなしでアカウント保護)] + [ステップ2：返信コメント (リンク/詳細)]
       return `📌【ステップ1：本文投稿用】（動画・写真と一緒に投稿／リンクなしでアカウント保護🛡️）
 ─────────────────────
 これ、正直買ってなかったら今年一番後悔してたかも…！🥹🤍

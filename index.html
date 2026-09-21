@@ -75,7 +75,7 @@
             <span class="mode-icon">🔗</span>
             <div class="mode-text-wrap">
               <span class="mode-title">내 상품 링크 등록</span>
-              <span class="mode-sub">스마트스토어 / 쿠팡 링크</span>
+              <span class="mode-sub">오늘의집 / 컬리 / 쿠팡 / 토스 등</span>
             </div>
           </button>
         </div>
@@ -104,15 +104,23 @@
             <!-- JS 동적 렌더링 -->
           </div>
 
-          <!-- 선택된 제품 쿠팡 검색 도우미 바 -->
+          <!-- 선택된 제품 제휴 플랫폼 멀티 검색 도우미 바 -->
           <div id="viral-selected-info" class="selected-product-summary">
-            <div>
-              <span style="font-size: 11px; color: var(--text-muted);">선택된 상품:</span>
-              <strong id="selected-viral-title" style="font-size: 13px; color: #fff; margin-left: 4px;">사각 딥 계란말이팬</strong>
+            <div class="selected-product-header">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span style="font-size: 11px; color: var(--text-muted);">선택된 상품:</span>
+                <strong id="selected-viral-title" style="font-size: 13px; color: #fff;">사각 딥 계란말이팬</strong>
+                <span id="selected-platform-badge" class="platform-mini-badge">🚀 쿠팡 모드</span>
+              </div>
+              <span class="platform-search-hint">💡 플랫폼 터치 시 검색창 열림 + 맞춤 카피/공정위 1초 전환</span>
             </div>
-            <a id="btn-coupang-search" href="https://www.coupang.com/np/search?component=&q=사각+계란말이팬" target="_blank" class="btn-header" style="font-size: 11px; padding: 5px 10px; color: #f43f5e; text-decoration: none;">
-              🔍 쿠팡에서 내 링크 찾기 ➔
-            </a>
+            
+            <div class="platform-search-toolbar">
+              <span class="platform-search-label">🔍 내 제휴 링크 찾기 (원클릭 검색 & 스타일 전환):</span>
+              <div id="platform-search-buttons" class="platform-btn-row">
+                <!-- JS 동적 생성 -->
+              </div>
+            </div>
           </div>
         </div>
 
@@ -122,12 +130,15 @@
             <span>🔗 내 상품 홍보 링크</span>
           </div>
           <div class="input-group">
-            <label for="product-link" class="input-label">
-              <span>판매/홍보 링크 URL 입력</span>
-              <span class="req">*</span>
-            </label>
-            <input type="url" id="product-link" class="input-control" placeholder="예: https://smartstore.naver.com/... 또는 쿠팡 링크" value="https://smartstore.naver.com/sample/products/neck-care" required>
-            <span style="font-size: 11px; color: var(--text-dim);">※ 첫 댓글이나 상세 리뷰 본문에 자동으로 삽입됩니다.</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label for="product-link" class="input-label" style="margin-bottom: 0;">
+                <span>판매/홍보 링크 URL 입력</span>
+                <span class="req">*</span>
+              </label>
+              <span id="mode-b-detected-badge" class="platform-pill">🔗 일반 링크</span>
+            </div>
+            <input type="url" id="product-link" class="input-control" placeholder="예: 오늘의집, 컬리, 오아시스, 토스, 쿠팡, 스마트스토어 링크 붙여넣기" value="https://smartstore.naver.com/sample/products/neck-care" required>
+            <span style="font-size: 11px; color: var(--text-dim);">※ 주소를 붙여넣으면 플랫폼(오늘의집·컬리·오아시스·토스·쿠팡 등)을 자동 감지해 맞춤 공정위 문구를 달아줍니다.</span>
           </div>
 
           <div class="input-group" style="margin-top: 10px;">

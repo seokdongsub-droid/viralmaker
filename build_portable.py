@@ -9,22 +9,22 @@ cardnews_path = os.path.join(base_dir, "js", "cardnews.js")
 app_path = os.path.join(base_dir, "js", "app.js")
 out_path = os.path.join(base_dir, "viralmaker_portable.html")
 
-with open(index_path, "r", encoding="utf-8") as f:
+with open(index_path, "r", encoding="utf-8", errors="replace") as f:
     html = f.read()
 
-with open(css_path, "r", encoding="utf-8") as f:
+with open(css_path, "r", encoding="utf-8", errors="replace") as f:
     css = f.read()
 
-with open(templates_path, "r", encoding="utf-8") as f:
+with open(templates_path, "r", encoding="utf-8", errors="replace") as f:
     templates_js = f.read()
 
-with open(generator_path, "r", encoding="utf-8") as f:
+with open(generator_path, "r", encoding="utf-8", errors="replace") as f:
     generator_js = f.read()
 
-with open(cardnews_path, "r", encoding="utf-8") as f:
+with open(cardnews_path, "r", encoding="utf-8", errors="replace") as f:
     cardnews_js = f.read()
 
-with open(app_path, "r", encoding="utf-8") as f:
+with open(app_path, "r", encoding="utf-8", errors="replace") as f:
     app_js = f.read()
 
 import re

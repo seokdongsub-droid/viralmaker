@@ -268,16 +268,133 @@ body {
 }
 
 .selected-product-summary {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.selected-product-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+}
+
+.platform-search-hint {
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+
+.platform-mini-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(228, 37, 40, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(228, 37, 40, 0.3);
+  transition: all 0.2s ease;
+}
+
+.platform-search-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.platform-search-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.platform-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.platform-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main);
+  user-select: none;
+}
+
+.platform-quick-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.platform-quick-btn.active {
+  box-shadow: 0 0 10px currentColor;
+  font-weight: 700;
+}
+
+.platform-quick-btn.coupang {
+  border-color: rgba(228, 37, 40, 0.4);
+  background: rgba(228, 37, 40, 0.12);
+  color: #ff6b6b;
+}
+
+.platform-quick-btn.ohou {
+  border-color: rgba(53, 197, 240, 0.4);
+  background: rgba(53, 197, 240, 0.12);
+  color: #38bdf8;
+}
+
+.platform-quick-btn.kurly {
+  border-color: rgba(147, 51, 234, 0.4);
+  background: rgba(147, 51, 234, 0.12);
+  color: #c084fc;
+}
+
+.platform-quick-btn.oasis {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.platform-quick-btn.toss {
+  border-color: rgba(0, 100, 255, 0.4);
+  background: rgba(0, 100, 255, 0.12);
+  color: #60a5fa;
+}
+
+.platform-quick-btn.smartstore {
+  border-color: rgba(3, 199, 90, 0.4);
+  background: rgba(3, 199, 90, 0.12);
+  color: #4ade80;
+}
+
+.platform-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 9999px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  transition: all 0.2s ease;
 }
 
 .photo-upload-card {

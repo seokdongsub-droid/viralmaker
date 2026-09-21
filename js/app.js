@@ -209,26 +209,133 @@ function startViralMakerApp() {
   // --- 🔥 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 라이브러리 연동 ---
   const viralItemsContainer = document.getElementById('viral-items-container');
   const selectedViralTitle = document.getElementById('selected-viral-title');
-  const btnCoupangSearch = document.getElementById('btn-coupang-search');
+  const selectedPlatformBadge = document.getElementById('selected-platform-badge');
+  const platformSearchButtons = document.getElementById('platform-search-buttons');
+  const modeBDetectedBadge = document.getElementById('mode-b-detected-badge');
   const btnRandomPick = document.getElementById('btn-random-pick');
   const viralCatBtns = document.querySelectorAll('.viral-cat-btn');
 
   let currentViralCat = 'kitchen';
+  let currentViralItem = null;
+  let currentActivePlatform = 'coupang';
+
+  const PlatformPresets = [
+    { id: 'coupang', label: '쿠팡 🚀', colorClass: 'coupang', sampleDomain: 'link.coupang.com/a/' },
+    { id: 'ohou', label: '오늘의집 🏠', colorClass: 'ohou', sampleDomain: 'ohou.se/productions/' },
+    { id: 'kurly', label: '마켓컬리 💜', colorClass: 'kurly', sampleDomain: 'www.kurly.com/goods/' },
+    { id: 'oasis', label: '오아시스 🌱', colorClass: 'oasis', sampleDomain: 'www.oasis.co.kr/product/detail/' },
+    { id: 'toss', label: '토스공구 ⚡', colorClass: 'toss', sampleDomain: 'toss.im/p/' },
+    { id: 'smartstore', label: '네이버 🛍️', colorClass: 'smartstore', sampleDomain: 'smartstore.naver.com/sample/' }
+  ];
+
+  function renderPlatformSearchToolbar(item, activePlatId) {
+    if (!platformSearchButtons) return;
+    platformSearchButtons.innerHTML = '';
+    const query = item.search || item.coupangSearch || item.name;
+
+    PlatformPresets.forEach(plat => {
+      const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[plat.id]) 
+        ? AffiliatePlatforms[plat.id] 
+        : null;
+      const searchUrl = (platMeta && typeof platMeta.searchUrl === 'function')
+        ? platMeta.searchUrl(query)
+        : `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(query)}`;
+
+      const btn = document.createElement('a');
+      btn.className = `platform-quick-btn ${plat.colorClass} ${plat.id === activePlatId ? 'active' : ''}`;
+      btn.href = searchUrl;
+      btn.target = '_blank';
+      btn.innerHTML = `<span>${plat.label}</span> <span style="font-size: 9px; opacity: 0.8;">↗</span>`;
+      btn.title = `${plat.label} 검색창 열기 + ${plat.label} 카피로 즉시 전환`;
+
+      btn.addEventListener('click', () => {
+        selectPlatformForItem(item, plat.id);
+      });
+
+      platformSearchButtons.appendChild(btn);
+    });
+  }
+
+  function selectPlatformForItem(item, platId) {
+    currentActivePlatform = platId;
+    const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId]) 
+      ? AffiliatePlatforms[platId] 
+      : null;
+
+    const platPreset = PlatformPresets.find(p => p.id === platId);
+    const sampleLink = `https://${platPreset ? platPreset.sampleDomain : 'link.coupang.com/a/'}${encodeURIComponent(item.search || 'item')}`;
+
+    inputLink.value = sampleLink;
+    inputMemo.value = item.memo;
+    state.product.name = item.name;
+    state.product.link = sampleLink;
+    state.product.memo = item.memo;
+    state.product.platform = platId;
+    state.generatedData = null;
+
+    if (selectedViralTitle) selectedViralTitle.textContent = item.name;
+    if (selectedPlatformBadge && platMeta) {
+      selectedPlatformBadge.textContent = `${platMeta.icon} ${platMeta.shortName} 모드`;
+      selectedPlatformBadge.style.color = platMeta.color;
+      selectedPlatformBadge.style.borderColor = platMeta.color + '66';
+      selectedPlatformBadge.style.backgroundColor = platMeta.color + '22';
+    }
+
+    if (platformSearchButtons) {
+      platformSearchButtons.querySelectorAll('.platform-quick-btn').forEach(btn => {
+        if (btn.classList.contains(platId)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    updateModeBBadge();
+    if (typeof updateCopyTextView === 'function') {
+      updateCopyTextView();
+    }
+    showToast(`'${platMeta ? platMeta.name : platId}' 스타일로 전환되었습니다! ✨`);
+  }
 
   function applyViralItem(item) {
     if (!item) return;
-    inputLink.value = item.link;
-    inputMemo.value = item.memo;
-    state.product.name = item.name;
-    state.product.link = item.link;
-    state.product.memo = item.memo;
+    currentViralItem = item;
+    const initialPlat = item.defaultPlatform || 'coupang';
+    renderPlatformSearchToolbar(item, initialPlat);
+    selectPlatformForItem(item, initialPlat);
+  }
 
-    if (selectedViralTitle) selectedViralTitle.textContent = item.name;
-    if (btnCoupangSearch) {
-      const q = encodeURIComponent(item.coupangSearch || item.name);
-      btnCoupangSearch.href = `https://www.coupang.com/np/search?component=&q=${q}`;
+  // Mode B URL 실시간 플랫폼 감지
+  function updateModeBBadge() {
+    if (!inputLink || !modeBDetectedBadge) return;
+    const url = inputLink.value.trim();
+    const platId = (typeof ContentGenerator !== 'undefined') ? ContentGenerator.detectPlatform(url) : 'general';
+    const plat = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId])
+      ? AffiliatePlatforms[platId]
+      : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['general'] : null);
+    
+    if (plat) {
+      modeBDetectedBadge.textContent = `${plat.icon} ${plat.shortName} 감지`;
+      modeBDetectedBadge.style.color = plat.color;
+      modeBDetectedBadge.style.borderColor = plat.color + '66';
+      modeBDetectedBadge.style.backgroundColor = plat.color + '22';
     }
-    showToast(`'${item.name}' 꿀템이 세팅되었습니다! 🚀`);
+  }
+
+  if (inputLink) {
+    inputLink.addEventListener('input', () => {
+      updateModeBBadge();
+      const url = inputLink.value.trim();
+      if (url) {
+        state.product.link = url;
+        state.product.platform = (typeof ContentGenerator !== 'undefined') ? ContentGenerator.detectPlatform(url) : 'general';
+        state.generatedData = null;
+        if (typeof updateCopyTextView === 'function') {
+          updateCopyTextView();
+        }
+      }
+    });
   }
 
   function renderViralCategory(catKey) {
