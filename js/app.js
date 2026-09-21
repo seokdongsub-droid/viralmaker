@@ -99,6 +99,7 @@ function startViralMakerApp() {
   const btnDownloadSlide = document.getElementById('btn-download-slide');
   const btnDownloadAll = document.getElementById('btn-download-all');
   const btnMobileSave = document.getElementById('btn-mobile-save');
+  const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
 
   // Tab 4 (시뮬레이터)
   const instaSimImage = document.getElementById('insta-sim-image');
@@ -147,6 +148,44 @@ function startViralMakerApp() {
     setTimeout(() => {
       toastEl.classList.remove('show');
     }, 2200);
+  }
+
+  // --- 스마트폰(iOS Safari / Android Chrome) 안전 클립보드 복사 헬퍼 ---
+  async function copyToClipboardSafe(text, fallbackEl) {
+    if (!text) return false;
+    let ok = false;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      } catch (err) {
+        console.warn('navigator.clipboard fallback trigger:', err);
+      }
+    }
+    if (!ok && fallbackEl) {
+      try {
+        fallbackEl.focus();
+        fallbackEl.select();
+        fallbackEl.setSelectionRange(0, 99999);
+        ok = document.execCommand('copy');
+        fallbackEl.blur();
+      } catch (e) {}
+    }
+    if (!ok) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, 99999);
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (e) {}
+    }
+    return ok;
   }
 
   // navItems 클릭 이벤트
@@ -369,13 +408,12 @@ function startViralMakerApp() {
         showToast('복사할 본문 내용이 없습니다.');
         return;
       }
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-      } catch (e) {
-        threadsBodyTextarea.select();
-        document.execCommand('copy');
+      const ok = await copyToClipboardSafe(textToCopy, threadsBodyTextarea);
+      if (ok) {
+        showToast('📋 [1단계: 본문] 복사 완료! 사진/영상과 함께 스레드에 업로드하세요 🚀');
+      } else {
+        showToast('⚠️ 복사 실패. 텍스트를 길게 눌러 직접 복사해주세요.');
       }
-      showToast('📋 [1단계: 본문] 복사 완료! 사진/영상과 함께 스레드에 업로드하세요 🚀');
     });
   }
 
@@ -387,13 +425,12 @@ function startViralMakerApp() {
         showToast('복사할 댓글 내용이 없습니다.');
         return;
       }
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-      } catch (e) {
-        threadsCommentTextarea.select();
-        document.execCommand('copy');
+      const ok = await copyToClipboardSafe(textToCopy, threadsCommentTextarea);
+      if (ok) {
+        showToast('💬 [2단계: 댓글] 복사 완료! 방금 올린 스레드 글에 바로 댓글로 붙여넣으세요 🔗');
+      } else {
+        showToast('⚠️ 복사 실패. 텍스트를 길게 눌러 직접 복사해주세요.');
       }
-      showToast('💬 [2단계: 댓글] 복사 완료! 방금 올린 스레드 글에 바로 댓글로 붙여넣으세요 🔗');
     });
   }
 
@@ -402,13 +439,12 @@ function startViralMakerApp() {
     btnCopyThreadsAll.addEventListener('click', async () => {
       const fullText = (state.generatedData && state.generatedData.texts && state.generatedData.texts[state.activeChannel]) ||
         (threadsBodyTextarea.value + '\n\n' + threadsCommentTextarea.value);
-      try {
-        await navigator.clipboard.writeText(fullText);
-      } catch (e) {
-        threadsBodyTextarea.select();
-        document.execCommand('copy');
+      const ok = await copyToClipboardSafe(fullText, threadsBodyTextarea);
+      if (ok) {
+        showToast('📋 스레드 본문+댓글 전체 복사 완료!');
+      } else {
+        showToast('⚠️ 복사 실패. 텍스트를 직접 복사해주세요.');
       }
-      showToast('📋 스레드 본문+댓글 전체 복사 완료!');
     });
   }
 
@@ -463,13 +499,11 @@ function startViralMakerApp() {
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(textToCopy);
+    const ok = await copyToClipboardSafe(textToCopy, copyTextarea);
+    if (ok) {
       showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
-    } catch (err) {
-      copyTextarea.select();
-      document.execCommand('copy');
-      showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
+    } else {
+      showToast('⚠️ 복사 실패. 텍스트를 직접 복사해주세요.');
     }
   });
 
@@ -584,14 +618,36 @@ function startViralMakerApp() {
     showToast('전체 5장 다운로드 완료! 🎉');
   });
 
-  btnMobileSave.addEventListener('click', () => {
-    modalSaveImage.src = CardNewsStudio.getCurrentDataUrl();
-    modalMobileSave.classList.add('active');
+  btnMobileSave.addEventListener('click', async () => {
+    showToast('📱 사진첩 저장 / 공유 준비 중...');
+    const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
+      modalSaveImage.src = dataUrl;
+      modalMobileSave.classList.add('active');
+    });
+    if (shared) {
+      showToast('🎉 사진첩 저장 또는 공유가 완료되었습니다!');
+    }
   });
+
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기)
+  const btnForceRefresh = document.getElementById('btn-force-refresh');
+  if (btnForceRefresh) {
+    btnForceRefresh.addEventListener('click', () => {
+      showToast('🔄 최신 버전으로 강력 새로고침 중...');
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.location.href = cleanUrl + '?v=2.2_' + Date.now();
+    });
+  }
 
   btnCloseModal.addEventListener('click', () => {
     modalMobileSave.classList.remove('active');
   });
+
+  if (btnQuickChangePhoto) {
+    btnQuickChangePhoto.addEventListener('click', () => {
+      if (mediaFileInput) mediaFileInput.click();
+    });
+  }
 
   modalMobileSave.addEventListener('click', (e) => {
     if (e.target === modalMobileSave) modalMobileSave.classList.remove('active');

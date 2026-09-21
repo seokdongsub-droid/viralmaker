@@ -8,7 +8,7 @@ ids_in_app = [
   'btn-regen-channel', 'cardnews-canvas', 'canvas-wrapper', 'btn-lang-ko',
   'btn-lang-ja', 'btn-prev-slide', 'btn-next-slide', 'slide-indicator-text',
   'slide-edit-badge', 'slide-edit-title', 'slide-edit-subtitle',
-  'btn-download-slide', 'btn-download-all', 'btn-mobile-save',
+  'btn-download-slide', 'btn-download-all', 'btn-mobile-save', 'btn-quick-change-photo',
   'insta-sim-image', 'insta-sim-caption', 'modal-mobile-save',
   'modal-save-image', 'btn-close-modal', 'modal-qr', 'btn-open-qr-modal',
   'btn-close-qr-modal', 'modal-api-key', 'input-gemini-key', 'btn-open-api-modal',

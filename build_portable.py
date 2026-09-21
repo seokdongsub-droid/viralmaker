@@ -27,23 +27,20 @@ with open(cardnews_path, "r", encoding="utf-8") as f:
 with open(app_path, "r", encoding="utf-8") as f:
     app_js = f.read()
 
-# Replace <link rel="stylesheet" href="css/style.css"> with <style>...</style>
-html = html.replace('<link rel="stylesheet" href="css/style.css">', f'<style>\n{css}\n</style>')
+import re
 
-# Replace script tags with inlined scripts
-scripts_to_replace = """  <script src="js/templates.js"></script>
-  <script src="js/content_generator.js"></script>
-  <script src="js/cardnews.js"></script>
-  <script src="js/app.js"></script>"""
+# Replace stylesheet link flexibly
+html = re.sub(r'<link\s+rel=["\']stylesheet["\']\s+href=["\']css/style\.css(?:\?[^"\']*)?["\']\s*>', f'<style>\n{css}\n</style>', html)
 
-inlined_scripts = f"""  <script>
+# Replace script tags flexibly
+script_pattern = r'<!-- Scripts.*?-->\s*(?:<script\s+src=["\']js/[^"\']+\.js(?:\?[^"\']*)?["\']\s*></script>\s*)+'
+inlined_scripts = f"""<script>
 {templates_js}
 {generator_js}
 {cardnews_js}
 {app_js}
-  </script>"""
-
-html = html.replace(scripts_to_replace, inlined_scripts)
+</script>"""
+html = re.sub(script_pattern, inlined_scripts, html, flags=re.DOTALL)
 
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)

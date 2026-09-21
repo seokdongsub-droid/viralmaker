@@ -10,7 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Cache Control (항상 최신 버전 로드) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="stylesheet" href="css/style.css?v=2.2">
 </head>
 <body>
 
@@ -25,7 +30,7 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge">한/일 멀티 채널</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.2 모바일</span>
         </div>
       </div>
       <div class="header-actions">
@@ -37,6 +42,17 @@
         </button>
       </div>
     </header>
+
+    <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
+    <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34D399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
+        <span><strong>v2.2 최신 버전 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(2026.09.21 모바일완전판)</span></span>
+      </div>
+      <button type="button" id="btn-force-refresh" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+        <span>🔄</span> <span>강력 새로고침</span>
+      </button>
+    </div>
 
     <!-- MAIN CONTENT VIEWS -->
     <main>
@@ -136,20 +152,65 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: 복붙용 홍보글 (한국어 / 일본어 4대 채널) -->
+      <!-- TAB 2: 복붙용 홍보글 (한국어 / 일본어 3대 채널 완전 분리) -->
       <!-- ============================================== -->
       <section id="tab-view-copy" class="tab-view">
         
-        <!-- 채널 선택 가로 스크롤 필 -->
-        <div class="channel-pills">
-          <button type="button" class="channel-pill active" data-channel="threads-kr">⚡ 스레드 (한국어)</button>
-          <button type="button" class="channel-pill" data-channel="threads-jp">🇯🇵 스레드 (일본어)</button>
-          <button type="button" class="channel-pill" data-channel="naver-blog">📝 네이버 블로그</button>
-          <button type="button" class="channel-pill" data-channel="ameba-jp">🌸 아메바 블로그 (일본어)</button>
-          <button type="button" class="channel-pill" data-channel="instagram">📸 인스타그램</button>
+        <!-- 3대 채널 및 언어 선택 (초보자도 헷갈림 0% 카테고리 그룹) -->
+        <div class="channel-group-container">
+          
+          <!-- 1. 스레드 (Threads) -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">⚡ 1. 스레드 (Threads)</span>
+              <span class="channel-group-desc">본문(사진/영상) + 첫 댓글(링크) 2단계 안전 분리</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill active" data-channel="threads-kr">
+                <span>🇰🇷 스레드 (한국어)</span>
+                <span class="pill-badge">계정정지 0% 🛡️</span>
+              </button>
+              <button type="button" class="channel-pill" data-channel="threads-jp">
+                <span>🇯🇵 スレッズ (일본어)</span>
+                <span class="pill-badge">2ステップ 🛡️</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. 블로그 (Blog) -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">📝 2. 블로그 (Blog)</span>
+              <span class="channel-group-desc">스마트에디터 상세 후기 / 언박싱 / 구매링크 서식</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill" data-channel="naver-blog">
+                <span>🇰🇷 네이버 블로그</span>
+                <span class="pill-badge">쿠팡 파트너스</span>
+              </button>
+              <button type="button" class="channel-pill" data-channel="ameba-jp">
+                <span>🇯🇵 아메바 블로그 (Ameba JP)</span>
+                <span class="pill-badge">Amazon JP 🌸</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. 인스타그램 피드 캡션 -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">📸 3. 인스타그램 피드 (Instagram Feed)</span>
+              <span class="channel-group-desc">감성 후킹 3줄 요약 + 프로필 링크 유도 + 해시태그 20선</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill" data-channel="instagram">
+                <span>🇰🇷 인스타그램 피드 본문 캡션</span>
+              </button>
+            </div>
+          </div>
+
         </div>
 
-        <!-- 채널 성격 안내 박스 -->
+        <!-- 현재 채널 성격 안내 박스 -->
         <div class="channel-info-box" id="channel-info-text">
           ⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 지원
         </div>
@@ -213,40 +274,66 @@
         <!-- 카드뉴스 이동 안내 -->
         <div style="text-align: center; margin-top: 14px;">
           <button type="button" class="btn-header" style="width: 100%; justify-content: center; padding: 12px; background: var(--bg-card); font-size: 13px;" onclick="document.querySelector('.nav-item[data-tab=\'cardnews\']').click();">
-            <span>🎨 인스타 카드뉴스(한국어/일본어) 이미지 확인하러 가기 ➔</span>
+            <span>🎨 인스타·틱톡·네이버클립 카드 이미지 확인하러 가기 ➔</span>
           </button>
         </div>
 
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 3: 인스타 쇼핑 카드뉴스 (한국어 / 일본어 2버전) -->
+      <!-- TAB 3: 카드뉴스 & 숏폼 이미지 제작소 (인스타 / 틱톡 / 네이버 클립) -->
       <!-- ============================================== -->
       <section id="tab-view-cardnews" class="tab-view">
         
-        <!-- 언어 선택 토글 (한국어 vs 일본어) -->
-        <div class="section-card" style="padding: 12px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">🌐 카드뉴스 언어 선택:</span>
-            <div class="ratio-toggle">
-              <button type="button" class="lang-btn active" id="btn-lang-ko" data-lang="ko" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇰🇷 한국어 버전</button>
-              <button type="button" class="lang-btn" id="btn-lang-ja" data-lang="ja" style="background: none; color: var(--text-muted); border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇯🇵 일본어 버전 (日本語)</button>
+        <!-- 최상단 채널 규격 및 언어 설정 카드 -->
+        <div class="section-card" style="padding: 14px; margin-bottom: 12px;">
+          
+          <!-- 1. 어디에 올리시나요? (규격: 틱톡/클립 9:16 vs 인스타 1:1, 4:5) -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                📱 1. 업로드 채널 규격 선택
+              </span>
+              <span style="font-size: 11px; color: var(--accent-pink); font-weight: 700;">★ 틱톡/클립은 9:16 필수!</span>
+            </div>
+            <div class="ratio-toggle" style="display: flex; gap: 4px; width: 100%;">
+              <button type="button" class="ratio-btn active" data-ratio="9:16" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                📱 9:16 틱톡·클립·릴스
+              </button>
+              <button type="button" class="ratio-btn" data-ratio="1:1" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                📷 1:1 인스타 피드
+              </button>
+              <button type="button" class="ratio-btn" data-ratio="4:5" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                🖼️ 4:5 인스타 세로
+              </button>
             </div>
           </div>
 
-          <div class="cardnews-controls" style="justify-content: space-between;">
-            <!-- 비율 토글 -->
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">규격:</span>
-              <div class="ratio-toggle">
-                <button type="button" class="ratio-btn active" data-ratio="1:1">1:1 피드</button>
-                <button type="button" class="ratio-btn" data-ratio="4:5">4:5 세로최적화</button>
-              </div>
+          <!-- 2. 카드뉴스 언어 선택 (한국어 vs 일본어) -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                🌐 2. 카드뉴스 언어 선택
+              </span>
+              <span style="font-size: 11px; color: var(--text-dim);">한국어 5장 / 일본어 5장 즉시 전환</span>
             </div>
+            <div class="ratio-toggle" style="display: flex; gap: 6px;">
+              <button type="button" class="lang-btn active" id="btn-lang-ko" data-lang="ko" style="flex: 1; background: var(--primary); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                🇰🇷 한국어 버전 (국내 SNS)
+              </button>
+              <button type="button" class="lang-btn" id="btn-lang-ja" data-lang="ja" style="flex: 1; background: none; color: var(--text-muted); border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                🇯🇵 일본어 버전 (日本語)
+              </button>
+            </div>
+          </div>
 
-            <!-- 테마 선택 칩 -->
+          <!-- 3. 디자인 스타일 선택 -->
+          <div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              🎨 3. 디자인 감성 테마 (자막 스타일)
+            </div>
             <div class="theme-selector" style="margin-bottom: 0; padding-bottom: 0;">
-              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 포토 (Dayz스타일)</div>
+              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 실사진 감성 (Dayz 스타일)</div>
               <div class="theme-chip" data-theme="modern-dark">모던 다크</div>
               <div class="theme-chip" data-theme="warm-minimal">웜 베이지</div>
               <div class="theme-chip" data-theme="clean-white">화이트</div>
@@ -254,6 +341,20 @@
               <div class="theme-chip" data-theme="japanese-zen">재팬 젠</div>
             </div>
           </div>
+
+        </div>
+
+        <!-- 📸 실제 제품 사진 안내 바 & 빠른 사진 교체 버튼 -->
+        <div class="cardnews-photo-bar">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">📸</span>
+            <div style="font-size: 12px; color: var(--text-main);">
+              <strong>동일한 실제 제품 사진</strong> 위에 5단계 자막이 합성됩니다.
+            </div>
+          </div>
+          <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 10px; color: var(--primary-light);">
+            📷 사진 교체
+          </button>
         </div>
 
         <!-- 카드뉴스 캔버스 프리뷰 -->
@@ -422,10 +523,10 @@
 
   </div>
 
-  <!-- Scripts -->
-  <script src="js/templates.js"></script>
-  <script src="js/content_generator.js"></script>
-  <script src="js/cardnews.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Scripts (캐시 방지 v2.2 적용) -->
+  <script src="js/templates.js?v=2.2"></script>
+  <script src="js/content_generator.js?v=2.2"></script>
+  <script src="js/cardnews.js?v=2.2"></script>
+  <script src="js/app.js?v=2.2"></script>
 </body>
 </html>

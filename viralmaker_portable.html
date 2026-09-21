@@ -343,33 +343,68 @@ body {
   filter: brightness(1.1);
 }
 
-/* Channel Selector (Tab 2) */
-.channel-pills {
+/* Categorized Channel Selector (Tab 2) */
+.channel-group-container {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 8px;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 12px;
-  scrollbar-width: none;
 }
-.channel-pills::-webkit-scrollbar {
-  display: none;
+
+.channel-group-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.channel-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.channel-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.channel-group-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.channel-pills-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .channel-pill {
-  flex-shrink: 0;
-  background: var(--bg-card);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 8px 14px;
-  border-radius: var(--radius-full);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
   transition: all 0.2s;
+  flex: 1;
+  min-width: 130px;
+  justify-content: center;
+}
+
+.channel-pill:hover {
+  border-color: var(--primary-light);
+  color: var(--text-main);
 }
 
 .channel-pill.active {
@@ -377,6 +412,19 @@ body {
   border-color: var(--primary);
   color: #FFFFFF;
   box-shadow: 0 2px 10px var(--primary-glow);
+}
+
+.pill-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.channel-pill.active .pill-badge {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .channel-info-box {
@@ -387,6 +435,20 @@ body {
   font-size: 12px;
   color: var(--text-muted);
   margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* CardNews Photo Info Bar */
+.cardnews-photo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  gap: 8px;
 }
 
 /* Copy Output Area */
@@ -565,9 +627,11 @@ body {
 }
 
 #cardnews-canvas {
-  width: 100%;
-  max-width: 400px;
+  width: auto;
+  max-width: 360px;
+  max-height: 500px;
   height: auto;
+  object-fit: contain;
   border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
@@ -909,7 +973,7 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge">한/일 멀티 채널</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.1 숏폼9:16</span>
         </div>
       </div>
       <div class="header-actions">
@@ -921,6 +985,12 @@ body {
         </button>
       </div>
     </header>
+
+    <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
+    <div style="background: rgba(16, 185, 129, 0.12); border-bottom: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 16px; font-size: 11px; color: #34D399; display: flex; justify-content: space-between; align-items: center;">
+      <span>🟢 <strong>v2.1 최신 업데이트 적용 완료</strong> (9:16 숏폼 &amp; 채널분리)</span>
+      <span style="color: var(--text-muted); font-size: 10px;">새로고침 확인용</span>
+    </div>
 
     <!-- MAIN CONTENT VIEWS -->
     <main>
@@ -1020,20 +1090,65 @@ body {
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: 복붙용 홍보글 (한국어 / 일본어 4대 채널) -->
+      <!-- TAB 2: 복붙용 홍보글 (한국어 / 일본어 3대 채널 완전 분리) -->
       <!-- ============================================== -->
       <section id="tab-view-copy" class="tab-view">
         
-        <!-- 채널 선택 가로 스크롤 필 -->
-        <div class="channel-pills">
-          <button type="button" class="channel-pill active" data-channel="threads-kr">⚡ 스레드 (한국어)</button>
-          <button type="button" class="channel-pill" data-channel="threads-jp">🇯🇵 스레드 (일본어)</button>
-          <button type="button" class="channel-pill" data-channel="naver-blog">📝 네이버 블로그</button>
-          <button type="button" class="channel-pill" data-channel="ameba-jp">🌸 아메바 블로그 (일본어)</button>
-          <button type="button" class="channel-pill" data-channel="instagram">📸 인스타그램</button>
+        <!-- 3대 채널 및 언어 선택 (초보자도 헷갈림 0% 카테고리 그룹) -->
+        <div class="channel-group-container">
+          
+          <!-- 1. 스레드 (Threads) -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">⚡ 1. 스레드 (Threads)</span>
+              <span class="channel-group-desc">본문(사진/영상) + 첫 댓글(링크) 2단계 안전 분리</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill active" data-channel="threads-kr">
+                <span>🇰🇷 스레드 (한국어)</span>
+                <span class="pill-badge">계정정지 0% 🛡️</span>
+              </button>
+              <button type="button" class="channel-pill" data-channel="threads-jp">
+                <span>🇯🇵 スレッズ (일본어)</span>
+                <span class="pill-badge">2ステップ 🛡️</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. 블로그 (Blog) -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">📝 2. 블로그 (Blog)</span>
+              <span class="channel-group-desc">스마트에디터 상세 후기 / 언박싱 / 구매링크 서식</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill" data-channel="naver-blog">
+                <span>🇰🇷 네이버 블로그</span>
+                <span class="pill-badge">쿠팡 파트너스</span>
+              </button>
+              <button type="button" class="channel-pill" data-channel="ameba-jp">
+                <span>🇯🇵 아메바 블로그 (Ameba JP)</span>
+                <span class="pill-badge">Amazon JP 🌸</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. 인스타그램 피드 캡션 -->
+          <div class="channel-group-box">
+            <div class="channel-group-header">
+              <span class="channel-group-title">📸 3. 인스타그램 피드 (Instagram Feed)</span>
+              <span class="channel-group-desc">감성 후킹 3줄 요약 + 프로필 링크 유도 + 해시태그 20선</span>
+            </div>
+            <div class="channel-pills-row">
+              <button type="button" class="channel-pill" data-channel="instagram">
+                <span>🇰🇷 인스타그램 피드 본문 캡션</span>
+              </button>
+            </div>
+          </div>
+
         </div>
 
-        <!-- 채널 성격 안내 박스 -->
+        <!-- 현재 채널 성격 안내 박스 -->
         <div class="channel-info-box" id="channel-info-text">
           ⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 지원
         </div>
@@ -1097,40 +1212,66 @@ body {
         <!-- 카드뉴스 이동 안내 -->
         <div style="text-align: center; margin-top: 14px;">
           <button type="button" class="btn-header" style="width: 100%; justify-content: center; padding: 12px; background: var(--bg-card); font-size: 13px;" onclick="document.querySelector('.nav-item[data-tab=\'cardnews\']').click();">
-            <span>🎨 인스타 카드뉴스(한국어/일본어) 이미지 확인하러 가기 ➔</span>
+            <span>🎨 인스타·틱톡·네이버클립 카드 이미지 확인하러 가기 ➔</span>
           </button>
         </div>
 
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 3: 인스타 쇼핑 카드뉴스 (한국어 / 일본어 2버전) -->
+      <!-- TAB 3: 카드뉴스 & 숏폼 이미지 제작소 (인스타 / 틱톡 / 네이버 클립) -->
       <!-- ============================================== -->
       <section id="tab-view-cardnews" class="tab-view">
         
-        <!-- 언어 선택 토글 (한국어 vs 일본어) -->
-        <div class="section-card" style="padding: 12px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-            <span style="font-size: 13px; font-weight: 700; color: var(--text-main);">🌐 카드뉴스 언어 선택:</span>
-            <div class="ratio-toggle">
-              <button type="button" class="lang-btn active" id="btn-lang-ko" data-lang="ko" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇰🇷 한국어 버전</button>
-              <button type="button" class="lang-btn" id="btn-lang-ja" data-lang="ja" style="background: none; color: var(--text-muted); border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">🇯🇵 일본어 버전 (日本語)</button>
+        <!-- 최상단 채널 규격 및 언어 설정 카드 -->
+        <div class="section-card" style="padding: 14px; margin-bottom: 12px;">
+          
+          <!-- 1. 어디에 올리시나요? (규격: 틱톡/클립 9:16 vs 인스타 1:1, 4:5) -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                📱 1. 업로드 채널 규격 선택
+              </span>
+              <span style="font-size: 11px; color: var(--accent-pink); font-weight: 700;">★ 틱톡/클립은 9:16 필수!</span>
+            </div>
+            <div class="ratio-toggle" style="display: flex; gap: 4px; width: 100%;">
+              <button type="button" class="ratio-btn active" data-ratio="9:16" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                📱 9:16 틱톡·클립·릴스
+              </button>
+              <button type="button" class="ratio-btn" data-ratio="1:1" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                📷 1:1 인스타 피드
+              </button>
+              <button type="button" class="ratio-btn" data-ratio="4:5" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                🖼️ 4:5 인스타 세로
+              </button>
             </div>
           </div>
 
-          <div class="cardnews-controls" style="justify-content: space-between;">
-            <!-- 비율 토글 -->
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">규격:</span>
-              <div class="ratio-toggle">
-                <button type="button" class="ratio-btn active" data-ratio="1:1">1:1 피드</button>
-                <button type="button" class="ratio-btn" data-ratio="4:5">4:5 세로최적화</button>
-              </div>
+          <!-- 2. 카드뉴스 언어 선택 (한국어 vs 일본어) -->
+          <div style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--text-main);">
+                🌐 2. 카드뉴스 언어 선택
+              </span>
+              <span style="font-size: 11px; color: var(--text-dim);">한국어 5장 / 일본어 5장 즉시 전환</span>
             </div>
+            <div class="ratio-toggle" style="display: flex; gap: 6px;">
+              <button type="button" class="lang-btn active" id="btn-lang-ko" data-lang="ko" style="flex: 1; background: var(--primary); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                🇰🇷 한국어 버전 (국내 SNS)
+              </button>
+              <button type="button" class="lang-btn" id="btn-lang-ja" data-lang="ja" style="flex: 1; background: none; color: var(--text-muted); border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                🇯🇵 일본어 버전 (日本語)
+              </button>
+            </div>
+          </div>
 
-            <!-- 테마 선택 칩 -->
+          <!-- 3. 디자인 스타일 선택 -->
+          <div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              🎨 3. 디자인 감성 테마 (자막 스타일)
+            </div>
             <div class="theme-selector" style="margin-bottom: 0; padding-bottom: 0;">
-              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 포토 (Dayz스타일)</div>
+              <div class="theme-chip active" data-theme="photo-overlay">📸 인스타 실사진 감성 (Dayz 스타일)</div>
               <div class="theme-chip" data-theme="modern-dark">모던 다크</div>
               <div class="theme-chip" data-theme="warm-minimal">웜 베이지</div>
               <div class="theme-chip" data-theme="clean-white">화이트</div>
@@ -1138,6 +1279,20 @@ body {
               <div class="theme-chip" data-theme="japanese-zen">재팬 젠</div>
             </div>
           </div>
+
+        </div>
+
+        <!-- 📸 실제 제품 사진 안내 바 & 빠른 사진 교체 버튼 -->
+        <div class="cardnews-photo-bar">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">📸</span>
+            <div style="font-size: 12px; color: var(--text-main);">
+              <strong>동일한 실제 제품 사진</strong> 위에 5단계 자막이 합성됩니다.
+            </div>
+          </div>
+          <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 10px; color: var(--primary-light);">
+            📷 사진 교체
+          </button>
         </div>
 
         <!-- 카드뉴스 캔버스 프리뷰 -->
@@ -2025,7 +2180,7 @@ class CardNewsStudio {
     this.slides_ja = [];
     this.currentSlideIndex = 0;
     this.themeKey = 'photo-overlay';
-    this.ratio = '1:1'; // '1:1' (1080x1080) or '4:5' (1080x1350)
+    this.ratio = '9:16'; // '9:16' (1080x1920) 틱톡/네이버클립/릴스 기본, '1:1' 또는 '4:5'
     this.userImage = null; // Image object (from image or video capture)
     this.canvas = null;
     this.ctx = null;
@@ -2099,6 +2254,9 @@ class CardNewsStudio {
     if (this.ratio === '4:5') {
       this.canvas.width = 1080;
       this.canvas.height = 1350;
+    } else if (this.ratio === '9:16') {
+      this.canvas.width = 1080;
+      this.canvas.height = 1920;
     } else {
       this.canvas.width = 1080;
       this.canvas.height = 1080;
@@ -2241,11 +2399,12 @@ class CardNewsStudio {
 
   drawFooter(ctx, width, height, theme, slide, fontFam, isJP) {
     ctx.save();
-    const bottomY = height - 80;
-    const pad = 80;
+    const is916 = (this.ratio === '9:16');
+    const bottomY = is916 ? (height - 200) : (height - 80);
+    const pad = is916 ? 60 : 80;
     const dotCount = this.slides.length;
-    const dotRadius = 6;
-    const dotGap = 18;
+    const dotRadius = is916 ? 8 : 6;
+    const dotGap = 20;
 
     for (let i = 0; i < dotCount; i++) {
       ctx.beginPath();
@@ -2292,8 +2451,10 @@ class CardNewsStudio {
     return badgeH;
   }
 
-  // 📸 Dayzhome 스타일: 실사진 전체 배경 + 감성 외곽선 자막 렌더러
+  // 📸 Dayzhome 스타일: 실사진 전체 배경 + 감성 외곽선 자막 렌더러 (1:1 피드 & 9:16 숏폼 완벽 호환)
   drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP) {
+    const is916 = (this.ratio === '9:16');
+
     // 1. Fullscreen Image Cover
     if (this.userImage && this.userImage.complete) {
       const img = this.userImage;
@@ -2324,25 +2485,28 @@ class CardNewsStudio {
       ctx.fillText('제품 사진을 첨부하면 여기에 풀화면으로 채워집니다', width / 2, height / 2 + 40);
     }
 
-    // 2. Gradients for text contrast
-    const topGrad = ctx.createLinearGradient(0, 0, 0, 180);
-    topGrad.addColorStop(0, 'rgba(0,0,0,0.45)');
+    // 2. Gradients for text contrast (숏폼 세이프존 고려)
+    const topGradH = is916 ? 260 : 180;
+    const topGrad = ctx.createLinearGradient(0, 0, 0, topGradH);
+    topGrad.addColorStop(0, 'rgba(0,0,0,0.55)');
     topGrad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = topGrad;
-    ctx.fillRect(0, 0, width, 180);
+    ctx.fillRect(0, 0, width, topGradH);
 
-    const botGrad = ctx.createLinearGradient(0, height - 380, 0, height);
+    const botGradH = is916 ? 560 : 380;
+    const botGrad = ctx.createLinearGradient(0, height - botGradH, 0, height);
     botGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    botGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
+    botGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
     ctx.fillStyle = botGrad;
-    ctx.fillRect(0, height - 380, width, 380);
+    ctx.fillRect(0, height - botGradH, width, botGradH);
 
-    // 3. Top right badge: [광고] or [추천] (인스타 대란 계정 스타일)
+    // 3. Top right badge: [광고] / 【PR】 (숏폼 상단 여백 세이프존)
     ctx.save();
     ctx.textAlign = 'right';
+    const topBadgeY = is916 ? 130 : 65;
     ctx.font = `700 24px ${fontFam}`;
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.fillText('[광고]', width - 55, 65);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText(isJP ? '【PR】' : '[광고]', width - 55, topBadgeY);
     ctx.restore();
 
     // 4. Outlined text helper (White text with black stroke + shadow)
@@ -2366,48 +2530,56 @@ class CardNewsStudio {
     };
 
     if (slide.type === 'cover') {
-      // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (dayzhome 표지와 100% 동일)
-      const pad = 65;
-      let startY = height - 160;
+      // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀
+      // 9:16 세로 숏폼(틱톡/클립/릴스)일 때는 하단 캡션·사운드 바(약 360px) 위쪽에 배치하여 가림 방지
+      const pad = is916 ? 70 : 65;
+      let startY = is916 ? (height - 400) : (height - 160);
       const titleLines = slide.mainTitle.split('\n');
+      const titleSize = is916 ? 66 : 62;
+      const titleStep = is916 ? 88 : 82;
 
       for (let i = titleLines.length - 1; i >= 0; i--) {
-        drawOutlinedText(titleLines[i], pad, startY, `900 62px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'left');
-        startY -= 82;
+        drawOutlinedText(titleLines[i], pad, startY, `900 ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'left');
+        startY -= titleStep;
       }
 
-      const sub = (slide.subTitle || '').split('\n')[0] || 'SNS 화제의 찐후기';
-      drawOutlinedText(sub, pad, startY - 12, `700 32px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 6, 'left');
+      const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
+      const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
+      const subSize = is916 ? 34 : 32;
+      drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 7, 'left');
     } else {
-      // 2~5번 슬라이드: 화면 정중앙에 2~3줄 감성 자막 (dayzhome 2, 3, 4번 슬라이드와 100% 동일)
-      const centerY = height / 2;
+      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~3줄 감성 자막 (틱톡/클립/인스타 최적)
+      const centerY = is916 ? (height * 0.46) : (height / 2);
       const mainLines = (slide.mainTitle || '').split('\n').filter(Boolean);
       const subLines = (slide.subTitle || '').split('\n').filter(Boolean);
       const allLines = [...mainLines, ...subLines];
 
       if (slide.type === 'cta') {
-        allLines.push('👉 제품 정보는 프로필 링크 확인! 🤍');
+        allLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
       }
 
-      const totalH = allLines.length * 68;
+      const fontSize = is916 ? 48 : 44;
+      const lineStep = is916 ? 80 : 72;
+      const totalH = allLines.length * (lineStep - 4);
       let y = centerY - (totalH / 2) + 34;
 
       allLines.forEach((line) => {
         const clean = line.replace(/^[✔\d\.\s]+/, '');
-        drawOutlinedText(clean, width / 2, y, `800 44px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 9, 'center');
-        y += 72;
+        drawOutlinedText(clean, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
+        y += lineStep;
       });
     }
 
-    // 하단 인디케이터 점 5개
+    // 하단 인디케이터 점 5개 (숏폼 세이프존 반영)
     ctx.save();
     const dotCount = this.slides.length;
     const dotGap = 22;
     const totalDotW = (dotCount - 1) * dotGap;
     const startX = (width - totalDotW) / 2;
+    const dotY = is916 ? (height - 230) : (height - 45);
     for (let i = 0; i < dotCount; i++) {
       ctx.beginPath();
-      ctx.arc(startX + (i * dotGap), height - 45, i === slide.slideNum - 1 ? 7 : 4, 0, Math.PI * 2);
+      ctx.arc(startX + (i * dotGap), dotY, i === slide.slideNum - 1 ? 7 : 4, 0, Math.PI * 2);
       ctx.fillStyle = i === slide.slideNum - 1 ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
       ctx.fill();
     }
@@ -2849,6 +3021,7 @@ function startViralMakerApp() {
   const btnDownloadSlide = document.getElementById('btn-download-slide');
   const btnDownloadAll = document.getElementById('btn-download-all');
   const btnMobileSave = document.getElementById('btn-mobile-save');
+  const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
 
   // Tab 4 (시뮬레이터)
   const instaSimImage = document.getElementById('insta-sim-image');
@@ -3342,6 +3515,12 @@ function startViralMakerApp() {
   btnCloseModal.addEventListener('click', () => {
     modalMobileSave.classList.remove('active');
   });
+
+  if (btnQuickChangePhoto) {
+    btnQuickChangePhoto.addEventListener('click', () => {
+      if (mediaFileInput) mediaFileInput.click();
+    });
+  }
 
   modalMobileSave.addEventListener('click', (e) => {
     if (e.target === modalMobileSave) modalMobileSave.classList.remove('active');

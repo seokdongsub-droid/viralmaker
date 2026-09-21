@@ -4,7 +4,7 @@
  * 스레드(Threads) 계정 보호를 위한 [1단계: 본문(영상/사진, 링크 절대 없음)] + [2단계: 첫 댓글(링크 & 정보)] 2단계 분리 구조 탑재
  */
 
-class ContentGenerator {
+class ContentGeneratorEngine {
   constructor() {
     this.geminiModels = [
       'gemini-2.5-flash',
@@ -475,4 +475,8 @@ Return ONLY the copy-paste-ready text, without conversational explanations.
   }
 }
 
-window.ContentGenerator = new ContentGenerator();
+const ContentGenerator = new ContentGeneratorEngine();
+window.ContentGenerator = ContentGenerator;
+if (typeof globalThis !== 'undefined') {
+  globalThis.ContentGenerator = ContentGenerator;
+}
