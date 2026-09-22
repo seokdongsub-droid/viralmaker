@@ -585,6 +585,141 @@ Return ONLY the copy-paste-ready text, without conversational explanations.
 
     throw new Error('AI 비전 분석에 실패했습니다. API 키와 네트워크 연결을 확인해주세요.');
   }
+
+  // --- 🎨 5단 스토리텔링 AI 이미지 자동 생성 엔진 (직장인 15초 모바일 전용) ---
+
+  // 한국어 제품명을 고품질 AI 이미지 프롬프트용 영문 키워드로 스마트 변환
+  translateProductToEnglish(name) {
+    if (!name) return 'aesthetic lifestyle home product';
+    const lower = name.toLowerCase();
+
+    // 빈출 인기 바이럴 키워드 사전 매핑
+    const dict = [
+      { kr: /계란말이|달걀/g, en: 'Japanese tamagoyaki rolled egg pan with savory golden rolled omelette' },
+      { kr: /마늘\s*다지기|야채\s*다지기|초퍼/g, en: 'compact cordless electric garlic chopper food mincer with chopped garlic' },
+      { kr: /오일\s*스프레이|기름\s*스프레이/g, en: 'sleek glass olive oil mister spray bottle on modern kitchen counter' },
+      { kr: /굴소스|소스|페스토/g, en: 'gourmet low-sugar culinary sauce bottle with appetizing cooked dish' },
+      { kr: /두부|한우|고기|식재료/g, en: 'fresh organic premium cooking ingredients on wooden board' },
+      { kr: /배수구|실리콘\s*덮개|덮개/g, en: 'clean hygienic silicone sink drain cover in modern pristine kitchen' },
+      { kr: /수납랙|하부장|선반|양념선반/g, en: 'modern minimalist sliding organizer shelf under sink with neatly organized bottles' },
+      { kr: /트롤리|이동식\s*선반/g, en: 'slim minimalist aesthetic rolling cart trolley neatly organized in cozy home' },
+      { kr: /워터블럭|스펀지|행주/g, en: 'clean PVA absorbent water block sponge wiping spotless kitchen counter' },
+      { kr: /마사지기|넥케어|목\s*마사지/g, en: 'modern ergonomic cordless neck massager device with soothing warm ambient glow' },
+      { kr: /휴지통|쓰레기통/g, en: 'minimalist modern smart motion sensor trash can in stylish apartment' },
+      { kr: /진공포장기|진공/g, en: 'sleek compact cordless food vacuum sealer machine with sealed food' },
+      { kr: /선풍기|목걸이\s*선풍기/g, en: 'ultra lightweight portable neck fan personal cooler in clean modern style' },
+      { kr: /앰플|세럼|시카|판테놀|화장품/g, en: 'luxury minimalist glass dropper skincare serum bottle on warm stone surface' },
+      { kr: /텀블러|보온병/g, en: 'modern pastel insulated stainless steel tumbler with reusable straw' },
+      { kr: /청소기|무선\s*청소기/g, en: 'lightweight cordless handheld mini vacuum cleaner cleaning sleek modern desk' },
+      { kr: /베개|경추베개/g, en: 'ergonomic memory foam neck contour pillow on cozy minimalist white bed' },
+      { kr: /스탠드|조명|무드등/g, en: 'aesthetic warm ambient minimalist bedside table lamp glowing at night' },
+      { kr: /에어프라이어/g, en: 'sleek modern matte compact air fryer on clean kitchen counter' },
+      { kr: /프라이팬|냄비/g, en: 'premium ceramic nonstick cooking pan with delicious appetizing dish' }
+    ];
+
+    for (const item of dict) {
+      if (item.kr.test(lower)) {
+        return item.en;
+      }
+    }
+
+    // 매칭되지 않는 일반 상품인 경우 자연스러운 라이프스타일 상품으로 조합
+    const cleanName = name.replace(/[\[\]\(\)\★\🔥\✨\⚡\🤍]/g, '').trim();
+    return `stylish modern Korean lifestyle product (${cleanName}), minimalist high-end consumer goods`;
+  }
+
+  // 카테고리별 인테리어 배경 & 분위기 프리셋
+  getCategoryVibe(category, name) {
+    const text = (category + ' ' + name).toLowerCase();
+    if (text.includes('kitchen') || text.includes('요리') || text.includes('주방') || text.includes('식재료') || text.includes('팬') || text.includes('오일') || text.includes('마늘')) {
+      return {
+        setting: 'a sunlit cozy minimalist kitchen with warm wooden countertop and white ceramic tiles',
+        problemContext: 'messy cluttered cooking scene with cooking grease splatter and cooking frustration',
+        actionContext: 'hands cooking effortlessly and smoothly with joyful kitchen workflow',
+        detailContext: 'premium nonstick food-grade texture, sturdy ergonomic handle, perfect craftsmanship',
+        resultContext: 'delicious freshly prepared appetizing meal on clean aesthetic breakfast table'
+      };
+    }
+    if (text.includes('living') || text.includes('살림') || text.includes('수납') || text.includes('인테리어') || text.includes('욕실') || text.includes('청소')) {
+      return {
+        setting: 'a modern Scandinavian cozy home interior with natural oak wood and tidy white aesthetic',
+        problemContext: 'disorganized cluttered messy living room space causing daily tidying stress',
+        actionContext: 'smooth one-touch effortless organization transforming the room in seconds',
+        detailContext: 'durable seamless materials, smooth silent sliding mechanism, sleek minimal design',
+        resultContext: 'spotless impeccably organized aesthetic cozy room bringing total peace of mind'
+      };
+    }
+    // 기본 라이프/뷰티/헬스케어
+    return {
+      setting: 'a serene warm aesthetic modern apartment interior with soft sunlight and lush green plants',
+      problemContext: 'exhausting daily fatigue, neck stiffness or cluttered stressful daily routine',
+      actionContext: 'relaxing comfortably while enjoying the effortless modern smart convenience',
+      detailContext: 'luxurious soft-touch finish, precision engineering, intuitive minimalist buttons',
+      resultContext: 'blissful comfortable lifestyle, renewed peaceful energy in a cozy modern home'
+    };
+  }
+
+  // 5대 슬라이드 스토리별 프롬프트 자동 조립
+  generate5ScenePrompts(productName, category = '') {
+    const subject = this.translateProductToEnglish(productName);
+    const vibe = this.getCategoryVibe(category, productName);
+
+    return [
+      // 1번 슬라이드: 표지 (시선 강탈 히어로 샷 / 완성형 비주얼)
+      `professional commercial product photography of ${subject}, centered hero composition, ${vibe.setting}, soft golden hour ambient lighting, clean aesthetic, Instagram viral lifestyle photo, 8k resolution, photorealistic`,
+
+      // 2번 슬라이드: 공감/문제 (사용 전 불편함과 일상 속 스트레스 상황)
+      `relatable authentic scene of ${vibe.problemContext}, natural indoor lighting, cinematic documentary photography, moody candid storytelling photo`,
+
+      // 3번 슬라이드: 해결/실사용 (실제 사용하며 문제를 단숨에 해결하는 액션 컷)
+      `close-up dynamic action shot of person using ${subject}, ${vibe.actionContext}, bright natural daylight, crisp sharp focus, satisfying lifestyle moment, 8k`,
+
+      // 4번 슬라이드: 디테일/특징 (재질, 마감, 기능 초근접 접사 컷)
+      `macro detailed close-up shot of ${subject}, ${vibe.detailContext}, soft shallow depth of field, elegant studio lighting, tactile premium feeling`,
+
+      // 5번 슬라이드: 만족/결과 (삶의 질이 수직상승한 감성 라이프스타일 컷)
+      `dreamy aesthetic lifestyle interior scene featuring ${vibe.resultContext}, with ${subject} proudly placed, cozy warm evening glow, peaceful happiness, 8k photo`
+    ];
+  }
+
+  // AI 생성 이미지를 Blob URL로 다운로드하여 캔버스 Tainted 원천 차단
+  async fetchAiImageBlobUrl(prompt, seed = Math.floor(Math.random() * 1000000)) {
+    const encoded = encodeURIComponent(prompt);
+    const url = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1920&nologo=true&seed=${seed}&enhance=true`;
+    
+    try {
+      const res = await fetch(url, { mode: 'cors' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      return URL.createObjectURL(blob);
+    } catch (e) {
+      console.warn('Direct blob fetch fallback to image url:', e);
+      return url;
+    }
+  }
+
+  // 5개 슬라이드 전체 AI 이미지 일괄 병렬/순차 생성 (진행 콜백 지원)
+  async generate5SceneImages(productName, category = '', onProgress = null) {
+    const prompts = this.generate5ScenePrompts(productName, category);
+    const baseSeed = Math.floor(Math.random() * 900000) + 100000;
+    const results = [];
+
+    for (let i = 0; i < prompts.length; i++) {
+      const prompt = prompts[i];
+      const seed = baseSeed + (i * 73);
+      try {
+        if (onProgress) onProgress(i, 'loading', null);
+        const imgUrl = await this.fetchAiImageBlobUrl(prompt, seed);
+        results.push(imgUrl);
+        if (onProgress) onProgress(i, 'done', imgUrl);
+      } catch (err) {
+        console.warn(`Slide ${i + 1} AI image generation failed:`, err);
+        results.push(null);
+        if (onProgress) onProgress(i, 'error', null);
+      }
+    }
+    return results;
+  }
 }
 
 const ContentGenerator = new ContentGeneratorEngine();

@@ -112,7 +112,17 @@ function startViralMakerApp() {
   const btnDownloadSlide = document.getElementById('btn-download-slide');
   const btnDownloadAll = document.getElementById('btn-download-all');
   const btnMobileSave = document.getElementById('btn-mobile-save');
+  const btnMobileSaveAll = document.getElementById('btn-mobile-save-all');
   const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
+  const btnRegenSlideAi = document.getElementById('btn-regen-slide-ai');
+  const slideSceneIcon = document.getElementById('slide-scene-icon');
+  const slideSceneLabel = document.getElementById('slide-scene-label');
+  const slideSceneStatus = document.getElementById('slide-scene-status');
+
+  // AI 5단 사진 프로그레스 DOM
+  const aiPhotoProgress = document.getElementById('ai-photo-progress');
+  const aiPhotoStatusTitle = document.getElementById('ai-photo-status-title');
+  const aiPhotoStatusDesc = document.getElementById('ai-photo-status-desc');
 
   // Tab 4 (시뮬레이터)
   const instaSimImage = document.getElementById('insta-sim-image');
@@ -156,6 +166,86 @@ function startViralMakerApp() {
 
   if (state.geminiKey && inputApiKey) {
     inputApiKey.value = state.geminiKey;
+  }
+
+  // --- 🎨 5단 슬라이드 스토리별 장면 메타데이터 및 상태 바 갱신 ---
+  const sceneDescriptions = [
+    { num: 1, icon: '🌟', title: '1번 표지', desc: '시선 강탈 대표 히어로 컷' },
+    { num: 2, icon: '🤔', title: '2번 고민/문제', desc: '사용 전 불편한 순간 비포 컷' },
+    { num: 3, icon: '💡', title: '3번 해결/실사용', desc: '실제 사용하는 인액션 컷' },
+    { num: 4, icon: '🔍', title: '4번 디테일/특징', desc: '핵심 기능·재질 초근접 컷' },
+    { num: 5, icon: '🎁', title: '5번 만족/결과', desc: '감성 라이프스타일 애프터 컷' }
+  ];
+
+  function updateSlideSceneBar() {
+    const idx = CardNewsStudio.currentSlideIndex;
+    const scene = sceneDescriptions[idx] || sceneDescriptions[0];
+    if (slideSceneIcon) slideSceneIcon.textContent = scene.icon;
+    if (slideSceneLabel) slideSceneLabel.textContent = `${scene.title} (${scene.desc})`;
+
+    if (slideSceneStatus) {
+      if (CardNewsStudio.slideImages && CardNewsStudio.slideImages[idx]) {
+        slideSceneStatus.textContent = '스토리 AI 실사 적용됨 ✨';
+        slideSceneStatus.style.color = '#34d399';
+      } else if (CardNewsStudio.userImage) {
+        slideSceneStatus.textContent = '내 사진 적용됨 📷';
+        slideSceneStatus.style.color = 'var(--primary-light)';
+      } else {
+        slideSceneStatus.textContent = '스튜디오 그래픽 🎨';
+        slideSceneStatus.style.color = 'var(--text-muted)';
+      }
+    }
+  }
+
+  // --- 🎨 비동기 5단 스토리 AI 실사 사진 자동 생성 엔진 ---
+  let isGeneratingAiPhotos = false;
+
+  async function trigger5SceneAiPhotoGeneration(product) {
+    if (isGeneratingAiPhotos) return;
+    isGeneratingAiPhotos = true;
+
+    if (aiPhotoProgress) {
+      aiPhotoProgress.style.display = 'flex';
+      if (aiPhotoStatusTitle) aiPhotoStatusTitle.textContent = '🎨 AI가 슬라이드 5장별 맞춤 실사 사진을 그리는 중... (1/5)';
+      if (aiPhotoStatusDesc) aiPhotoStatusDesc.textContent = '1번 표지 ➔ 2번 고민 ➔ 3번 사용 ➔ 4번 디테일 ➔ 5번 완성';
+    }
+
+    const prodName = ContentGenerator.inferProductName(product);
+    const category = product.category || 'living';
+
+    try {
+      await ContentGenerator.generate5SceneImages(prodName, category, (idx, status, imgUrl) => {
+        if (status === 'done' && imgUrl) {
+          CardNewsStudio.setSlideImage(idx, imgUrl);
+          if (aiPhotoStatusTitle) {
+            aiPhotoStatusTitle.textContent = `🎨 AI 맞춤 실사 완성 중... (${idx + 1}/5 완료 ✨)`;
+          }
+          if (idx === CardNewsStudio.currentSlideIndex) {
+            updateSlideSceneBar();
+            if (typeof updateSimulator === 'function') updateSimulator();
+          }
+        }
+      });
+
+      if (aiPhotoStatusTitle) {
+        aiPhotoStatusTitle.textContent = '🎉 5단 스토리 맞춤 사진 모두 완성!';
+      }
+      setTimeout(() => {
+        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
+      }, 3000);
+
+    } catch (e) {
+      console.warn('AI photo generation error:', e);
+      if (aiPhotoStatusTitle) {
+        aiPhotoStatusTitle.textContent = '⚠️ 사진 생성 완료 (일부 스튜디오 그래픽 대체)';
+      }
+      setTimeout(() => {
+        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
+      }, 2000);
+    } finally {
+      isGeneratingAiPhotos = false;
+      updateSlideSceneBar();
+    }
   }
 
   // --- 토스트 알림 ---
@@ -547,7 +637,10 @@ function startViralMakerApp() {
       // 복붙 글 업데이트
       updateCopyTextView();
 
-      showToast('🎉 복붙용 글과 한/일 카드뉴스가 완성되었습니다!');
+      // 🎨 직장인 15초 완성: 백그라운드에서 AI 5단 스토리 사진 자동 생성 시작
+      trigger5SceneAiPhotoGeneration(state.product);
+
+      showToast('🎉 복붙용 글과 5단 카드뉴스가 완성되었습니다!');
       switchTab('copy');
 
     } catch (err) {
@@ -780,6 +873,9 @@ function startViralMakerApp() {
 
       btnPrevSlide.disabled = curNum === 1;
       btnNextSlide.disabled = curNum === total;
+
+      // 상단 장면 상태 바 갱신
+      updateSlideSceneBar();
     }
   }
 
@@ -836,7 +932,7 @@ function startViralMakerApp() {
   });
 
   btnMobileSave.addEventListener('click', async () => {
-    showToast('📱 사진첩 저장 / 공유 준비 중...');
+    showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
     const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
       modalSaveImage.src = dataUrl;
       modalMobileSave.classList.add('active');
@@ -846,13 +942,57 @@ function startViralMakerApp() {
     }
   });
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기)
+  // 📱 직장인 모바일 5장 일괄 사진첩 저장 버튼
+  if (btnMobileSaveAll) {
+    btnMobileSaveAll.addEventListener('click', async () => {
+      showToast('📱 사진첩 5장 일괄 저장 / 공유 준비 중...');
+      const shared = await CardNewsStudio.shareOrSaveAllSlides((dataUrl) => {
+        modalSaveImage.src = dataUrl;
+        modalMobileSave.classList.add('active');
+      });
+      if (shared) {
+        showToast('🎉 사진첩 5장 저장 또는 공유가 완료되었습니다!');
+      }
+    });
+  }
+
+  // 🎲 현재 슬라이드 AI 사진만 단독 재생성 버튼
+  if (btnRegenSlideAi) {
+    btnRegenSlideAi.addEventListener('click', async () => {
+      const idx = CardNewsStudio.currentSlideIndex;
+      const prodName = ContentGenerator.inferProductName(state.product);
+      const category = state.product.category || 'living';
+      const prompts = ContentGenerator.generate5ScenePrompts(prodName, category);
+      const prompt = prompts[idx] || prompts[0];
+
+      showToast(`슬라이드 ${idx + 1}번 AI 사진을 다시 생성하고 있습니다... 🎨`);
+      btnRegenSlideAi.disabled = true;
+      const origText = btnRegenSlideAi.textContent;
+      btnRegenSlideAi.textContent = '생성 중...';
+
+      try {
+        const seed = Math.floor(Math.random() * 999999) + 10;
+        const newUrl = await ContentGenerator.fetchAiImageBlobUrl(prompt, seed);
+        CardNewsStudio.setSlideImage(idx, newUrl);
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`슬라이드 ${idx + 1}번 사진이 새로 바뀌었습니다! ✨`);
+      } catch (err) {
+        showToast('사진 재생성 실패: ' + err.message);
+      } finally {
+        btnRegenSlideAi.disabled = false;
+        btnRegenSlideAi.textContent = origText;
+      }
+    });
+  }
+
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.6)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.5_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.6_' + Date.now();
     });
   }
 
@@ -953,6 +1093,7 @@ function startViralMakerApp() {
 
   // 첫 번째 샘플 로드
   presetChips[0]?.click();
+  updateSlideSceneBar();
 }
 
 if (document.readyState === 'loading') {

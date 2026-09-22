@@ -13,6 +13,7 @@ class CardNewsStudioEngine {
     this.themeKey = 'photo-overlay';
     this.ratio = '9:16'; // '9:16' (1080x1920) 틱톡/네이버클립/릴스 기본, '1:1' 또는 '4:5'
     this.userImage = null; // Image object (from image or video capture)
+    this.slideImages = [null, null, null, null, null]; // 5개 슬라이드별 독립 AI 실사 씬 이미지
     this.canvas = null;
     this.ctx = null;
     this.previewContainer = null;
@@ -94,15 +95,49 @@ class CardNewsStudioEngine {
     }
   }
 
-  // 이미지 또는 비디오 프레임 DataURL 등록
+  // 이미지 또는 비디오 프레임 DataURL 등록 (단일 사진 또는 전체 기본 배경)
   setUserMedia(dataUrl) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       this.userImage = img;
+      // 전체 슬라이드 기본값으로도 세팅 (개별 이미지가 없을 때 폴백)
       this.render();
     };
     img.src = dataUrl;
+  }
+
+  // 🎨 슬라이드별 개별 씬 이미지 등록 (0 ~ 4)
+  setSlideImage(index, dataOrBlobUrl) {
+    if (index < 0 || index > 4 || !dataOrBlobUrl) return;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      this.slideImages[index] = img;
+      if (this.currentSlideIndex === index) {
+        this.render();
+      }
+    };
+    img.src = dataOrBlobUrl;
+  }
+
+  // 5개 슬라이드 전체 이미지 일괄 등록
+  setAllSlideImages(urls) {
+    if (!Array.isArray(urls)) return;
+    urls.forEach((u, i) => {
+      if (u) this.setSlideImage(i, u);
+    });
+  }
+
+  // 모든 슬라이드 이미지 초기화
+  clearSlideImages() {
+    this.slideImages = [null, null, null, null, null];
+    this.render();
+  }
+
+  // 현재 슬라이드의 활성 이미지 반환
+  getCurrentSlideImage() {
+    return this.slideImages[this.currentSlideIndex] || this.userImage;
   }
 
   // 동영상 파일에서 썸네일 자동 캡처
@@ -285,11 +320,13 @@ class CardNewsStudioEngine {
   // 📸 Dayzhome 스타일: 실사진 전체 배경 + 감성 외곽선 자막 렌더러 (1:1 피드 & 9:16 숏폼 완벽 호환)
   drawDayzPhotoOverlaySlide(ctx, width, height, theme, slide, fontFam, isJP) {
     const is916 = (this.ratio === '9:16');
+    const slideIdx = (slide && slide.slideNum ? slide.slideNum - 1 : this.currentSlideIndex);
+    const targetImg = this.slideImages[slideIdx] || this.userImage;
 
-    // 1. Fullscreen Image Cover
-    if (this.userImage && this.userImage.complete) {
-      const img = this.userImage;
-      const imgRatio = img.width / img.height;
+    // 1. Fullscreen Image Cover (슬라이드별 개별 씬 이미지 또는 업로드 사진)
+    if (targetImg && (targetImg.complete || targetImg.naturalWidth > 0) && (targetImg.naturalWidth !== 0)) {
+      const img = targetImg;
+      const imgRatio = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
       const canvasRatio = width / height;
       let drawW, drawH, drawX, drawY;
       if (imgRatio > canvasRatio) {
@@ -817,6 +854,35 @@ class CardNewsStudioEngine {
       link.click();
       await new Promise(r => setTimeout(r, 400));
     }
+  }
+
+  // 최신 모바일 브라우저 5장 일괄 사진첩 저장 / 공유
+  async shareOrSaveAllSlides(onFallbackModal) {
+    const dataUrls = await this.getAllSlideDataUrls();
+    if (navigator.share && navigator.canShare) {
+      try {
+        const files = [];
+        for (let i = 0; i < dataUrls.length; i++) {
+          const res = await fetch(dataUrls[i]);
+          const blob = await res.blob();
+          files.push(new File([blob], `CardNews_${this.currentLanguage}_Slide_${i + 1}.png`, { type: 'image/png' }));
+        }
+        if (navigator.canShare({ files })) {
+          await navigator.share({
+            files,
+            title: 'ViralMaker 5단 카드뉴스',
+            text: '바이럴메이커에서 제작한 감성 카드뉴스 5장'
+          });
+          return true;
+        }
+      } catch (err) {
+        if (err.name === 'AbortError') return false;
+        console.warn('Batch Web Share failed, falling back to sequential download:', err);
+      }
+    }
+    // Web Share 미지원 브라우저는 일괄 다운로드 실행
+    await this.downloadAllSlides();
+    return true;
   }
 
   getCurrentDataUrl() {

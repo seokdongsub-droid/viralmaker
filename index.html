@@ -149,25 +149,47 @@
           </div>
         </div>
 
-        <!-- 사진/동영상 첨부 (선택 사항 - 두 모드 공통 컴팩트 카드) -->
+        <!-- 사진/동영상 첨부: AI 5단 자동 생성 기본 탑재 -->
         <div class="section-card photo-upload-card">
           <div class="section-title" style="margin-bottom: 4px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span>📸 제품 사진/영상 첨부</span>
-              <span class="tag-optional">선택사항</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span>📸 카드뉴스 5장 사진</span>
+                <span class="platform-pill" style="background: rgba(99, 102, 241, 0.2); color: var(--primary-light); font-size: 10px;">모바일 1초 완성</span>
+              </div>
+              <span class="tag-optional" id="photo-mode-badge" style="background: var(--success-bg); color: var(--success); border-color: rgba(16, 185, 129, 0.3);">🎨 AI 5단 자동생성 ON</span>
             </div>
           </div>
-          <p class="section-desc" style="margin-bottom: 8px;">💡 사진이 없어도 고급 감성 스튜디오 배경이 자동 생성됩니다!</p>
+          <p class="section-desc" style="margin-bottom: 8px;">
+            💡 <strong>직장에서 사진 캡처할 필요 0%!</strong> 아래 [완성하기] 버튼을 누르면 AI가 제품명에 맞춰 5장 슬라이드마다 서로 다른 감성 실사 사진을 100% 자동 생성합니다.
+          </p>
 
-          <input type="file" id="product-media-file" accept="image/*,video/*" style="display: none;">
-          <label for="product-media-file" class="upload-box compact" id="upload-box">
-            <img id="upload-preview" class="upload-preview" alt="미리보기">
-            <div id="upload-prompt">
-              <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🎥</div>
-              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 사진 또는 동영상 선택</div>
-              <div style="font-size: 11px; color: var(--text-muted);">스마트폰 갤러리 또는 카메라 촬영</div>
+          <!-- 🎨 AI 5단 사진 생성 실시간 프로그레스 바 -->
+          <div id="ai-photo-progress" class="ai-photo-progress-box" style="display: none;">
+            <div class="ai-photo-spinner"></div>
+            <div style="flex: 1; overflow: hidden;">
+              <div style="font-size: 12px; font-weight: 700; color: #fff;" id="ai-photo-status-title">🎨 AI가 슬라이드 5장별 맞춤 실사 사진을 생성 중...</div>
+              <div style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="ai-photo-status-desc">1번 표지 ➔ 2번 고민 ➔ 3번 사용 ➔ 4번 디테일 ➔ 5번 완성</div>
             </div>
-          </label>
+          </div>
+
+          <!-- (선택) 직접 찍은 사진이나 갤러리 사진 쓰기 접이식 -->
+          <details style="margin-top: 8px;">
+            <summary style="font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 0;">
+              📷 혹시 직접 찍은 사진이나 갤러리 사진을 쓰시려면? (터치하여 열기)
+            </summary>
+            <div style="margin-top: 8px;">
+              <input type="file" id="product-media-file" accept="image/*,video/*" style="display: none;">
+              <label for="product-media-file" class="upload-box compact" id="upload-box">
+                <img id="upload-preview" class="upload-preview" alt="미리보기">
+                <div id="upload-prompt">
+                  <div style="font-size: 22px; margin-bottom: 2px;">📷 / 🎥</div>
+                  <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">터치하여 내 폰 갤러리 사진 선택</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">선택 시 AI 생성 사진 대신 내 사진이 적용됩니다</div>
+                </div>
+              </label>
+            </div>
+          </details>
 
           <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 활성화) -->
           <div id="vision-action-panel" style="display: none; margin-top: 10px;">
@@ -329,17 +351,22 @@
       <!-- ============================================== -->
       <section id="tab-view-cardnews" class="tab-view">
         
-        <!-- 📸 실제 제품 사진 안내 바 & 빠른 사진 교체 버튼 -->
+        <!-- 📸 슬라이드별 장면 상태 & 빠른 교체 바 -->
         <div class="cardnews-photo-bar">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 16px;">📸</span>
-            <div style="font-size: 12px; color: var(--text-main);">
-              <strong>실제 사진</strong> 위에 5단계 자막이 합성됩니다.
+          <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+            <span style="font-size: 16px;" id="slide-scene-icon">🌟</span>
+            <div style="font-size: 12px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <strong id="slide-scene-label">1번 표지</strong>: <span id="slide-scene-status" style="color: var(--primary-light);">스토리 AI 실사 적용됨</span>
             </div>
           </div>
-          <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 12px; color: var(--primary-light);">
-            📷 사진 변경
-          </button>
+          <div style="display: flex; gap: 5px; flex-shrink: 0;">
+            <button type="button" class="btn-header" id="btn-regen-slide-ai" style="font-size: 11px; padding: 5px 9px; color: #FACC15; background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.3);">
+              🎲 사진 재생성
+            </button>
+            <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
+              📷 내 사진
+            </button>
+          </div>
         </div>
 
         <!-- 카드뉴스 캔버스 프리뷰 (메인 정중앙 시원하게 강조) -->
@@ -356,17 +383,17 @@
 
         <!-- 다운로드 및 모바일 저장 메인 액션 버튼들 -->
         <div class="cardnews-action-stack">
-          <button type="button" class="btn-primary-large glowing-btn-save" id="btn-mobile-save">
+          <button type="button" class="btn-primary-large glowing-btn-save" id="btn-mobile-save-all">
             <span style="font-size: 18px;">📱</span>
-            <span>내 폰 사진첩에 바로 저장</span>
+            <span>내 폰 사진첩에 5장 한 번에 저장 (추천)</span>
           </button>
 
           <div class="sub-download-row">
-            <button type="button" class="btn-sub-action" id="btn-download-slide">
-              <span>💾 현재 슬라이드 PNG</span>
+            <button type="button" class="btn-sub-action" id="btn-mobile-save">
+              <span>📱 현재 1장만 저장</span>
             </button>
             <button type="button" class="btn-sub-action" id="btn-download-all">
-              <span>📦 전체 5장 일괄 저장</span>
+              <span>📦 5장 일괄 ZIP/다운</span>
             </button>
           </div>
         </div>
@@ -600,10 +627,10 @@
 
   </div>
 
-  <!-- Scripts (캐시 방지 v2.5 적용) -->
-  <script src="js/templates.js?v=2.5"></script>
-  <script src="js/generator.js?v=2.5"></script>
-  <script src="js/cardnews.js?v=2.5"></script>
-  <script src="js/app.js?v=2.5"></script>
+  <!-- Scripts (캐시 방지 v2.6 적용) -->
+  <script src="js/templates.js?v=2.6"></script>
+  <script src="js/generator.js?v=2.6"></script>
+  <script src="js/cardnews.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
 </body>
 </html>
