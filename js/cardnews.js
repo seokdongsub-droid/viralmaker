@@ -323,26 +323,72 @@ class CardNewsStudioEngine {
     const slideIdx = (slide && slide.slideNum ? slide.slideNum - 1 : this.currentSlideIndex);
     const targetImg = this.slideImages[slideIdx] || this.userImage;
 
-    // 1. Fullscreen Image Cover (슬라이드별 개별 씬 이미지 또는 업로드 사진)
+    // 1. Fullscreen Image Cover (슬라이드별 개별 씬 이미지 또는 단일 사진 스마트 5단 앵글 연출)
     if (targetImg && (targetImg.complete || targetImg.naturalWidth > 0) && (targetImg.naturalWidth !== 0)) {
       const img = targetImg;
-      const imgRatio = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
+      const imgNaturalW = img.naturalWidth || img.width;
+      const imgNaturalH = img.naturalHeight || img.height;
+      const imgRatio = imgNaturalW / imgNaturalH;
       const canvasRatio = width / height;
-      let drawW, drawH, drawX, drawY;
+
+      // 기본 커버(Cover) 크기 계산
+      let baseW, baseH;
       if (imgRatio > canvasRatio) {
-        drawH = height;
-        drawW = height * imgRatio;
-        drawX = (width - drawW) / 2;
-        drawY = 0;
+        baseH = height;
+        baseW = height * imgRatio;
       } else {
-        drawW = width;
-        drawH = width / imgRatio;
-        drawX = 0;
-        drawY = (height - drawH) / 2;
+        baseW = width;
+        baseH = width / imgRatio;
       }
+
+      // 💡 [스마트 5단 앵글 연출]: 단일 사진일 때 각도·줌·초점을 다르게 자동 연출
+      const isSingleImage = !this.slideImages[slideIdx] && Boolean(this.userImage);
+      let scale = 1.0;
+      let focalShiftY = 0; // 중심 이동
+
+      if (isSingleImage) {
+        if (slideIdx === 0) {
+          // 1번 표지: 정구도 안정적인 풀스크린 샷 (100%)
+          scale = 1.0;
+          focalShiftY = 0;
+        } else if (slideIdx === 1) {
+          // 2번 고민: 시선 집중 은은한 줌인 (112%) + 감성 비네팅
+          scale = 1.12;
+          focalShiftY = -0.04;
+        } else if (slideIdx === 2) {
+          // 3번 사용: 중심부 다이내믹 액션 클로즈업 줌 (128%)
+          scale = 1.28;
+          focalShiftY = 0.04;
+        } else if (slideIdx === 3) {
+          // 4번 디테일: 소재·질감 초근접 매크로 접사 줌 (146%)
+          scale = 1.46;
+          focalShiftY = 0.08;
+        } else if (slideIdx === 4) {
+          // 5번 완성: 피니시 와이드 컷 (106%)
+          scale = 1.06;
+          focalShiftY = -0.02;
+        }
+      }
+
+      const drawW = baseW * scale;
+      const drawH = baseH * scale;
+      const drawX = (width - drawW) / 2;
+      const drawY = (height - drawH) / 2 + (focalShiftY * height * 0.15);
+
+      ctx.save();
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      // 2번 슬라이드: 문제/고민 연출용 감성 비네팅 효과
+      if (isSingleImage && slideIdx === 1) {
+        const vignGrad = ctx.createRadialGradient(width / 2, height / 2, width * 0.25, width / 2, height / 2, width * 0.75);
+        vignGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        vignGrad.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+        ctx.fillStyle = vignGrad;
+        ctx.fillRect(0, 0, width, height);
+      }
+      ctx.restore();
     } else {
-      // 사진 미첨부 시에도 완성도 높은 프리미엄 앰비언트 스튜디오 그래픽 렌더링
+      // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
       const studioGrad = ctx.createLinearGradient(0, 0, width, height);
       studioGrad.addColorStop(0, '#1e1b4b');   // Deep indigo
       studioGrad.addColorStop(0.5, '#0f172a'); // Slate dark
@@ -352,12 +398,12 @@ class CardNewsStudioEngine {
 
       // 중앙 앰비언트 글로우 원
       const radialGlow = ctx.createRadialGradient(width / 2, height / 2, 40, width / 2, height / 2, width * 0.45);
-      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.22)');
+      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
       radialGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 스튜디오 그리드 텍스처
+      // 은은한 스튜디오 그리드 텍스처
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.lineWidth = 1;
       for (let gy = 0; gy < height; gy += 120) {
@@ -366,20 +412,6 @@ class CardNewsStudioEngine {
         ctx.lineTo(width, gy);
         ctx.stroke();
       }
-
-      ctx.save();
-      ctx.font = '90px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('✨', width / 2, height / 2 - 50);
-
-      ctx.font = '700 32px sans-serif';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      ctx.fillText('SNS 바이럴 감성 카드뉴스', width / 2, height / 2 + 25);
-
-      ctx.font = '500 24px sans-serif';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-      ctx.fillText('💡 제품 사진/동영상 첨부 시 100% 실사진 풀화면 합성', width / 2, height / 2 + 75);
-      ctx.restore();
     }
 
     // 2. Gradients for text contrast (숏폼 세이프존 고려)
@@ -428,7 +460,6 @@ class CardNewsStudioEngine {
 
     if (slide.type === 'cover') {
       // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀
-      // 9:16 세로 숏폼(틱톡/클립/릴스)일 때는 하단 캡션·사운드 바(약 360px) 위쪽에 배치하여 가림 방지
       const pad = is916 ? 70 : 65;
       let startY = is916 ? (height - 400) : (height - 160);
       const titleLines = slide.mainTitle.split('\n');
@@ -445,24 +476,39 @@ class CardNewsStudioEngine {
       const subSize = is916 ? 34 : 32;
       drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 7, 'left');
     } else {
-      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~3줄 감성 자막 (틱톡/클립/인스타 최적)
+      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~4줄 감성 자막 (자동 줄바꿈 & 텍스트 잘림 방지)
       const centerY = is916 ? (height * 0.46) : (height / 2);
-      const mainLines = (slide.mainTitle || '').split('\n').filter(Boolean);
-      const subLines = (slide.subTitle || '').split('\n').filter(Boolean);
-      const allLines = [...mainLines, ...subLines];
+      const rawLines = [
+        ...(slide.mainTitle || '').split('\n').filter(Boolean),
+        ...(slide.subTitle || '').split('\n').filter(Boolean)
+      ];
 
       if (slide.type === 'cta') {
-        allLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
+        rawLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
       }
 
-      const fontSize = is916 ? 48 : 44;
-      const lineStep = is916 ? 80 : 72;
-      const totalH = allLines.length * (lineStep - 4);
+      // 긴 문장 스마트 자동 줄바꿈 (화면 밖 텍스트 잘림 원천 차단)
+      const formattedLines = [];
+      rawLines.forEach((line) => {
+        const clean = line.replace(/^[✔\d\.\s]+/, '').trim();
+        if (clean.length > 20) {
+          const mid = Math.ceil(clean.length / 2);
+          const splitIdx = clean.lastIndexOf(' ', mid) > 0 ? clean.lastIndexOf(' ', mid) : mid;
+          formattedLines.push(clean.substring(0, splitIdx).trim());
+          formattedLines.push(clean.substring(splitIdx).trim());
+        } else if (clean) {
+          formattedLines.push(clean);
+        }
+      });
+
+      const displayLines = formattedLines.slice(0, 5);
+      const fontSize = is916 ? 46 : 42;
+      const lineStep = is916 ? 78 : 70;
+      const totalH = displayLines.length * (lineStep - 4);
       let y = centerY - (totalH / 2) + 34;
 
-      allLines.forEach((line) => {
-        const clean = line.replace(/^[✔\d\.\s]+/, '');
-        drawOutlinedText(clean, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
+      displayLines.forEach((line) => {
+        drawOutlinedText(line, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
         y += lineStep;
       });
     }

@@ -202,6 +202,7 @@ const ViralProductLibrary = {
       search: '사각 계란말이팬',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-eggpan',
+      imageUrl: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=1080&auto=format&fit=crop&q=80',
       memo: '똥손도 호텔 조식 비주얼 계란말이 3분 컷! 세라믹 논스틱 코팅이라 기름 조금만 둘러도 스르륵 말림'
     },
     {
@@ -211,6 +212,7 @@ const ViralProductLibrary = {
       search: '유리 오일 스프레이',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-oilspray',
+      imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=1080&auto=format&fit=crop&q=80',
       memo: '숟가락으로 식용유 붓다가 기름바다 칼로리 폭탄 맞던 사람 필수템! 안개 분사로 기름 90% 줄여주고 에어프라이어 요리 필수'
     },
     {
@@ -220,6 +222,7 @@ const ViralProductLibrary = {
       search: '무선 마늘 다지기',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-chopper',
+      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=1080&auto=format&fit=crop&q=80',
       memo: '볶음밥/파스타 할 때 눈물 흘리며 칼질 10분 하던 거 버튼 누르면 3초 만에 끝냄! 세척도 물로 슥 헹구면 됨'
     },
     {
@@ -294,6 +297,7 @@ const ViralProductLibrary = {
       search: '틈새 이동식 트롤리 수납선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-trolley',
+      imageUrl: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1080&auto=format&fit=crop&q=80',
       memo: '냉장고 옆이나 세탁실 15cm 죽은 틈새 공간 살려주는 수납 구원템! 바퀴 굴림 부드럽고 오늘의집 감성 인테리어 완성'
     },
     {
@@ -303,6 +307,7 @@ const ViralProductLibrary = {
       search: '싱크대 하부장 슬라이딩 선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-rack',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '어둡고 깊어서 냄비 꺼내기 힘들었던 하부장이 서랍처럼 스르륵 나옴! 공간 2배로 넓어지는 수납 혁명'
     },
     {
@@ -359,6 +364,7 @@ const ViralProductLibrary = {
       search: '무선 온열 목마사지기',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-neck',
+      imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1080&auto=format&fit=crop&q=80',
       memo: '하루 종일 폰/컴퓨터 보느라 돌덩이 된 승모근 15분 만에 살살 녹여줌! 145g 깃털 무게에 온열 기능 힐링'
     },
     {

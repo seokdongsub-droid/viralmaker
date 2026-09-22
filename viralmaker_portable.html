@@ -1536,6 +1536,45 @@ body {
   flex-shrink: 0;
 }
 
+/* 5개 슬라이드 퀵 탭 바 */
+.slide-quick-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  padding: 2px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slide-quick-chip {
+  flex: 1;
+  min-width: 68px;
+  padding: 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.slide-quick-chip:hover {
+  border-color: var(--primary-light);
+  color: var(--text-main);
+}
+
+.slide-quick-chip.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.28);
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+}
+
+
 
 </style>
 </head>
@@ -1552,7 +1591,7 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.6 5단 실사 AI</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.7 실물 앵글 연출</span>
         </div>
       </div>
       <div class="header-actions">
@@ -1569,7 +1608,7 @@ body {
     <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34D399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v2.6 5단 스토리 AI 실사 자동 생성 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(직장인 15초 모바일 전용)</span></span>
+        <span><strong>v2.7 실제 제품 사진 기반 스마트 5단 앵글 연출 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(사진 1장으로 5가지 컷 자동 완성)</span></span>
       </div>
       <button type="button" id="btn-force-refresh" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
         <span>🔄</span> <span>강력 새로고침</span>
@@ -1671,47 +1710,30 @@ body {
           </div>
         </div>
 
-        <!-- 사진/동영상 첨부: AI 5단 자동 생성 기본 탑재 -->
+        <!-- 사진/동영상 첨부: 1장 또는 여러 장 (스마트 5단 앵글 연출) -->
         <div class="section-card photo-upload-card">
           <div class="section-title" style="margin-bottom: 4px;">
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
               <div style="display: flex; align-items: center; gap: 6px;">
-                <span>📸 카드뉴스 5장 사진</span>
-                <span class="platform-pill" style="background: rgba(99, 102, 241, 0.2); color: var(--primary-light); font-size: 10px;">모바일 1초 완성</span>
+                <span>📸 제품 실물 사진 첨부</span>
+                <span class="platform-pill" style="background: rgba(99, 102, 241, 0.2); color: var(--primary-light); font-size: 10px;">1초 자동 연출</span>
               </div>
-              <span class="tag-optional" id="photo-mode-badge" style="background: var(--success-bg); color: var(--success); border-color: rgba(16, 185, 129, 0.3);">🎨 AI 5단 자동생성 ON</span>
+              <span class="tag-optional" id="photo-mode-badge" style="background: var(--success-bg); color: var(--success); border-color: rgba(16, 185, 129, 0.3);">✨ 5단 앵글 연출 ON</span>
             </div>
           </div>
           <p class="section-desc" style="margin-bottom: 8px;">
-            💡 <strong>직장에서 사진 캡처할 필요 0%!</strong> 아래 [완성하기] 버튼을 누르면 AI가 제품명에 맞춰 5장 슬라이드마다 서로 다른 감성 실사 사진을 100% 자동 생성합니다.
+            💡 <strong>사진 딱 1장만 올려도 5개 슬라이드가 5가지 앵글로 자동 연출</strong>됩니다! (상세페이지 캡처 여러 장 동시 선택도 가능)
           </p>
 
-          <!-- 🎨 AI 5단 사진 생성 실시간 프로그레스 바 -->
-          <div id="ai-photo-progress" class="ai-photo-progress-box" style="display: none;">
-            <div class="ai-photo-spinner"></div>
-            <div style="flex: 1; overflow: hidden;">
-              <div style="font-size: 12px; font-weight: 700; color: #fff;" id="ai-photo-status-title">🎨 AI가 슬라이드 5장별 맞춤 실사 사진을 생성 중...</div>
-              <div style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="ai-photo-status-desc">1번 표지 ➔ 2번 고민 ➔ 3번 사용 ➔ 4번 디테일 ➔ 5번 완성</div>
+          <input type="file" id="product-media-file" accept="image/*,video/*" multiple style="display: none;">
+          <label for="product-media-file" class="upload-box compact" id="upload-box">
+            <img id="upload-preview" class="upload-preview" alt="미리보기">
+            <div id="upload-prompt">
+              <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
+              <div style="font-size: 11px; color: var(--text-muted);">사진 1장만 올려도 풀샷/줌/디테일 5장으로 자동 완성! (여러 장 선택 가능)</div>
             </div>
-          </div>
-
-          <!-- (선택) 직접 찍은 사진이나 갤러리 사진 쓰기 접이식 -->
-          <details style="margin-top: 8px;">
-            <summary style="font-size: 11px; color: var(--text-muted); cursor: pointer; padding: 4px 0;">
-              📷 혹시 직접 찍은 사진이나 갤러리 사진을 쓰시려면? (터치하여 열기)
-            </summary>
-            <div style="margin-top: 8px;">
-              <input type="file" id="product-media-file" accept="image/*,video/*" style="display: none;">
-              <label for="product-media-file" class="upload-box compact" id="upload-box">
-                <img id="upload-preview" class="upload-preview" alt="미리보기">
-                <div id="upload-prompt">
-                  <div style="font-size: 22px; margin-bottom: 2px;">📷 / 🎥</div>
-                  <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">터치하여 내 폰 갤러리 사진 선택</div>
-                  <div style="font-size: 10px; color: var(--text-muted);">선택 시 AI 생성 사진 대신 내 사진이 적용됩니다</div>
-                </div>
-              </label>
-            </div>
-          </details>
+          </label>
 
           <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 활성화) -->
           <div id="vision-action-panel" style="display: none; margin-top: 10px;">
@@ -1878,17 +1900,22 @@ body {
           <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
             <span style="font-size: 16px;" id="slide-scene-icon">🌟</span>
             <div style="font-size: 12px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              <strong id="slide-scene-label">1번 표지</strong>: <span id="slide-scene-status" style="color: var(--primary-light);">스토리 AI 실사 적용됨</span>
+              <strong id="slide-scene-label">1번 표지</strong>: <span id="slide-scene-status" style="color: var(--primary-light);">스마트 앵글 풀샷</span>
             </div>
           </div>
-          <div style="display: flex; gap: 5px; flex-shrink: 0;">
-            <button type="button" class="btn-header" id="btn-regen-slide-ai" style="font-size: 11px; padding: 5px 9px; color: #FACC15; background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.3);">
-              🎲 사진 재생성
-            </button>
-            <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
-              📷 내 사진
-            </button>
-          </div>
+          <input type="file" id="slide-single-file-input" accept="image/*" style="display: none;">
+          <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 12px; color: var(--primary-light);">
+            📷 이 슬라이드 사진 변경
+          </button>
+        </div>
+
+        <!-- 5개 슬라이드 퀵 탭 바 (터치 1번으로 슬라이드 즉시 전환) -->
+        <div class="slide-quick-bar" id="slide-quick-bar">
+          <button type="button" class="slide-quick-chip active" data-slide="0">1. 표지(풀샷)</button>
+          <button type="button" class="slide-quick-chip" data-slide="1">2. 고민(줌)</button>
+          <button type="button" class="slide-quick-chip" data-slide="2">3. 사용(액션)</button>
+          <button type="button" class="slide-quick-chip" data-slide="3">4. 디테일(접사)</button>
+          <button type="button" class="slide-quick-chip" data-slide="4">5. 완성(CTA)</button>
         </div>
 
         <!-- 카드뉴스 캔버스 프리뷰 (메인 정중앙 시원하게 강조) -->
@@ -2354,6 +2381,7 @@ const ViralProductLibrary = {
       search: '사각 계란말이팬',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-eggpan',
+      imageUrl: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=1080&auto=format&fit=crop&q=80',
       memo: '똥손도 호텔 조식 비주얼 계란말이 3분 컷! 세라믹 논스틱 코팅이라 기름 조금만 둘러도 스르륵 말림'
     },
     {
@@ -2363,6 +2391,7 @@ const ViralProductLibrary = {
       search: '유리 오일 스프레이',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-oilspray',
+      imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=1080&auto=format&fit=crop&q=80',
       memo: '숟가락으로 식용유 붓다가 기름바다 칼로리 폭탄 맞던 사람 필수템! 안개 분사로 기름 90% 줄여주고 에어프라이어 요리 필수'
     },
     {
@@ -2372,6 +2401,7 @@ const ViralProductLibrary = {
       search: '무선 마늘 다지기',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-chopper',
+      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=1080&auto=format&fit=crop&q=80',
       memo: '볶음밥/파스타 할 때 눈물 흘리며 칼질 10분 하던 거 버튼 누르면 3초 만에 끝냄! 세척도 물로 슥 헹구면 됨'
     },
     {
@@ -2446,6 +2476,7 @@ const ViralProductLibrary = {
       search: '틈새 이동식 트롤리 수납선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-trolley',
+      imageUrl: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1080&auto=format&fit=crop&q=80',
       memo: '냉장고 옆이나 세탁실 15cm 죽은 틈새 공간 살려주는 수납 구원템! 바퀴 굴림 부드럽고 오늘의집 감성 인테리어 완성'
     },
     {
@@ -2455,6 +2486,7 @@ const ViralProductLibrary = {
       search: '싱크대 하부장 슬라이딩 선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-rack',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '어둡고 깊어서 냄비 꺼내기 힘들었던 하부장이 서랍처럼 스르륵 나옴! 공간 2배로 넓어지는 수납 혁명'
     },
     {
@@ -2511,6 +2543,7 @@ const ViralProductLibrary = {
       search: '무선 온열 목마사지기',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-neck',
+      imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1080&auto=format&fit=crop&q=80',
       memo: '하루 종일 폰/컴퓨터 보느라 돌덩이 된 승모근 15분 만에 살살 녹여줌! 145g 깃털 무게에 온열 기능 힐링'
     },
     {
@@ -3607,26 +3640,72 @@ class CardNewsStudioEngine {
     const slideIdx = (slide && slide.slideNum ? slide.slideNum - 1 : this.currentSlideIndex);
     const targetImg = this.slideImages[slideIdx] || this.userImage;
 
-    // 1. Fullscreen Image Cover (슬라이드별 개별 씬 이미지 또는 업로드 사진)
+    // 1. Fullscreen Image Cover (슬라이드별 개별 씬 이미지 또는 단일 사진 스마트 5단 앵글 연출)
     if (targetImg && (targetImg.complete || targetImg.naturalWidth > 0) && (targetImg.naturalWidth !== 0)) {
       const img = targetImg;
-      const imgRatio = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
+      const imgNaturalW = img.naturalWidth || img.width;
+      const imgNaturalH = img.naturalHeight || img.height;
+      const imgRatio = imgNaturalW / imgNaturalH;
       const canvasRatio = width / height;
-      let drawW, drawH, drawX, drawY;
+
+      // 기본 커버(Cover) 크기 계산
+      let baseW, baseH;
       if (imgRatio > canvasRatio) {
-        drawH = height;
-        drawW = height * imgRatio;
-        drawX = (width - drawW) / 2;
-        drawY = 0;
+        baseH = height;
+        baseW = height * imgRatio;
       } else {
-        drawW = width;
-        drawH = width / imgRatio;
-        drawX = 0;
-        drawY = (height - drawH) / 2;
+        baseW = width;
+        baseH = width / imgRatio;
       }
+
+      // 💡 [스마트 5단 앵글 연출]: 단일 사진일 때 각도·줌·초점을 다르게 자동 연출
+      const isSingleImage = !this.slideImages[slideIdx] && Boolean(this.userImage);
+      let scale = 1.0;
+      let focalShiftY = 0; // 중심 이동
+
+      if (isSingleImage) {
+        if (slideIdx === 0) {
+          // 1번 표지: 정구도 안정적인 풀스크린 샷 (100%)
+          scale = 1.0;
+          focalShiftY = 0;
+        } else if (slideIdx === 1) {
+          // 2번 고민: 시선 집중 은은한 줌인 (112%) + 감성 비네팅
+          scale = 1.12;
+          focalShiftY = -0.04;
+        } else if (slideIdx === 2) {
+          // 3번 사용: 중심부 다이내믹 액션 클로즈업 줌 (128%)
+          scale = 1.28;
+          focalShiftY = 0.04;
+        } else if (slideIdx === 3) {
+          // 4번 디테일: 소재·질감 초근접 매크로 접사 줌 (146%)
+          scale = 1.46;
+          focalShiftY = 0.08;
+        } else if (slideIdx === 4) {
+          // 5번 완성: 피니시 와이드 컷 (106%)
+          scale = 1.06;
+          focalShiftY = -0.02;
+        }
+      }
+
+      const drawW = baseW * scale;
+      const drawH = baseH * scale;
+      const drawX = (width - drawW) / 2;
+      const drawY = (height - drawH) / 2 + (focalShiftY * height * 0.15);
+
+      ctx.save();
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      // 2번 슬라이드: 문제/고민 연출용 감성 비네팅 효과
+      if (isSingleImage && slideIdx === 1) {
+        const vignGrad = ctx.createRadialGradient(width / 2, height / 2, width * 0.25, width / 2, height / 2, width * 0.75);
+        vignGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        vignGrad.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+        ctx.fillStyle = vignGrad;
+        ctx.fillRect(0, 0, width, height);
+      }
+      ctx.restore();
     } else {
-      // 사진 미첨부 시에도 완성도 높은 프리미엄 앰비언트 스튜디오 그래픽 렌더링
+      // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
       const studioGrad = ctx.createLinearGradient(0, 0, width, height);
       studioGrad.addColorStop(0, '#1e1b4b');   // Deep indigo
       studioGrad.addColorStop(0.5, '#0f172a'); // Slate dark
@@ -3636,12 +3715,12 @@ class CardNewsStudioEngine {
 
       // 중앙 앰비언트 글로우 원
       const radialGlow = ctx.createRadialGradient(width / 2, height / 2, 40, width / 2, height / 2, width * 0.45);
-      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.22)');
+      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
       radialGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // 스튜디오 그리드 텍스처
+      // 은은한 스튜디오 그리드 텍스처
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.lineWidth = 1;
       for (let gy = 0; gy < height; gy += 120) {
@@ -3650,20 +3729,6 @@ class CardNewsStudioEngine {
         ctx.lineTo(width, gy);
         ctx.stroke();
       }
-
-      ctx.save();
-      ctx.font = '90px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('✨', width / 2, height / 2 - 50);
-
-      ctx.font = '700 32px sans-serif';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      ctx.fillText('SNS 바이럴 감성 카드뉴스', width / 2, height / 2 + 25);
-
-      ctx.font = '500 24px sans-serif';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-      ctx.fillText('💡 제품 사진/동영상 첨부 시 100% 실사진 풀화면 합성', width / 2, height / 2 + 75);
-      ctx.restore();
     }
 
     // 2. Gradients for text contrast (숏폼 세이프존 고려)
@@ -3712,7 +3777,6 @@ class CardNewsStudioEngine {
 
     if (slide.type === 'cover') {
       // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀
-      // 9:16 세로 숏폼(틱톡/클립/릴스)일 때는 하단 캡션·사운드 바(약 360px) 위쪽에 배치하여 가림 방지
       const pad = is916 ? 70 : 65;
       let startY = is916 ? (height - 400) : (height - 160);
       const titleLines = slide.mainTitle.split('\n');
@@ -3729,24 +3793,39 @@ class CardNewsStudioEngine {
       const subSize = is916 ? 34 : 32;
       drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 7, 'left');
     } else {
-      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~3줄 감성 자막 (틱톡/클립/인스타 최적)
+      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~4줄 감성 자막 (자동 줄바꿈 & 텍스트 잘림 방지)
       const centerY = is916 ? (height * 0.46) : (height / 2);
-      const mainLines = (slide.mainTitle || '').split('\n').filter(Boolean);
-      const subLines = (slide.subTitle || '').split('\n').filter(Boolean);
-      const allLines = [...mainLines, ...subLines];
+      const rawLines = [
+        ...(slide.mainTitle || '').split('\n').filter(Boolean),
+        ...(slide.subTitle || '').split('\n').filter(Boolean)
+      ];
 
       if (slide.type === 'cta') {
-        allLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
+        rawLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
       }
 
-      const fontSize = is916 ? 48 : 44;
-      const lineStep = is916 ? 80 : 72;
-      const totalH = allLines.length * (lineStep - 4);
+      // 긴 문장 스마트 자동 줄바꿈 (화면 밖 텍스트 잘림 원천 차단)
+      const formattedLines = [];
+      rawLines.forEach((line) => {
+        const clean = line.replace(/^[✔\d\.\s]+/, '').trim();
+        if (clean.length > 20) {
+          const mid = Math.ceil(clean.length / 2);
+          const splitIdx = clean.lastIndexOf(' ', mid) > 0 ? clean.lastIndexOf(' ', mid) : mid;
+          formattedLines.push(clean.substring(0, splitIdx).trim());
+          formattedLines.push(clean.substring(splitIdx).trim());
+        } else if (clean) {
+          formattedLines.push(clean);
+        }
+      });
+
+      const displayLines = formattedLines.slice(0, 5);
+      const fontSize = is916 ? 46 : 42;
+      const lineStep = is916 ? 78 : 70;
+      const totalH = displayLines.length * (lineStep - 4);
       let y = centerY - (totalH / 2) + 34;
 
-      allLines.forEach((line) => {
-        const clean = line.replace(/^[✔\d\.\s]+/, '');
-        drawOutlinedText(clean, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
+      displayLines.forEach((line) => {
+        drawOutlinedText(line, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
         y += lineStep;
       });
     }
@@ -4296,6 +4375,8 @@ function startViralMakerApp() {
   const btnMobileSave = document.getElementById('btn-mobile-save');
   const btnMobileSaveAll = document.getElementById('btn-mobile-save-all');
   const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
+  const slideSingleFileInput = document.getElementById('slide-single-file-input');
+  const slideQuickChips = document.querySelectorAll('.slide-quick-chip');
   const btnRegenSlideAi = document.getElementById('btn-regen-slide-ai');
   const slideSceneIcon = document.getElementById('slide-scene-icon');
   const slideSceneLabel = document.getElementById('slide-scene-label');
@@ -4367,10 +4448,10 @@ function startViralMakerApp() {
 
     if (slideSceneStatus) {
       if (CardNewsStudio.slideImages && CardNewsStudio.slideImages[idx]) {
-        slideSceneStatus.textContent = '스토리 AI 실사 적용됨 ✨';
+        slideSceneStatus.textContent = '개별 사진 적용됨 📸';
         slideSceneStatus.style.color = '#34d399';
       } else if (CardNewsStudio.userImage) {
-        slideSceneStatus.textContent = '내 사진 적용됨 📷';
+        slideSceneStatus.textContent = `${scene.desc} (5단 앵글 연출 ✨)`;
         slideSceneStatus.style.color = 'var(--primary-light)';
       } else {
         slideSceneStatus.textContent = '스튜디오 그래픽 🎨';
@@ -4379,55 +4460,10 @@ function startViralMakerApp() {
     }
   }
 
-  // --- 🎨 비동기 5단 스토리 AI 실사 사진 자동 생성 엔진 ---
-  let isGeneratingAiPhotos = false;
-
+  // AI 텍스트 생성 기반 - 사진은 실제 첨부 사진 5단 앵글 연출 및 다중 첨부로 동작
   async function trigger5SceneAiPhotoGeneration(product) {
-    if (isGeneratingAiPhotos) return;
-    isGeneratingAiPhotos = true;
-
-    if (aiPhotoProgress) {
-      aiPhotoProgress.style.display = 'flex';
-      if (aiPhotoStatusTitle) aiPhotoStatusTitle.textContent = '🎨 AI가 슬라이드 5장별 맞춤 실사 사진을 그리는 중... (1/5)';
-      if (aiPhotoStatusDesc) aiPhotoStatusDesc.textContent = '1번 표지 ➔ 2번 고민 ➔ 3번 사용 ➔ 4번 디테일 ➔ 5번 완성';
-    }
-
-    const prodName = ContentGenerator.inferProductName(product);
-    const category = product.category || 'living';
-
-    try {
-      await ContentGenerator.generate5SceneImages(prodName, category, (idx, status, imgUrl) => {
-        if (status === 'done' && imgUrl) {
-          CardNewsStudio.setSlideImage(idx, imgUrl);
-          if (aiPhotoStatusTitle) {
-            aiPhotoStatusTitle.textContent = `🎨 AI 맞춤 실사 완성 중... (${idx + 1}/5 완료 ✨)`;
-          }
-          if (idx === CardNewsStudio.currentSlideIndex) {
-            updateSlideSceneBar();
-            if (typeof updateSimulator === 'function') updateSimulator();
-          }
-        }
-      });
-
-      if (aiPhotoStatusTitle) {
-        aiPhotoStatusTitle.textContent = '🎉 5단 스토리 맞춤 사진 모두 완성!';
-      }
-      setTimeout(() => {
-        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
-      }, 3000);
-
-    } catch (e) {
-      console.warn('AI photo generation error:', e);
-      if (aiPhotoStatusTitle) {
-        aiPhotoStatusTitle.textContent = '⚠️ 사진 생성 완료 (일부 스튜디오 그래픽 대체)';
-      }
-      setTimeout(() => {
-        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
-      }, 2000);
-    } finally {
-      isGeneratingAiPhotos = false;
-      updateSlideSceneBar();
-    }
+    // 사용자의 피드백에 따라 왜곡된 환각 AI 사진 생성 대신 실제 제품 사진 5단 앵글 연출을 우선 사용합니다.
+    updateSlideSceneBar();
   }
 
   // --- 토스트 알림 ---
@@ -4584,6 +4620,19 @@ function startViralMakerApp() {
     const initialPlat = item.defaultPlatform || 'coupang';
     renderPlatformSearchToolbar(item, initialPlat);
     selectPlatformForItem(item, initialPlat);
+
+    // 추천템에 감성 실사 사진이 등록되어 있으면 카드뉴스 및 업로드 미리보기에 즉시 자동 연출
+    if (item.imageUrl) {
+      state.product.mediaSrc = item.imageUrl;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = item.imageUrl;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(item.imageUrl);
+      updateSlideSceneBar();
+    }
   }
 
   // Mode B URL 실시간 플랫폼 감지
@@ -4693,39 +4742,79 @@ function startViralMakerApp() {
 
   // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
-  mediaFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  mediaFileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    if (file.type.startsWith('video/')) {
-      showToast('🎬 동영상 썸네일 프레임을 추출하는 중...');
-      CardNewsStudio.captureVideoFrame(file, (dataUrl) => {
-        state.product.mediaSrc = dataUrl;
-        uploadPreview.src = dataUrl;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
-        showToast('동영상 썸네일이 카드뉴스에 적용되었습니다! 🎥');
+    if (files.length === 1) {
+      const file = files[0];
+      if (file.type.startsWith('video/')) {
+        showToast('🎬 동영상 썸네일 프레임을 추출하는 중...');
+        CardNewsStudio.captureVideoFrame(file, (dataUrl) => {
+          state.product.mediaSrc = dataUrl;
+          uploadPreview.src = dataUrl;
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+          CardNewsStudio.clearSlideImages();
+          CardNewsStudio.setUserMedia(dataUrl);
+          updateSlideSceneBar();
+          showToast('동영상 썸네일로 5단 앵글 연출이 적용되었습니다! 🎥');
+        });
+      } else {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          state.product.mediaSrc = dataUrl;
+          uploadPreview.src = dataUrl;
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+
+          // 단일 사진 등록 시 5개 슬라이드에 5가지 앵글(풀샷/줌/디테일) 자동 연출
+          CardNewsStudio.clearSlideImages();
+          CardNewsStudio.setUserMedia(dataUrl);
+          updateSlideSceneBar();
+          showToast('📸 사진 1장으로 5단 맞춤 앵글(풀샷·줌·접사)이 자동 완성되었습니다! ✨');
+
+          // AI 비전 분석 버튼 활성화
+          if (visionActionPanel) {
+            visionActionPanel.style.display = 'block';
+            if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+            if (visionResult) visionResult.style.display = 'none';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      // 2장 이상 다중 사진 선택 시 (최대 5장 슬라이드 1~5번에 자동 순차 배분)
+      showToast(`📸 ${files.length}장의 사진을 슬라이드별로 배분하는 중...`);
+      const readPromises = files.slice(0, 5).map(f => {
+        return new Promise((resolve) => {
+          const r = new FileReader();
+          r.onload = ev => resolve(ev.target.result);
+          r.readAsDataURL(f);
+        });
       });
-    } else if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target.result;
-        state.product.mediaSrc = dataUrl;
-        uploadPreview.src = dataUrl;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
 
-        CardNewsStudio.setUserMedia(dataUrl);
-        showToast('제품 사진이 카드뉴스에 적용되었습니다! 🖼️');
+      const dataUrls = await Promise.all(readPromises);
+      CardNewsStudio.clearSlideImages();
+      dataUrls.forEach((url, i) => {
+        CardNewsStudio.setSlideImage(i, url);
+      });
+      state.product.mediaSrc = dataUrls[0];
+      CardNewsStudio.setUserMedia(dataUrls[0]);
+      uploadPreview.src = dataUrls[0];
+      uploadPreview.style.display = 'block';
+      uploadPrompt.style.display = 'none';
 
-        // AI 비전 분석 버튼 활성화
-        if (visionActionPanel) {
-          visionActionPanel.style.display = 'block';
-          if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
-          if (visionResult) visionResult.style.display = 'none';
-        }
-      };
-      reader.readAsDataURL(file);
+      CardNewsStudio.render();
+      updateSlideSceneBar();
+      showToast(`🎉 ${dataUrls.length}장의 사진이 슬라이드 1~${dataUrls.length}번에 각각 배분되었습니다!`);
+
+      if (visionActionPanel) {
+        visionActionPanel.style.display = 'block';
+        if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+        if (visionResult) visionResult.style.display = 'none';
+      }
     }
   });
 
@@ -4819,8 +4908,10 @@ function startViralMakerApp() {
       // 복붙 글 업데이트
       updateCopyTextView();
 
-      // 🎨 직장인 15초 완성: 백그라운드에서 AI 5단 스토리 사진 자동 생성 시작
-      trigger5SceneAiPhotoGeneration(state.product);
+      // 사진이 등록되어 있지 않고 현재 선택된 추천템에 감성 이미지가 있는 경우 자동 연동
+      if (!CardNewsStudio.userImage && currentViralItem && currentViralItem.imageUrl) {
+        CardNewsStudio.setUserMedia(currentViralItem.imageUrl);
+      }
 
       showToast('🎉 복붙용 글과 5단 카드뉴스가 완성되었습니다!');
       switchTab('copy');
@@ -5056,9 +5147,36 @@ function startViralMakerApp() {
       btnPrevSlide.disabled = curNum === 1;
       btnNextSlide.disabled = curNum === total;
 
+      // 5개 퀵 슬라이드 칩 활성화 상태 동기화
+      if (slideQuickChips) {
+        slideQuickChips.forEach(chip => {
+          const sIdx = parseInt(chip.getAttribute('data-slide'), 10);
+          if (sIdx === CardNewsStudio.currentSlideIndex) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      }
+
       // 상단 장면 상태 바 갱신
       updateSlideSceneBar();
     }
+  }
+
+  // 5개 슬라이드 퀵 칩 터치 시 슬라이드 즉시 전환
+  if (slideQuickChips) {
+    slideQuickChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const sIdx = parseInt(chip.getAttribute('data-slide'), 10);
+        if (!isNaN(sIdx) && sIdx >= 0 && sIdx < CardNewsStudio.slides.length) {
+          CardNewsStudio.currentSlideIndex = sIdx;
+          CardNewsStudio.render();
+          updateSlideEditInputs();
+          if (typeof updateSimulator === 'function') updateSimulator();
+        }
+      });
+    });
   }
 
   [inputSlideBadge, inputSlideTitle, inputSlideSubtitle].forEach(input => {
@@ -5168,13 +5286,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.6)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.7)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.6_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.7_' + Date.now();
     });
   }
 
@@ -5206,9 +5324,27 @@ function startViralMakerApp() {
     });
   }
 
-  if (btnQuickChangePhoto) {
+  // Tab 3 슬라이드별 1-Tap 개별 사진 교체
+  if (btnQuickChangePhoto && slideSingleFileInput) {
     btnQuickChangePhoto.addEventListener('click', () => {
-      if (mediaFileInput) mediaFileInput.click();
+      slideSingleFileInput.click();
+    });
+
+    slideSingleFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        const curIdx = CardNewsStudio.currentSlideIndex;
+        CardNewsStudio.setSlideImage(curIdx, dataUrl);
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`📷 ${curIdx + 1}번 슬라이드 사진이 변경되었습니다! ✨`);
+      };
+      reader.readAsDataURL(file);
+      slideSingleFileInput.value = '';
     });
   }
 

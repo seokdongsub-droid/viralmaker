@@ -114,6 +114,8 @@ function startViralMakerApp() {
   const btnMobileSave = document.getElementById('btn-mobile-save');
   const btnMobileSaveAll = document.getElementById('btn-mobile-save-all');
   const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
+  const slideSingleFileInput = document.getElementById('slide-single-file-input');
+  const slideQuickChips = document.querySelectorAll('.slide-quick-chip');
   const btnRegenSlideAi = document.getElementById('btn-regen-slide-ai');
   const slideSceneIcon = document.getElementById('slide-scene-icon');
   const slideSceneLabel = document.getElementById('slide-scene-label');
@@ -185,10 +187,10 @@ function startViralMakerApp() {
 
     if (slideSceneStatus) {
       if (CardNewsStudio.slideImages && CardNewsStudio.slideImages[idx]) {
-        slideSceneStatus.textContent = '스토리 AI 실사 적용됨 ✨';
+        slideSceneStatus.textContent = '개별 사진 적용됨 📸';
         slideSceneStatus.style.color = '#34d399';
       } else if (CardNewsStudio.userImage) {
-        slideSceneStatus.textContent = '내 사진 적용됨 📷';
+        slideSceneStatus.textContent = `${scene.desc} (5단 앵글 연출 ✨)`;
         slideSceneStatus.style.color = 'var(--primary-light)';
       } else {
         slideSceneStatus.textContent = '스튜디오 그래픽 🎨';
@@ -197,55 +199,10 @@ function startViralMakerApp() {
     }
   }
 
-  // --- 🎨 비동기 5단 스토리 AI 실사 사진 자동 생성 엔진 ---
-  let isGeneratingAiPhotos = false;
-
+  // AI 텍스트 생성 기반 - 사진은 실제 첨부 사진 5단 앵글 연출 및 다중 첨부로 동작
   async function trigger5SceneAiPhotoGeneration(product) {
-    if (isGeneratingAiPhotos) return;
-    isGeneratingAiPhotos = true;
-
-    if (aiPhotoProgress) {
-      aiPhotoProgress.style.display = 'flex';
-      if (aiPhotoStatusTitle) aiPhotoStatusTitle.textContent = '🎨 AI가 슬라이드 5장별 맞춤 실사 사진을 그리는 중... (1/5)';
-      if (aiPhotoStatusDesc) aiPhotoStatusDesc.textContent = '1번 표지 ➔ 2번 고민 ➔ 3번 사용 ➔ 4번 디테일 ➔ 5번 완성';
-    }
-
-    const prodName = ContentGenerator.inferProductName(product);
-    const category = product.category || 'living';
-
-    try {
-      await ContentGenerator.generate5SceneImages(prodName, category, (idx, status, imgUrl) => {
-        if (status === 'done' && imgUrl) {
-          CardNewsStudio.setSlideImage(idx, imgUrl);
-          if (aiPhotoStatusTitle) {
-            aiPhotoStatusTitle.textContent = `🎨 AI 맞춤 실사 완성 중... (${idx + 1}/5 완료 ✨)`;
-          }
-          if (idx === CardNewsStudio.currentSlideIndex) {
-            updateSlideSceneBar();
-            if (typeof updateSimulator === 'function') updateSimulator();
-          }
-        }
-      });
-
-      if (aiPhotoStatusTitle) {
-        aiPhotoStatusTitle.textContent = '🎉 5단 스토리 맞춤 사진 모두 완성!';
-      }
-      setTimeout(() => {
-        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
-      }, 3000);
-
-    } catch (e) {
-      console.warn('AI photo generation error:', e);
-      if (aiPhotoStatusTitle) {
-        aiPhotoStatusTitle.textContent = '⚠️ 사진 생성 완료 (일부 스튜디오 그래픽 대체)';
-      }
-      setTimeout(() => {
-        if (aiPhotoProgress) aiPhotoProgress.style.display = 'none';
-      }, 2000);
-    } finally {
-      isGeneratingAiPhotos = false;
-      updateSlideSceneBar();
-    }
+    // 사용자의 피드백에 따라 왜곡된 환각 AI 사진 생성 대신 실제 제품 사진 5단 앵글 연출을 우선 사용합니다.
+    updateSlideSceneBar();
   }
 
   // --- 토스트 알림 ---
@@ -402,6 +359,19 @@ function startViralMakerApp() {
     const initialPlat = item.defaultPlatform || 'coupang';
     renderPlatformSearchToolbar(item, initialPlat);
     selectPlatformForItem(item, initialPlat);
+
+    // 추천템에 감성 실사 사진이 등록되어 있으면 카드뉴스 및 업로드 미리보기에 즉시 자동 연출
+    if (item.imageUrl) {
+      state.product.mediaSrc = item.imageUrl;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = item.imageUrl;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(item.imageUrl);
+      updateSlideSceneBar();
+    }
   }
 
   // Mode B URL 실시간 플랫폼 감지
@@ -511,39 +481,79 @@ function startViralMakerApp() {
 
   // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
-  mediaFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  mediaFileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    if (file.type.startsWith('video/')) {
-      showToast('🎬 동영상 썸네일 프레임을 추출하는 중...');
-      CardNewsStudio.captureVideoFrame(file, (dataUrl) => {
-        state.product.mediaSrc = dataUrl;
-        uploadPreview.src = dataUrl;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
-        showToast('동영상 썸네일이 카드뉴스에 적용되었습니다! 🎥');
+    if (files.length === 1) {
+      const file = files[0];
+      if (file.type.startsWith('video/')) {
+        showToast('🎬 동영상 썸네일 프레임을 추출하는 중...');
+        CardNewsStudio.captureVideoFrame(file, (dataUrl) => {
+          state.product.mediaSrc = dataUrl;
+          uploadPreview.src = dataUrl;
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+          CardNewsStudio.clearSlideImages();
+          CardNewsStudio.setUserMedia(dataUrl);
+          updateSlideSceneBar();
+          showToast('동영상 썸네일로 5단 앵글 연출이 적용되었습니다! 🎥');
+        });
+      } else {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          state.product.mediaSrc = dataUrl;
+          uploadPreview.src = dataUrl;
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+
+          // 단일 사진 등록 시 5개 슬라이드에 5가지 앵글(풀샷/줌/디테일) 자동 연출
+          CardNewsStudio.clearSlideImages();
+          CardNewsStudio.setUserMedia(dataUrl);
+          updateSlideSceneBar();
+          showToast('📸 사진 1장으로 5단 맞춤 앵글(풀샷·줌·접사)이 자동 완성되었습니다! ✨');
+
+          // AI 비전 분석 버튼 활성화
+          if (visionActionPanel) {
+            visionActionPanel.style.display = 'block';
+            if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+            if (visionResult) visionResult.style.display = 'none';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      // 2장 이상 다중 사진 선택 시 (최대 5장 슬라이드 1~5번에 자동 순차 배분)
+      showToast(`📸 ${files.length}장의 사진을 슬라이드별로 배분하는 중...`);
+      const readPromises = files.slice(0, 5).map(f => {
+        return new Promise((resolve) => {
+          const r = new FileReader();
+          r.onload = ev => resolve(ev.target.result);
+          r.readAsDataURL(f);
+        });
       });
-    } else if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target.result;
-        state.product.mediaSrc = dataUrl;
-        uploadPreview.src = dataUrl;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
 
-        CardNewsStudio.setUserMedia(dataUrl);
-        showToast('제품 사진이 카드뉴스에 적용되었습니다! 🖼️');
+      const dataUrls = await Promise.all(readPromises);
+      CardNewsStudio.clearSlideImages();
+      dataUrls.forEach((url, i) => {
+        CardNewsStudio.setSlideImage(i, url);
+      });
+      state.product.mediaSrc = dataUrls[0];
+      CardNewsStudio.setUserMedia(dataUrls[0]);
+      uploadPreview.src = dataUrls[0];
+      uploadPreview.style.display = 'block';
+      uploadPrompt.style.display = 'none';
 
-        // AI 비전 분석 버튼 활성화
-        if (visionActionPanel) {
-          visionActionPanel.style.display = 'block';
-          if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
-          if (visionResult) visionResult.style.display = 'none';
-        }
-      };
-      reader.readAsDataURL(file);
+      CardNewsStudio.render();
+      updateSlideSceneBar();
+      showToast(`🎉 ${dataUrls.length}장의 사진이 슬라이드 1~${dataUrls.length}번에 각각 배분되었습니다!`);
+
+      if (visionActionPanel) {
+        visionActionPanel.style.display = 'block';
+        if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+        if (visionResult) visionResult.style.display = 'none';
+      }
     }
   });
 
@@ -637,8 +647,10 @@ function startViralMakerApp() {
       // 복붙 글 업데이트
       updateCopyTextView();
 
-      // 🎨 직장인 15초 완성: 백그라운드에서 AI 5단 스토리 사진 자동 생성 시작
-      trigger5SceneAiPhotoGeneration(state.product);
+      // 사진이 등록되어 있지 않고 현재 선택된 추천템에 감성 이미지가 있는 경우 자동 연동
+      if (!CardNewsStudio.userImage && currentViralItem && currentViralItem.imageUrl) {
+        CardNewsStudio.setUserMedia(currentViralItem.imageUrl);
+      }
 
       showToast('🎉 복붙용 글과 5단 카드뉴스가 완성되었습니다!');
       switchTab('copy');
@@ -874,9 +886,36 @@ function startViralMakerApp() {
       btnPrevSlide.disabled = curNum === 1;
       btnNextSlide.disabled = curNum === total;
 
+      // 5개 퀵 슬라이드 칩 활성화 상태 동기화
+      if (slideQuickChips) {
+        slideQuickChips.forEach(chip => {
+          const sIdx = parseInt(chip.getAttribute('data-slide'), 10);
+          if (sIdx === CardNewsStudio.currentSlideIndex) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      }
+
       // 상단 장면 상태 바 갱신
       updateSlideSceneBar();
     }
+  }
+
+  // 5개 슬라이드 퀵 칩 터치 시 슬라이드 즉시 전환
+  if (slideQuickChips) {
+    slideQuickChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const sIdx = parseInt(chip.getAttribute('data-slide'), 10);
+        if (!isNaN(sIdx) && sIdx >= 0 && sIdx < CardNewsStudio.slides.length) {
+          CardNewsStudio.currentSlideIndex = sIdx;
+          CardNewsStudio.render();
+          updateSlideEditInputs();
+          if (typeof updateSimulator === 'function') updateSimulator();
+        }
+      });
+    });
   }
 
   [inputSlideBadge, inputSlideTitle, inputSlideSubtitle].forEach(input => {
@@ -986,13 +1025,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.6)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.7)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.6_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.7_' + Date.now();
     });
   }
 
@@ -1024,9 +1063,27 @@ function startViralMakerApp() {
     });
   }
 
-  if (btnQuickChangePhoto) {
+  // Tab 3 슬라이드별 1-Tap 개별 사진 교체
+  if (btnQuickChangePhoto && slideSingleFileInput) {
     btnQuickChangePhoto.addEventListener('click', () => {
-      if (mediaFileInput) mediaFileInput.click();
+      slideSingleFileInput.click();
+    });
+
+    slideSingleFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        const curIdx = CardNewsStudio.currentSlideIndex;
+        CardNewsStudio.setSlideImage(curIdx, dataUrl);
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`📷 ${curIdx + 1}번 슬라이드 사진이 변경되었습니다! ✨`);
+      };
+      reader.readAsDataURL(file);
+      slideSingleFileInput.value = '';
     });
   }
 

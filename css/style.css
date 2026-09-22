@@ -1518,3 +1518,42 @@ body {
   flex-shrink: 0;
 }
 
+/* 5개 슬라이드 퀵 탭 바 */
+.slide-quick-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  padding: 2px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slide-quick-chip {
+  flex: 1;
+  min-width: 68px;
+  padding: 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.slide-quick-chip:hover {
+  border-color: var(--primary-light);
+  color: var(--text-main);
+}
+
+.slide-quick-chip.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.28);
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+}
+
+
