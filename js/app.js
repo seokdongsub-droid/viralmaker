@@ -67,6 +67,14 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
+  // 🚀 제휴몰 사진 1초 첨부 (URL 복붙 / 클립보드 / 파일)
+  const btnTabMethodUrl = document.getElementById('btn-tab-method-url');
+  const btnTabMethodClipboard = document.getElementById('btn-tab-method-clipboard');
+  const btnTabMethodFile = document.getElementById('btn-tab-method-file');
+  const panelPhotoUrl = document.getElementById('panel-photo-url');
+  const inputImageUrl = document.getElementById('input-image-url');
+  const btnApplyImageUrl = document.getElementById('btn-apply-image-url');
+
   // AI 비전 분석 DOM
   const visionActionPanel = document.getElementById('vision-action-panel');
   const btnVisionAnalyze = document.getElementById('btn-vision-analyze');
@@ -114,6 +122,7 @@ function startViralMakerApp() {
   const btnMobileSave = document.getElementById('btn-mobile-save');
   const btnMobileSaveAll = document.getElementById('btn-mobile-save-all');
   const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
+  const btnQuickUrlPhoto = document.getElementById('btn-quick-url-photo');
   const slideSingleFileInput = document.getElementById('slide-single-file-input');
   const slideQuickChips = document.querySelectorAll('.slide-quick-chip');
   const btnRegenSlideAi = document.getElementById('btn-regen-slide-ai');
@@ -402,6 +411,14 @@ function startViralMakerApp() {
         if (typeof updateCopyTextView === 'function') {
           updateCopyTextView();
         }
+
+        // 제휴몰 링크 입력 시 제품 대표 이미지 자동 추출 시도 (디바운스 600ms)
+        if (autoFetchTimer) clearTimeout(autoFetchTimer);
+        autoFetchTimer = setTimeout(() => {
+          if (typeof autoFetchProductImage === 'function') {
+            autoFetchProductImage(url);
+          }
+        }, 600);
       }
     });
   }
@@ -556,6 +573,205 @@ function startViralMakerApp() {
       }
     }
   });
+
+  // --- 🌐 제휴 쇼핑몰 사진 1초 첨부 엔진 (URL 복붙, 클립보드, 자동 추출) ---
+
+  function applyImageUrlDirectly(imgUrl) {
+    if (!imgUrl) return;
+    const trimmed = imgUrl.trim();
+    if (!trimmed || (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('data:image/'))) {
+      showToast('⚠️ 올바른 이미지 웹 주소(http 또는 https)를 입력해주세요.');
+      return;
+    }
+
+    showToast('🌐 제휴몰 사진을 불러와 5단 앵글로 연출하는 중...');
+
+    // Image 객체로 사전 로드
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      state.product.mediaSrc = trimmed;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = trimmed;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(trimmed);
+      updateSlideSceneBar();
+      if (typeof updateSimulator === 'function') updateSimulator();
+      showToast('🎉 제휴몰 제품 사진이 5단 카드뉴스에 즉시 적용되었습니다! (5단 앵글 연출 ON)');
+
+      if (visionActionPanel) {
+        visionActionPanel.style.display = 'block';
+        if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+      }
+    };
+    img.onerror = () => {
+      state.product.mediaSrc = trimmed;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = trimmed;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(trimmed);
+      updateSlideSceneBar();
+      if (typeof updateSimulator === 'function') updateSimulator();
+      showToast('🎉 제품 사진이 카드뉴스에 적용되었습니다!');
+    };
+    img.src = trimmed;
+  }
+
+  // 1. [적용] 버튼 및 엔터키
+  if (btnApplyImageUrl && inputImageUrl) {
+    btnApplyImageUrl.addEventListener('click', () => {
+      applyImageUrlDirectly(inputImageUrl.value);
+    });
+    inputImageUrl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyImageUrlDirectly(inputImageUrl.value);
+      }
+    });
+  }
+
+  // 2. 3-Way 방식 탭 제어
+  if (btnTabMethodUrl && btnTabMethodClipboard && btnTabMethodFile) {
+    btnTabMethodUrl.addEventListener('click', () => {
+      btnTabMethodUrl.classList.add('active');
+      btnTabMethodClipboard.classList.remove('active');
+      btnTabMethodFile.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
+      if (inputImageUrl) inputImageUrl.focus();
+    });
+
+    btnTabMethodClipboard.addEventListener('click', async () => {
+      btnTabMethodClipboard.classList.add('active');
+      btnTabMethodUrl.classList.remove('active');
+      btnTabMethodFile.classList.remove('active');
+      await pasteImageFromClipboard();
+    });
+
+    btnTabMethodFile.addEventListener('click', () => {
+      btnTabMethodFile.classList.add('active');
+      btnTabMethodUrl.classList.remove('active');
+      btnTabMethodClipboard.classList.remove('active');
+      if (mediaFileInput) mediaFileInput.click();
+    });
+  }
+
+  // 3. 클립보드 이미지 붙여넣기
+  async function pasteImageFromClipboard() {
+    if (!navigator.clipboard) {
+      showToast('💡 텍스트창에서 길게 눌러 붙여넣기하거나 [이미지 주소 복붙]을 이용해주세요.');
+      return;
+    }
+
+    try {
+      if (navigator.clipboard.read) {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              const blob = await item.getType(type);
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                state.product.mediaSrc = dataUrl;
+                if (uploadPreview && uploadPrompt) {
+                  uploadPreview.src = dataUrl;
+                  uploadPreview.style.display = 'block';
+                  uploadPrompt.style.display = 'none';
+                }
+                CardNewsStudio.clearSlideImages();
+                CardNewsStudio.setUserMedia(dataUrl);
+                updateSlideSceneBar();
+                if (typeof updateSimulator === 'function') updateSimulator();
+                showToast('📋 클립보드 사진이 카드뉴스에 적용되었습니다! ✨');
+              };
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+        }
+      }
+
+      if (navigator.clipboard.readText) {
+        const clipText = await navigator.clipboard.readText();
+        if (clipText && (clipText.startsWith('http://') || clipText.startsWith('https://'))) {
+          if (inputImageUrl) inputImageUrl.value = clipText.trim();
+          applyImageUrlDirectly(clipText);
+          return;
+        }
+      }
+
+      showToast('⚠️ 클립보드에 사진이 없습니다. 쇼핑몰에서 사진을 꾹 눌러 [이미지 복사] 후 다시 눌러주세요.');
+    } catch (err) {
+      console.warn('Clipboard read error:', err);
+      showToast('💡 [이미지 주소 복붙] 입력창에 복사한 주소를 붙여넣어 주세요!');
+    }
+  }
+
+  // 4. 전역 붙여넣기(Paste) 이벤트 지원 (스마트폰/PC 어디서나 사진 복사 후 붙여넣으면 즉시 감지)
+  window.addEventListener('paste', (e) => {
+    if (e.clipboardData && e.clipboardData.items) {
+      for (const item of e.clipboardData.items) {
+        if (item.type.indexOf('image') !== -1) {
+          const blob = item.getAsFile();
+          if (blob) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const dataUrl = ev.target.result;
+              state.product.mediaSrc = dataUrl;
+              if (uploadPreview && uploadPrompt) {
+                uploadPreview.src = dataUrl;
+                uploadPreview.style.display = 'block';
+                uploadPrompt.style.display = 'none';
+              }
+              CardNewsStudio.clearSlideImages();
+              CardNewsStudio.setUserMedia(dataUrl);
+              updateSlideSceneBar();
+              if (typeof updateSimulator === 'function') updateSimulator();
+              showToast('📋 복사한 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+            };
+            reader.readAsDataURL(blob);
+            return;
+          }
+        }
+      }
+    }
+  });
+
+  // 5. 제휴 상품 링크 입력 시 대표 이미지 자동 추출 (오픈그래프 og:image 탐색)
+  let autoFetchTimer = null;
+  async function autoFetchProductImage(url) {
+    if (!url || !url.startsWith('http')) return;
+    if (state.product.mediaSrc && state.product.mediaSrc.startsWith('data:image')) return;
+
+    try {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      if (!data.contents) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, 'text/html');
+
+      const ogImg = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')
+                 || doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content')
+                 || doc.querySelector('link[rel="image_src"]')?.getAttribute('href');
+
+      if (ogImg && ogImg.startsWith('http')) {
+        if (inputImageUrl) inputImageUrl.value = ogImg;
+        applyImageUrlDirectly(ogImg);
+        showToast('🎉 제휴 링크에서 제품 대표 사진을 자동으로 가져왔습니다!');
+      }
+    } catch (e) {
+      // CORS 실패 시 조용히 넘김
+    }
+  }
 
   // --- AI 비전 분석 버튼 클릭 이벤트 ---
   if (btnVisionAnalyze) {
@@ -1025,13 +1241,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.7)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.8)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.7_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.8_' + Date.now();
     });
   }
 
@@ -1063,7 +1279,7 @@ function startViralMakerApp() {
     });
   }
 
-  // Tab 3 슬라이드별 1-Tap 개별 사진 교체
+  // Tab 3 슬라이드별 1-Tap 개별 사진 교체 (갤러리)
   if (btnQuickChangePhoto && slideSingleFileInput) {
     btnQuickChangePhoto.addEventListener('click', () => {
       slideSingleFileInput.click();
@@ -1084,6 +1300,21 @@ function startViralMakerApp() {
       };
       reader.readAsDataURL(file);
       slideSingleFileInput.value = '';
+    });
+  }
+
+  // Tab 3 슬라이드별 제휴몰 사진 주소(URL)로 변경
+  if (btnQuickUrlPhoto) {
+    btnQuickUrlPhoto.addEventListener('click', () => {
+      const curIdx = CardNewsStudio.currentSlideIndex;
+      const curScene = sceneDescriptions[curIdx] || sceneDescriptions[0];
+      const url = prompt(`[${curIdx + 1}번 ${curScene.title}]에 넣을 쇼핑몰 제품 사진 주소(URL)를 붙여넣으세요:`);
+      if (url && url.trim().startsWith('http')) {
+        CardNewsStudio.setSlideImage(curIdx, url.trim());
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`📷 ${curIdx + 1}번 슬라이드 사진이 URL로 변경되었습니다! ✨`);
+      }
     });
   }
 

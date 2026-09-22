@@ -1574,6 +1574,43 @@ body {
   box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
 }
 
+/* 사진 첨부 3-Way 방식 스위처 버튼 */
+.photo-method-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.photo-method-btn {
+  flex: 1;
+  padding: 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.photo-method-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--text-main);
+}
+
+.photo-method-btn.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.25);
+  color: #FFFFFF;
+}
+
+
 
 
 </style>
@@ -1591,7 +1628,7 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.7 실물 앵글 연출</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.8 제휴몰 사진 1초 첨부</span>
         </div>
       </div>
       <div class="header-actions">
@@ -1608,7 +1645,7 @@ body {
     <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34D399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v2.7 실제 제품 사진 기반 스마트 5단 앵글 연출 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(사진 1장으로 5가지 컷 자동 완성)</span></span>
+        <span><strong>v2.8 제휴 쇼핑몰 사진 1초 첨부 시스템 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(이미지 주소 복붙·클립보드·자동 추출)</span></span>
       </div>
       <button type="button" id="btn-force-refresh" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
         <span>🔄</span> <span>강력 새로고침</span>
@@ -1724,6 +1761,36 @@ body {
           <p class="section-desc" style="margin-bottom: 8px;">
             💡 <strong>사진 딱 1장만 올려도 5개 슬라이드가 5가지 앵글로 자동 연출</strong>됩니다! (상세페이지 캡처 여러 장 동시 선택도 가능)
           </p>
+
+          <!-- 🚀 제휴몰 제품 사진 초간단 첨부 3-Way 툴바 -->
+          <div class="photo-method-tabs">
+            <button type="button" class="photo-method-btn active" id="btn-tab-method-url">
+              <span>🔗</span> <span>이미지 주소 복붙</span>
+            </button>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
+              <span>📋</span> <span>사진 클립보드 붙여넣기</span>
+            </button>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-file">
+              <span>📁</span> <span>내 사진첩 선택</span>
+            </button>
+          </div>
+
+          <!-- 방법 1: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 -->
+          <div id="panel-photo-url" style="display: block; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-light); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+              <span>🔗 쇼핑몰 제품 이미지 주소(URL) 붙여넣기</span>
+              <span style="font-size: 10px; color: #34d399; font-weight: 600;">⚡ 저장 없이 1초 완성!</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="url" id="input-image-url" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="쿠팡/오늘의집에서 사진 꾹 누르고 '이미지 주소 복사' 후 붙여넣기">
+              <button type="button" id="btn-apply-image-url" class="btn-header" style="background: var(--primary); color: #fff; border-color: var(--primary); font-size: 12px; padding: 8px 14px; font-weight: 700; white-space: nowrap; cursor: pointer;">
+                <span>적용</span>
+              </button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
+              💡 <strong>스마트폰 초간단 팁:</strong> 쿠팡·오늘의집에서 마음에 드는 제품 사진을 1초간 꾹 누르면 <strong>[이미지 주소 복사]</strong>가 뜹니다. 복사 후 여기에 붙여넣고 [적용]을 누르면 갤러리 저장 없이 즉시 5단 카드뉴스가 완성됩니다!
+            </div>
+          </div>
 
           <input type="file" id="product-media-file" accept="image/*,video/*" multiple style="display: none;">
           <label for="product-media-file" class="upload-box compact" id="upload-box">
@@ -1904,9 +1971,14 @@ body {
             </div>
           </div>
           <input type="file" id="slide-single-file-input" accept="image/*" style="display: none;">
-          <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 12px; color: var(--primary-light);">
-            📷 이 슬라이드 사진 변경
-          </button>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
+              🔗 URL로 사진 변경
+            </button>
+            <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
+              📷 갤러리 변경
+            </button>
+          </div>
         </div>
 
         <!-- 5개 슬라이드 퀵 탭 바 (터치 1번으로 슬라이드 즉시 전환) -->
@@ -4328,6 +4400,14 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
+  // 🚀 제휴몰 사진 1초 첨부 (URL 복붙 / 클립보드 / 파일)
+  const btnTabMethodUrl = document.getElementById('btn-tab-method-url');
+  const btnTabMethodClipboard = document.getElementById('btn-tab-method-clipboard');
+  const btnTabMethodFile = document.getElementById('btn-tab-method-file');
+  const panelPhotoUrl = document.getElementById('panel-photo-url');
+  const inputImageUrl = document.getElementById('input-image-url');
+  const btnApplyImageUrl = document.getElementById('btn-apply-image-url');
+
   // AI 비전 분석 DOM
   const visionActionPanel = document.getElementById('vision-action-panel');
   const btnVisionAnalyze = document.getElementById('btn-vision-analyze');
@@ -4375,6 +4455,7 @@ function startViralMakerApp() {
   const btnMobileSave = document.getElementById('btn-mobile-save');
   const btnMobileSaveAll = document.getElementById('btn-mobile-save-all');
   const btnQuickChangePhoto = document.getElementById('btn-quick-change-photo');
+  const btnQuickUrlPhoto = document.getElementById('btn-quick-url-photo');
   const slideSingleFileInput = document.getElementById('slide-single-file-input');
   const slideQuickChips = document.querySelectorAll('.slide-quick-chip');
   const btnRegenSlideAi = document.getElementById('btn-regen-slide-ai');
@@ -4663,6 +4744,14 @@ function startViralMakerApp() {
         if (typeof updateCopyTextView === 'function') {
           updateCopyTextView();
         }
+
+        // 제휴몰 링크 입력 시 제품 대표 이미지 자동 추출 시도 (디바운스 600ms)
+        if (autoFetchTimer) clearTimeout(autoFetchTimer);
+        autoFetchTimer = setTimeout(() => {
+          if (typeof autoFetchProductImage === 'function') {
+            autoFetchProductImage(url);
+          }
+        }, 600);
       }
     });
   }
@@ -4817,6 +4906,205 @@ function startViralMakerApp() {
       }
     }
   });
+
+  // --- 🌐 제휴 쇼핑몰 사진 1초 첨부 엔진 (URL 복붙, 클립보드, 자동 추출) ---
+
+  function applyImageUrlDirectly(imgUrl) {
+    if (!imgUrl) return;
+    const trimmed = imgUrl.trim();
+    if (!trimmed || (!trimmed.startsWith('http://') && !trimmed.startsWith('https://') && !trimmed.startsWith('data:image/'))) {
+      showToast('⚠️ 올바른 이미지 웹 주소(http 또는 https)를 입력해주세요.');
+      return;
+    }
+
+    showToast('🌐 제휴몰 사진을 불러와 5단 앵글로 연출하는 중...');
+
+    // Image 객체로 사전 로드
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      state.product.mediaSrc = trimmed;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = trimmed;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(trimmed);
+      updateSlideSceneBar();
+      if (typeof updateSimulator === 'function') updateSimulator();
+      showToast('🎉 제휴몰 제품 사진이 5단 카드뉴스에 즉시 적용되었습니다! (5단 앵글 연출 ON)');
+
+      if (visionActionPanel) {
+        visionActionPanel.style.display = 'block';
+        if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+      }
+    };
+    img.onerror = () => {
+      state.product.mediaSrc = trimmed;
+      if (uploadPreview && uploadPrompt) {
+        uploadPreview.src = trimmed;
+        uploadPreview.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+      }
+      CardNewsStudio.clearSlideImages();
+      CardNewsStudio.setUserMedia(trimmed);
+      updateSlideSceneBar();
+      if (typeof updateSimulator === 'function') updateSimulator();
+      showToast('🎉 제품 사진이 카드뉴스에 적용되었습니다!');
+    };
+    img.src = trimmed;
+  }
+
+  // 1. [적용] 버튼 및 엔터키
+  if (btnApplyImageUrl && inputImageUrl) {
+    btnApplyImageUrl.addEventListener('click', () => {
+      applyImageUrlDirectly(inputImageUrl.value);
+    });
+    inputImageUrl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyImageUrlDirectly(inputImageUrl.value);
+      }
+    });
+  }
+
+  // 2. 3-Way 방식 탭 제어
+  if (btnTabMethodUrl && btnTabMethodClipboard && btnTabMethodFile) {
+    btnTabMethodUrl.addEventListener('click', () => {
+      btnTabMethodUrl.classList.add('active');
+      btnTabMethodClipboard.classList.remove('active');
+      btnTabMethodFile.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
+      if (inputImageUrl) inputImageUrl.focus();
+    });
+
+    btnTabMethodClipboard.addEventListener('click', async () => {
+      btnTabMethodClipboard.classList.add('active');
+      btnTabMethodUrl.classList.remove('active');
+      btnTabMethodFile.classList.remove('active');
+      await pasteImageFromClipboard();
+    });
+
+    btnTabMethodFile.addEventListener('click', () => {
+      btnTabMethodFile.classList.add('active');
+      btnTabMethodUrl.classList.remove('active');
+      btnTabMethodClipboard.classList.remove('active');
+      if (mediaFileInput) mediaFileInput.click();
+    });
+  }
+
+  // 3. 클립보드 이미지 붙여넣기
+  async function pasteImageFromClipboard() {
+    if (!navigator.clipboard) {
+      showToast('💡 텍스트창에서 길게 눌러 붙여넣기하거나 [이미지 주소 복붙]을 이용해주세요.');
+      return;
+    }
+
+    try {
+      if (navigator.clipboard.read) {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              const blob = await item.getType(type);
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                state.product.mediaSrc = dataUrl;
+                if (uploadPreview && uploadPrompt) {
+                  uploadPreview.src = dataUrl;
+                  uploadPreview.style.display = 'block';
+                  uploadPrompt.style.display = 'none';
+                }
+                CardNewsStudio.clearSlideImages();
+                CardNewsStudio.setUserMedia(dataUrl);
+                updateSlideSceneBar();
+                if (typeof updateSimulator === 'function') updateSimulator();
+                showToast('📋 클립보드 사진이 카드뉴스에 적용되었습니다! ✨');
+              };
+              reader.readAsDataURL(blob);
+              return;
+            }
+          }
+        }
+      }
+
+      if (navigator.clipboard.readText) {
+        const clipText = await navigator.clipboard.readText();
+        if (clipText && (clipText.startsWith('http://') || clipText.startsWith('https://'))) {
+          if (inputImageUrl) inputImageUrl.value = clipText.trim();
+          applyImageUrlDirectly(clipText);
+          return;
+        }
+      }
+
+      showToast('⚠️ 클립보드에 사진이 없습니다. 쇼핑몰에서 사진을 꾹 눌러 [이미지 복사] 후 다시 눌러주세요.');
+    } catch (err) {
+      console.warn('Clipboard read error:', err);
+      showToast('💡 [이미지 주소 복붙] 입력창에 복사한 주소를 붙여넣어 주세요!');
+    }
+  }
+
+  // 4. 전역 붙여넣기(Paste) 이벤트 지원 (스마트폰/PC 어디서나 사진 복사 후 붙여넣으면 즉시 감지)
+  window.addEventListener('paste', (e) => {
+    if (e.clipboardData && e.clipboardData.items) {
+      for (const item of e.clipboardData.items) {
+        if (item.type.indexOf('image') !== -1) {
+          const blob = item.getAsFile();
+          if (blob) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const dataUrl = ev.target.result;
+              state.product.mediaSrc = dataUrl;
+              if (uploadPreview && uploadPrompt) {
+                uploadPreview.src = dataUrl;
+                uploadPreview.style.display = 'block';
+                uploadPrompt.style.display = 'none';
+              }
+              CardNewsStudio.clearSlideImages();
+              CardNewsStudio.setUserMedia(dataUrl);
+              updateSlideSceneBar();
+              if (typeof updateSimulator === 'function') updateSimulator();
+              showToast('📋 복사한 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+            };
+            reader.readAsDataURL(blob);
+            return;
+          }
+        }
+      }
+    }
+  });
+
+  // 5. 제휴 상품 링크 입력 시 대표 이미지 자동 추출 (오픈그래프 og:image 탐색)
+  let autoFetchTimer = null;
+  async function autoFetchProductImage(url) {
+    if (!url || !url.startsWith('http')) return;
+    if (state.product.mediaSrc && state.product.mediaSrc.startsWith('data:image')) return;
+
+    try {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      if (!data.contents) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, 'text/html');
+
+      const ogImg = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')
+                 || doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content')
+                 || doc.querySelector('link[rel="image_src"]')?.getAttribute('href');
+
+      if (ogImg && ogImg.startsWith('http')) {
+        if (inputImageUrl) inputImageUrl.value = ogImg;
+        applyImageUrlDirectly(ogImg);
+        showToast('🎉 제휴 링크에서 제품 대표 사진을 자동으로 가져왔습니다!');
+      }
+    } catch (e) {
+      // CORS 실패 시 조용히 넘김
+    }
+  }
 
   // --- AI 비전 분석 버튼 클릭 이벤트 ---
   if (btnVisionAnalyze) {
@@ -5286,13 +5574,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.7)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.8)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
       showToast('🔄 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.7_' + Date.now();
+      window.location.href = cleanUrl + '?v=2.8_' + Date.now();
     });
   }
 
@@ -5324,7 +5612,7 @@ function startViralMakerApp() {
     });
   }
 
-  // Tab 3 슬라이드별 1-Tap 개별 사진 교체
+  // Tab 3 슬라이드별 1-Tap 개별 사진 교체 (갤러리)
   if (btnQuickChangePhoto && slideSingleFileInput) {
     btnQuickChangePhoto.addEventListener('click', () => {
       slideSingleFileInput.click();
@@ -5345,6 +5633,21 @@ function startViralMakerApp() {
       };
       reader.readAsDataURL(file);
       slideSingleFileInput.value = '';
+    });
+  }
+
+  // Tab 3 슬라이드별 제휴몰 사진 주소(URL)로 변경
+  if (btnQuickUrlPhoto) {
+    btnQuickUrlPhoto.addEventListener('click', () => {
+      const curIdx = CardNewsStudio.currentSlideIndex;
+      const curScene = sceneDescriptions[curIdx] || sceneDescriptions[0];
+      const url = prompt(`[${curIdx + 1}번 ${curScene.title}]에 넣을 쇼핑몰 제품 사진 주소(URL)를 붙여넣으세요:`);
+      if (url && url.trim().startsWith('http')) {
+        CardNewsStudio.setSlideImage(curIdx, url.trim());
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`📷 ${curIdx + 1}번 슬라이드 사진이 URL로 변경되었습니다! ✨`);
+      }
     });
   }
 
