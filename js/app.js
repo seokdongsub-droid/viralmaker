@@ -73,8 +73,9 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
-  // v3.0 상단 셀렉터 DOM (슬라이드 장수 & 수익화 방식)
-  const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
+  // v3.4 상단 셀렉터 DOM (슬라이드 장수 드롭다운 & 수익화 방식)
+  const selectSlideCountTop = document.getElementById('select-slide-count');
+  const inputCustomSlideCountTop = document.getElementById('input-custom-slide-count');
   const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
   const labelMonetizeHint = document.getElementById('label-monetize-hint');
 
@@ -1339,16 +1340,7 @@ function startViralMakerApp() {
     });
   }
 
-  // v3.0 슬라이드 장수 선택 (3장 / 4장 / 5장)
-  slideCountChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const count = parseInt(chip.getAttribute('data-count'), 10) || 4;
-      if (typeof syncSlideCountUI === 'function') {
-        syncSlideCountUI(count);
-      }
-      showToast(`🎯 ${count}장 슬라이드 구성으로 전환되었습니다!`);
-    });
-  });
+
 
   // v3.0 수익화 전환 방식 (프로필/댓글 링크 vs 쿠팡 자동 DM)
   monetizeModeChips.forEach(chip => {
@@ -1493,16 +1485,26 @@ function startViralMakerApp() {
 
   const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
   const lblSlideCount = document.getElementById('lbl-slide-count');
+  const selectSlideCount = document.getElementById('select-slide-count');
+  const inputCustomSlideCount = document.getElementById('input-custom-slide-count');
 
   function syncSlideCountUI(count) {
+    count = parseInt(count, 10) || 4;
+    if (count < 3) count = 3;
+    if (count > 10) count = 10;
     state.slideCount = count;
+
     if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setSlideCount) {
       CardNewsStudio.setSlideCount(count);
     }
     const countMap = {
       3: '3장 (스피드)',
-      4: '4장 (데이즈홈)',
-      5: '5장 (스토리)'
+      4: '4장 (인스타 표준)',
+      5: '5장 (스토리)',
+      6: '6장 (비교/디테일)',
+      7: '7장 (스펙 풀버전)',
+      8: '8장 (심층 매뉴얼)',
+      10: '10장 (풀캐러셀)'
     };
     if (lblSlideCount) {
       lblSlideCount.textContent = countMap[count] || `${count}장`;
@@ -1510,16 +1512,15 @@ function startViralMakerApp() {
     }
     const labelSlideCountHint = document.getElementById('label-slide-count-hint');
     if (labelSlideCountHint) {
-      labelSlideCountHint.textContent = `${count}장`;
+      labelSlideCountHint.textContent = count === 4 ? '4장 (추천)' : `${count}장`;
     }
-    const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
-    slideCountChips.forEach(c => {
-      if (parseInt(c.getAttribute('data-count'), 10) === count) {
-        c.classList.add('active');
-      } else {
-        c.classList.remove('active');
-      }
-    });
+    if (selectSlideCount && parseInt(selectSlideCount.value, 10) !== count) {
+      selectSlideCount.value = String(count);
+    }
+    if (inputCustomSlideCount && parseInt(inputCustomSlideCount.value, 10) !== count) {
+      inputCustomSlideCount.value = count;
+    }
+
     if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
     updateSlideQuickBar(count);
     updateSlideEditInputs();
@@ -1528,6 +1529,28 @@ function startViralMakerApp() {
   }
   window.syncSlideCountUI = syncSlideCountUI;
 
+  // 1. 드롭다운 선택 리스너
+  if (selectSlideCount) {
+    selectSlideCount.addEventListener('change', () => {
+      const val = parseInt(selectSlideCount.value, 10) || 4;
+      syncSlideCountUI(val);
+      showToast(`🎞️ 카드뉴스 장수: ${val}장으로 선택되었습니다!`);
+    });
+  }
+
+  // 2. 장수 숫자 직접입력 리스너
+  if (inputCustomSlideCount) {
+    inputCustomSlideCount.addEventListener('change', () => {
+      let val = parseInt(inputCustomSlideCount.value, 10) || 4;
+      if (val < 3) val = 3;
+      if (val > 10) val = 10;
+      inputCustomSlideCount.value = val;
+      syncSlideCountUI(val);
+      showToast(`🎞️ 카드뉴스 장수: ${val}장으로 설정되었습니다!`);
+    });
+  }
+
+  // 3. 캔버스 툴바 토글 버튼 리스너
   if (btnToggleSlideCount) {
     btnToggleSlideCount.addEventListener('click', () => {
       if (window.CardNewsStudio && window.CardNewsStudio.toggleSlideCount) {
@@ -1537,18 +1560,6 @@ function startViralMakerApp() {
       }
     });
   }
-
-  // Tab 1 슬라이드 장수 칩 클릭 리스너
-  const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
-  slideCountChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const count = parseInt(chip.getAttribute('data-count'), 10);
-      if (count && typeof syncSlideCountUI === 'function') {
-        syncSlideCountUI(count);
-        showToast(`🎞️ 카드뉴스 장수: ${count}장으로 선택되었습니다!`);
-      }
-    });
-  });
 
   // Tab 1 수익화 방식 칩 클릭 리스너 (프로필 링크 vs 댓글 자동 DM)
   const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
@@ -1586,7 +1597,7 @@ function startViralMakerApp() {
     });
   });
 
-  // 슬라이드 퀵 바 동적 렌더링 헬퍼 (3장 / 4장 / 5장 대응)
+  // 슬라이드 퀵 바 동적 렌더링 헬퍼 (3장 ~ 10장 대응)
   function updateSlideQuickBar(count) {
     const bar = document.getElementById('slide-quick-bar');
     if (!bar) return;
@@ -1594,7 +1605,17 @@ function startViralMakerApp() {
     const labels3 = ['1. 표지(풀샷)', '2. 고민(과정)', '3. 완성(CTA)'];
     const labels4 = ['1. 표지(풀샷)', '2. 스와치(액션)', '3. 디테일(질감)', '4. 완성(CTA)'];
     const labels5 = ['1. 표지(풀샷)', '2. 고민(줌)', '3. 사용(액션)', '4. 디테일(접사)', '5. 완성(CTA)'];
-    const labels = count === 3 ? labels3 : (count === 4 ? labels4 : labels5);
+    let labels = [];
+    if (count === 3) labels = labels3;
+    else if (count === 4) labels = labels4;
+    else if (count === 5) labels = labels5;
+    else {
+      labels = ['1. 표지(풀샷)', '2. 고민(줌)', '3. 사용(액션)', '4. 디테일(접사)'];
+      for (let i = 5; i < count; i++) {
+        labels.push(`${i}. 디테일 0${i}`);
+      }
+      labels.push(`${count}. 완성(CTA)`);
+    }
 
     labels.forEach((lbl, idx) => {
       const btn = document.createElement('button');

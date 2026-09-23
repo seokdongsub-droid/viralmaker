@@ -83,38 +83,53 @@
           </button>
         </div>
 
-        <!-- 🎯 v3.1 슬라이드 장수 & 규격 & 수익화 방식 선택 툴바 -->
+        <!-- 🎯 v3.4 슬라이드 장수(드롭다운/직접입력) & 규격 & 수익화 방식 선택 툴바 -->
         <div class="custom-selector-row">
+          <!-- 1. 카드뉴스 장수 드롭다운 & 직접 입력 (3~10장) -->
           <div class="selector-group">
             <div class="selector-group-label">
               <span>🎞️ 카드뉴스 장수</span>
-              <span id="label-slide-count-hint" style="color: var(--primary-light);">4장 추천</span>
+              <span id="label-slide-count-hint" class="selector-badge">4장 (추천)</span>
             </div>
-            <div class="chip-btn-group" id="slide-count-group">
-              <button type="button" class="chip-btn" data-count="3">⚡ 3장</button>
-              <button type="button" class="chip-btn active" data-count="4">🎯 4장 (데이즈홈)</button>
-              <button type="button" class="chip-btn" data-count="5">📚 5장</button>
+            <div class="slide-count-select-box">
+              <select id="select-slide-count" class="slide-count-dropdown">
+                <option value="3">⚡ 3장 (스피드 임팩트 / 팁·레시피)</option>
+                <option value="4" selected>🎯 4장 (인스타 데이즈홈) [추천]</option>
+                <option value="5">📚 5장 (표준 스토리텔링 / 상세 후기)</option>
+                <option value="6">🔍 6장 (기능성 / 비포&애프터 비교)</option>
+                <option value="7">🔥 7장 (고기능 가전 / 스펙 풀버전)</option>
+                <option value="8">💡 8장 (심층 매뉴얼 / FAQ)</option>
+                <option value="10">👑 10장 (인스타 캐러셀 최대 한도)</option>
+              </select>
+              <div class="slide-count-stepper" title="원하는 카드 장수를 직접 입력할 수 있습니다 (3~10장)">
+                <input type="number" id="input-custom-slide-count" class="slide-count-num-input" min="3" max="10" value="4">
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">장</span>
+              </div>
             </div>
           </div>
+
+          <!-- 2. 화면 규격 (비율) -->
           <div class="selector-group">
             <div class="selector-group-label">
               <span>📐 화면 규격(비율)</span>
-              <span id="label-ratio-hint" style="color: #34d399;">4:5 인스타 (추천)</span>
+              <span id="label-ratio-hint" class="selector-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">4:5 피드 (추천)</span>
             </div>
             <div class="chip-btn-group" id="tab1-ratio-group">
-              <button type="button" class="chip-btn active tab1-ratio-chip" data-ratio="4:5">🖼️ 4:5 인스타</button>
-              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="9:16">📱 9:16 숏폼</button>
-              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="1:1">📷 1:1 정사각</button>
+              <button type="button" class="chip-btn active tab1-ratio-chip" data-ratio="4:5" title="인스타그램 피드 표준">🖼️ 4:5 피드</button>
+              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="9:16" title="인스타 릴스 / 유튜브 쇼츠">📱 9:16 릴스</button>
+              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="1:1" title="정사각형 피드">📷 1:1 정사각</button>
             </div>
           </div>
+
+          <!-- 3. 수익화 방식 -->
           <div class="selector-group">
             <div class="selector-group-label">
               <span>💰 수익화 방식</span>
-              <span id="label-monetize-hint" style="color: var(--success);">프로필 링크 (무료)</span>
+              <span id="label-monetize-hint" class="selector-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">프로필 링크</span>
             </div>
             <div class="chip-btn-group" id="monetize-mode-group">
-              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필 링크 (무료/기본)</button>
-              <button type="button" class="chip-btn" data-mode="dm">💬 댓글 DM (선택옵션)</button>
+              <button type="button" class="chip-btn active" data-mode="link" title="프로필 링크에 제휴 주소를 달아두는 기본 무료 방식">🔗 프로필 링크 (기본)</button>
+              <button type="button" class="chip-btn" data-mode="dm" title="댓글 작성 시 DM으로 링크를 보내는 인플루언서 방식">💬 댓글 DM (선택)</button>
             </div>
           </div>
         </div>

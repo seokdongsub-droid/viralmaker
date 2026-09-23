@@ -44,7 +44,7 @@ class CardNewsStudioEngine {
   }
 
   setSlideCount(count) {
-    if (count < 3 || count > 5) return;
+    if (count < 3 || count > 10) return;
     this.slideCount = count;
     if (this.currentSlideIndex >= count) {
       this.currentSlideIndex = count - 1;
@@ -53,7 +53,9 @@ class CardNewsStudioEngine {
   }
 
   toggleSlideCount() {
-    const nextCount = (this.slideCount === 3) ? 4 : (this.slideCount === 4) ? 5 : 3;
+    const list = [3, 4, 5, 6, 7, 8, 10];
+    const currIdx = list.indexOf(this.slideCount);
+    const nextCount = (currIdx >= 0 && currIdx < list.length - 1) ? list[currIdx + 1] : 3;
     this.setSlideCount(nextCount);
     return nextCount;
   }
@@ -86,7 +88,19 @@ class CardNewsStudioEngine {
 
   get slides() {
     const raw = this.currentLanguage === 'ja' ? this.slides_ja : this.slides_ko;
-    return raw.slice(0, this.slideCount || 4);
+    const count = this.slideCount || 4;
+    while (raw.length < count) {
+      const idx = raw.length + 1;
+      raw.push({
+        slideNum: idx,
+        type: idx === count ? 'cta' : 'detail',
+        badge: `POINT 0${idx} 🔍`,
+        mainTitle: `핵심 체크 포인트 0${idx}`,
+        subTitle: '실제 사용자가 극찬한 핵심 기능 & 편의성',
+        extra: 'SNS 대란템'
+      });
+    }
+    return raw.slice(0, count);
   }
 
   set slides(val) {

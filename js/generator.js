@@ -325,8 +325,40 @@ class ContentGeneratorEngine {
       ];
     }
 
-    // 📚 5장: 표준 스토리텔링형
-    return this.generateKoreanCardNews(p);
+    // 📚 5장 이상: 표준 스토리텔링형 + 가변 확장 슬라이드
+    const baseSlides = this.generateKoreanCardNews(p);
+    if (count <= 5) return baseSlides;
+
+    // 5장이 넘을 때: CTA 직전에 디테일/비교/활용팁 슬라이드를 순차적으로 삽입
+    const result = baseSlides.slice(0, 4); // 1~4 슬라이드 유지
+    const ctaSlide = { ...baseSlides[4] }; // 5번 CTA 슬라이드 복제
+
+    const extraThemes = [
+      { badge: '비포 & 애프터 🔍', mainTitle: '직접 써보고 느낀\n확실한 전후 차이점', subTitle: '✔ 일상 속 사소한 불편함 100% 해소\n✔ 주변 사람들에게도 추천하고픈 완성도' },
+      { badge: '200% 활용 꿀팁 💡', mainTitle: '알아두면 유용한\n실전 꿀팁 & 보관법', subTitle: '✔ 오래오래 처음처럼 쓰는 관리 노하우\n✔ 똥손도 1초 만에 마스터하는 비법' },
+      { badge: '타사 비교 & 스펙 ⚖️', mainTitle: '기존 제품들과\n비교할 수 없는 압도적 차이', subTitle: '✔ 더 가볍고, 더 튼튼하고, 더 편리한 설계\n✔ 가성비와 퀄리티를 모두 잡은 갓성비' },
+      { badge: '자주 묻는 질문 FAQ ❓', mainTitle: '구매 전 궁금했던 점\n핵심만 콕 짚어 정리', subTitle: '✔ 사용 방법과 세척/관리 주의사항\n✔ 안심하고 쓸 수 있는 검증된 안전성' },
+      { badge: '언박싱 & 패키지 📦', mainTitle: '실물 언박싱 & 구성품\n깔끔한 포장과 디테일', subTitle: '✔ 선물용으로도 손색없는 프리미엄 패키지\n✔ 받아보는 순간 만족스러운 실물 비주얼' }
+    ];
+
+    for (let i = 5; i < count; i++) {
+      const themeIdx = (i - 5) % extraThemes.length;
+      const theme = extraThemes[themeIdx];
+      result.push({
+        slideNum: i,
+        type: 'detail',
+        textPosition: 'center',
+        badge: theme.badge,
+        mainTitle: theme.mainTitle,
+        subTitle: `${memo}\n${theme.subTitle}`,
+        extra: 'SNS 대란템'
+      });
+    }
+
+    // 마지막 슬라이드는 항상 CTA로 배치
+    ctaSlide.slideNum = count;
+    result.push(ctaSlide);
+    return result;
   }
 
   // ==========================================
@@ -491,15 +523,29 @@ ${cleanNegative}
       return prompts;
     }
 
-    // 5장 기본
-    return this.generate5ScenePrompts(name, cat).map((pPrompt, idx) => {
+    // 📚 5장 이상 가변 슬라이드용 제미나이 프롬프트 생성
+    const basePrompts = this.generate5ScenePrompts(name, cat);
+    const extraScenes = [
+      `Extreme macro visual comparison showing pristine texture and flawless build quality of ${name}`,
+      `Practical everyday demonstration shot highlighting clever functional usage and maintenance of ${name}`,
+      `Aesthetic still life showcasing premium unboxing presentation and authentic packaging of ${name}`,
+      `Editorial living interior shot demonstrating ${name} elevating modern room atmosphere seamlessly`,
+      `Final grand aesthetic scene capturing the unmatched elegance and lifestyle value of ${name}`
+    ];
+    while (basePrompts.length < count) {
+      const extraIdx = (basePrompts.length - 5) % extraScenes.length;
+      basePrompts.push(extraScenes[extraIdx]);
+    }
+    const finalPrompts = basePrompts.slice(0, count);
+
+    return finalPrompts.map((pPrompt, idx) => {
       const fullP = `${multimodalHeader}${pPrompt}\n${cleanNegative}\n이미지 생성해줘.`;
       return {
         slideNum: idx + 1,
         title: `${idx + 1}번 슬라이드 씬`,
         role: `${idx + 1}번 슬라이드 씬`,
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
-        exactText: `${name} 추천 후기`,
+        exactText: `${name} (${idx + 1}/${count})`,
         promptText: fullP,
         prompt: fullP
       };
