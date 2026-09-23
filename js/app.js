@@ -908,8 +908,10 @@ function startViralMakerApp() {
       }
 
       if (!state.geminiKey) {
-        showToast('💡 AI 이미지 분석을 위해 무료 Gemini API 키를 먼저 입력해주세요! 🔑');
-        if (modalApiKey) modalApiKey.classList.add('active');
+        showToast('💡 API 키 없이도 바로 아래 초록색 [✨ 1초 만에 완성하기]를 누르시면 모든 글과 카드뉴스가 즉시 완성됩니다! (API 불필요)');
+        if (btnGenerateAll) {
+          btnGenerateAll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         return;
       }
 

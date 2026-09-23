@@ -267,15 +267,18 @@
             </div>
           </label>
 
-          <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 활성화) -->
-          <div id="vision-action-panel" style="display: none; margin-top: 10px;">
-            <button type="button" class="btn-vision-analyze" id="btn-vision-analyze">
-              <span class="vision-btn-icon">✨</span>
-              <div class="vision-btn-text">
-                <strong>AI 사진·상세페이지 분석하기</strong>
-                <span>제품명 & 3대 핵심 장점 1초 자동 추출 ➔</span>
-              </div>
+          <!-- 🤖 AI 비전 이미지 분석 액션 바 (사진 업로드 시 선택형 표시) -->
+          <div id="vision-action-panel" style="display: none; margin-top: 10px; background: rgba(99, 102, 241, 0.06); border: 1px dashed rgba(99, 102, 241, 0.35); border-radius: 8px; padding: 10px 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--primary-light);">🤖 (선택 부가기능) AI 상세페이지 자동 분석</span>
+              <span style="font-size: 10px; color: var(--text-dim); background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: 4px;">API 키 소지 시</span>
+            </div>
+            <button type="button" class="btn-vision-analyze" id="btn-vision-analyze" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 12px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); color: #c7d2fe; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+              <span>🔍</span> <span>AI로 사진 속 제품명/장점 자동 추출해보기</span>
             </button>
+            <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 5px; line-height: 1.4;">
+              💡 <strong>안내:</strong> API 키가 없으셔도 아무 문제 없습니다! 바로 아래 초록색 <strong>[✨ 1초 만에 완성하기]</strong>를 누르시면 100% 무료로 즉시 생성됩니다.
+            </div>
             <div id="vision-loading" class="vision-loading-box" style="display: none;">
               <div class="vision-spinner"></div>
               <span>🤖 AI가 상세페이지 이미지를 분석하고 있습니다... (제품명/장점 추출 중)</span>
@@ -296,11 +299,14 @@
           </div>
         </div>
 
-        <!-- 메인 일괄 생성 버튼 -->
+        <!-- 메인 일괄 생성 버튼 (API 키 불필요 / 100% 무료 즉시 작동) -->
         <div style="margin-top: 16px; margin-bottom: 12px;">
           <button type="button" class="btn-primary-large glowing-btn" id="btn-generate-all">
-            <span>✨ 1초 만에 마케팅 글 &amp; 카드뉴스 완성하기 ➔</span>
+            <span style="font-size: 14.5px; font-weight: 900;">✨ 1초 만에 마케팅 글 &amp; 카드뉴스 완성하기 (API 불필요 / 무료) ➔</span>
           </button>
+          <div style="text-align: center; font-size: 11px; color: #34d399; margin-top: 6px; font-weight: 700;">
+            ✓ 회원가입 / Gemini API 키 입력 없이 100% 무료 즉시 생성
+          </div>
         </div>
 
       </section>
