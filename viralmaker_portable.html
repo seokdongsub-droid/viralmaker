@@ -2261,27 +2261,9 @@ body {
       <!-- ============================================== -->
       <section id="tab-view-input" class="tab-view active">
         
-        <!-- 🎯 2-WAY 입력 방식 선택 탭 (1초 추천템 vs 내 상품 링크) -->
-        <div class="mode-selector-bar">
-          <button type="button" class="mode-pill-btn active" id="btn-mode-preset">
-            <span class="mode-icon">🔥</span>
-            <div class="mode-text-wrap">
-              <span class="mode-title">1초 추천 대란템</span>
-              <span class="mode-sub">SNS 검증 상품 원클릭 픽</span>
-            </div>
-          </button>
-          <button type="button" class="mode-pill-btn" id="btn-mode-custom">
-            <span class="mode-icon">🔗</span>
-            <div class="mode-text-wrap">
-              <span class="mode-title">내 상품 링크 등록</span>
-              <span class="mode-sub">오늘의집 / 컬리 / 쿠팡 / 토스 등</span>
-            </div>
-          </button>
-        </div>
-
         <!-- 🎯 v3.4 슬라이드 장수(드롭다운/직접입력) & 규격 & 수익화 방식 선택 툴바 -->
         <div class="custom-selector-row">
-          <!-- 1. 카드뉴스 장수 드롭다운 & 직접 입력 (3~10장) -->
+          <!-- 1. 카드뉴스 장수 드롭다운 & 직접 입력 (1~10장) -->
           <div class="selector-group">
             <div class="selector-group-label">
               <span>🎞️ 카드뉴스 장수</span>
@@ -2332,22 +2314,24 @@ body {
           </div>
         </div>
 
-        <!-- MODE A: 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 (기본 활성화) -->
+        <!-- 🔥 홍보 상품 & 5대 제휴쇼핑몰 올인원 설정 카드 -->
         <div id="panel-mode-preset" class="section-card preset-hero-card">
           <div class="section-title" style="margin-bottom: 6px;">
             <span style="display: flex; align-items: center; gap: 6px; color: var(--accent-pink);">
-              🔥 <strong>SNS 화제의 추천템 치트키</strong>
+              🔥 <strong>홍보 상품 &amp; 5대 제휴쇼핑몰 설정</strong>
             </span>
             <button type="button" class="btn-header" id="btn-random-pick" style="font-size: 11px; padding: 4px 10px; color: var(--primary-light);">
               🎲 랜덤 추천 1초 픽
             </button>
           </div>
-          <p class="section-desc" style="margin-bottom: 8px;">제품 고민 끝! 실제로 영상 조회수 터진 검증된 상품을 터치만 하세요.</p>
+          <p class="section-desc" style="margin-bottom: 8px;">
+            SNS 화제의 검증 추천템을 터치만 하거나, 내가 직접 홍보하고 싶은 상품명과 링크를 자유롭게 입력하세요!
+          </p>
 
           <!-- 🏬 5대 제휴쇼핑몰 전용관 바로가기 필터 탭 -->
           <div style="margin-bottom: 8px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 8px 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <span style="font-size: 11px; font-weight: 800; color: #fbbf24;">🏬 제휴쇼핑몰별 모아보기:</span>
+              <span style="font-size: 11px; font-weight: 800; color: #fbbf24;">🏬 제휴쇼핑몰별 추천템 모아보기:</span>
               <button type="button" id="btn-quick-open-affiliate-guide" style="font-size: 10.5px; color: #38bdf8; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; font-weight: 700;">
                 💡 5대 제휴몰 링크 따는 법 ↗
               </button>
@@ -2375,70 +2359,65 @@ body {
             <!-- JS 동적 렌더링 -->
           </div>
 
-          <!-- 선택된 제품 제휴 플랫폼 멀티 검색 도우미 바 -->
+          <!-- 선택 및 수정 가능한 상품 상세 정보 박스 -->
           <div id="viral-selected-info" class="selected-product-summary">
-            <div class="selected-product-header">
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span style="font-size: 11px; color: var(--text-muted);">선택된 상품:</span>
-                <strong id="selected-viral-title" style="font-size: 13px; color: #fff;">사각 딥 계란말이팬</strong>
-                <span id="selected-platform-badge" class="platform-mini-badge">🚀 쿠팡 모드</span>
+            <!-- 1. 상품명 (추천템 클릭 시 자동 입력, 직접 타이핑 수정 가능) -->
+            <div class="selected-product-header" style="flex-direction: column; align-items: stretch; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <label for="input-product-name" style="font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <span>🏷️ 홍보 상품명:</span>
+                  <span id="selected-platform-badge" class="platform-mini-badge">🚀 쿠팡 모드</span>
+                </label>
+                <span class="platform-search-hint">💡 추천템 클릭 시 자동 채워지며, 원하는 상품명으로 직접 수정 가능합니다</span>
               </div>
-              <span class="platform-search-hint">💡 플랫폼 터치 시 검색창 열림 + 맞춤 카피/공정위 1초 전환</span>
+              <input type="text" id="input-product-name" class="input-control" style="font-size: 13px; font-weight: 700; padding: 8px 12px;" placeholder="예: 사각 딥 계란말이팬 (직접 입력 가능)" value="사각 딥 계란말이팬">
+              <span id="selected-viral-title" style="display: none;">사각 딥 계란말이팬</span>
             </div>
             
-            <div class="platform-search-toolbar">
-              <span class="platform-search-label">🔍 5대 제휴몰에서 내 링크 찾기 (원클릭 검색 &amp; 스타일 전환):</span>
+            <!-- 2. 5대 제휴몰에서 내 링크 찾기 버튼 모음 -->
+            <div class="platform-search-toolbar" style="margin-top: 10px;">
+              <span class="platform-search-label">🔍 5대 제휴몰에서 내 링크 찾기 (원클릭 검색창 열기):</span>
               <div id="platform-search-buttons" class="platform-btn-row">
                 <!-- JS 동적 생성 -->
               </div>
             </div>
 
-            <!-- 💰 수익 창출 핵심: 내 파트너스 링크 1초 등록 바 -->
+            <!-- 3. 내 제휴마케팅 링크 (수익 입금용) -->
             <div class="affiliate-link-swap-box" style="margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span id="label-mode-a-link-title" style="font-size: 11.5px; font-weight: 700; color: #fbbf24;">💰 내 제휴마케팅 링크 (수익 입금용):</span>
-                <span id="badge-mode-a-link-status" style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #fbbf24;">⚠️ 샘플 링크 (교체 권장)</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+                <label for="product-link" id="label-mode-a-link-title" style="font-size: 11.5px; font-weight: 700; color: #fbbf24; cursor: pointer;">
+                  💰 내 제휴마케팅 링크 (수익 입금용):
+                </label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span id="mode-b-detected-badge" class="platform-pill" style="font-size: 10px;">🚀 쿠팡 감지</span>
+                  <span id="badge-mode-a-link-status" style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #fbbf24;">⚠️ 샘플 링크 (교체 권장)</span>
+                </div>
               </div>
               <div style="display: flex; gap: 6px;">
-                <input type="url" id="input-mode-a-real-link" class="input-control" style="font-size: 11.5px; padding: 7px 10px;" placeholder="내 제휴 링크 붙여넣기 (예: https://...)">
+                <input type="url" id="product-link" class="input-control" style="font-size: 11.5px; padding: 7px 10px;" placeholder="내 제휴 링크 붙여넣기 (예: 오늘의집, 컬리, 오아시스, 토스, 쿠팡 링크)" value="https://link.coupang.com/a/sample-eggpan" required>
+                <!-- 호환용 숨김 입력 필드 -->
+                <input type="hidden" id="input-mode-a-real-link" value="https://link.coupang.com/a/sample-eggpan">
                 <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
               </div>
               <div id="tip-mode-a-link" style="font-size: 10.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;">
-                💡 <strong>수익 보장 팁:</strong> 위 검색 버튼을 눌러 해당 제휴몰에서 내 링크를 복사해 넣으세요! 내 링크가 들어가야 구매 발생 시 수수료가 내 통장으로 입금됩니다.
+                💡 <strong>수익 보장 팁:</strong> 위 검색 버튼을 눌러 해당 제휴몰에서 내 파트너스 링크를 복사해 넣으세요! 내 링크가 들어가야 구매 발생 시 수수료가 내 통장으로 입금됩니다.
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- MODE B: 내 상품 링크 직접 등록 (기본 숨김, 스위처로 전환) -->
-        <div id="panel-mode-custom" class="section-card" style="display: none;">
-          <div class="section-title">
-            <span>🔗 내 상품 홍보 링크</span>
-          </div>
-          <div class="input-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label for="product-link" class="input-label" style="margin-bottom: 0;">
-                <span>판매/홍보 링크 URL 입력</span>
-                <span class="req">*</span>
+            <!-- 4. 핵심 장점 / 어필 메모 & 1초 터치 키워드 칩 -->
+            <div style="margin-top: 10px;">
+              <label for="product-memo" class="input-label" style="font-size: 11.5px; margin-bottom: 4px;">
+                <span>✍️ 제품 핵심 장점 / 어필 포인트 메모</span>
               </label>
-              <span id="mode-b-detected-badge" class="platform-pill">🔗 일반 링크</span>
-            </div>
-            <input type="url" id="product-link" class="input-control" placeholder="예: 오늘의집, 컬리, 오아시스, 토스, 쿠팡, 스마트스토어 링크 붙여넣기" value="https://smartstore.naver.com/sample/products/neck-care" required>
-            <span style="font-size: 11px; color: var(--text-dim);">※ 주소를 붙여넣으면 플랫폼(오늘의집·컬리·오아시스·토스·쿠팡 등)을 자동 감지해 맞춤 공정위 문구를 달아줍니다.</span>
-          </div>
-
-          <div class="input-group" style="margin-top: 10px;">
-            <label for="product-memo" class="input-label">
-              <span>✍️ (선택) 제품명 또는 핵심 장점 메모</span>
-            </label>
-            <textarea id="product-memo" class="textarea-control" style="min-height: 55px;" placeholder="예: 무선 온열 넥케어 마사지기, 하루 15분 승모근 케어 55% 한정특가"></textarea>
-            <div style="margin-top: 6px;">
-              <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">💡 직장인 1초 터치 키워드 (타자 없이 터치로 자동 입력):</span>
-              <div class="preset-chips" id="quick-memo-chips" style="flex-wrap: wrap; gap: 4px;">
-                <button type="button" class="preset-chip quick-memo-chip" data-memo="삶의 질 수직상승, 시간·설거지 절약, 컴팩트 수납">✨ 삶의질/절약</button>
-                <button type="button" class="preset-chip quick-memo-chip" data-memo="가성비 끝판왕, 원터치 1초 완성, 자취생 필수템">⚡ 1초 가성비</button>
-                <button type="button" class="preset-chip quick-memo-chip" data-memo="SNS 품절대란 화제템, 실물 퀄리티 대박, 후기 폭발">🔥 SNS 품절대란</button>
-                <button type="button" class="preset-chip quick-memo-chip" data-memo="초간단 요리 치트키, 논스틱 코팅, 세척 간편">🍳 요리/살림 치트키</button>
+              <textarea id="product-memo" class="textarea-control" style="min-height: 55px; font-size: 12px;" placeholder="예: 똥손도 호텔 조식 비주얼 계란말이 3분 컷! 세라믹 논스틱 코팅이라 기름 조금만 둘러도 스르륵 말림"></textarea>
+              <div style="margin-top: 6px;">
+                <span style="font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 4px;">💡 1초 터치 키워드 (타자 없이 터치로 자동 입력):</span>
+                <div class="preset-chips" id="quick-memo-chips" style="flex-wrap: wrap; gap: 4px;">
+                  <button type="button" class="preset-chip quick-memo-chip" data-memo="삶의 질 수직상승, 시간·설거지 절약, 컴팩트 수납">✨ 삶의질/절약</button>
+                  <button type="button" class="preset-chip quick-memo-chip" data-memo="가성비 끝판왕, 원터치 1초 완성, 자취생 필수템">⚡ 1초 가성비</button>
+                  <button type="button" class="preset-chip quick-memo-chip" data-memo="SNS 품절대란 화제템, 실물 퀄리티 대박, 후기 폭발">🔥 SNS 품절대란</button>
+                  <button type="button" class="preset-chip quick-memo-chip" data-memo="초간단 요리 치트키, 논스틱 코팅, 세척 간편">🍳 요리/살림 치트키</button>
+                </div>
               </div>
             </div>
           </div>
@@ -6221,12 +6200,8 @@ function startViralMakerApp() {
   const navItems = document.querySelectorAll('.nav-item');
   const toastEl = document.getElementById('toast-msg');
 
-  // Tab 1 (2-Way 모드 스위처 & 입력)
-  const btnModePreset = document.getElementById('btn-mode-preset');
-  const btnModeCustom = document.getElementById('btn-mode-custom');
-  const panelModePreset = document.getElementById('panel-mode-preset');
-  const panelModeCustom = document.getElementById('panel-mode-custom');
-
+  // Tab 1 (통합 상품 & 제휴 설정)
+  const inputProductName = document.getElementById('input-product-name');
   const inputLink = document.getElementById('product-link');
   const inputMemo = document.getElementById('product-memo');
   const mediaFileInput = document.getElementById('product-media-file');
@@ -6237,8 +6212,12 @@ function startViralMakerApp() {
   const presetChips = document.querySelectorAll('.preset-chip');
 
   // v3.4 상단 셀렉터 DOM (슬라이드 장수 드롭다운 & 수익화 방식)
-  const selectSlideCountTop = document.getElementById('select-slide-count');
-  const inputCustomSlideCountTop = document.getElementById('input-custom-slide-count');
+  const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
+  const lblSlideCount = document.getElementById('lbl-slide-count');
+  const selectSlideCount = document.getElementById('select-slide-count');
+  const inputCustomSlideCount = document.getElementById('input-custom-slide-count');
+  const selectSlideCountTop = selectSlideCount;
+  const inputCustomSlideCountTop = inputCustomSlideCount;
   const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
   const labelMonetizeHint = document.getElementById('label-monetize-hint');
 
@@ -6551,6 +6530,9 @@ function startViralMakerApp() {
     const platPreset = PlatformPresets.find(p => p.id === platId);
     const sampleLink = `https://${platPreset ? platPreset.sampleDomain : 'link.coupang.com/a/'}${encodeURIComponent(item.search || 'item')}`;
 
+    if (inputProductName) {
+      inputProductName.value = item.name;
+    }
     inputLink.value = sampleLink;
     inputMemo.value = item.memo;
     state.product.name = item.name;
@@ -6631,25 +6613,25 @@ function startViralMakerApp() {
     });
   }
 
-  if (btnPasteModeARealLink && inputModeARealLink) {
+  if (btnPasteModeARealLink) {
     btnPasteModeARealLink.addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
         if (text && text.startsWith('http')) {
-          inputModeARealLink.value = text.trim();
-          inputLink.value = text.trim();
+          if (inputModeARealLink) inputModeARealLink.value = text.trim();
+          if (inputLink) inputLink.value = text.trim();
           state.product.link = text.trim();
           updateModeALinkStatus(text.trim());
           updateModeBBadge();
           if (typeof updateCopyTextView === 'function') updateCopyTextView();
           showToast('내 제휴 링크가 적용되었습니다! 수익 적립 준비 완료 🎉');
         } else {
-          inputModeARealLink.focus();
-          showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+          if (inputLink) inputLink.focus();
+          showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
         }
       } catch (err) {
-        inputModeARealLink.focus();
-        showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+        if (inputLink) inputLink.focus();
+        showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
       }
     });
   }
@@ -6797,7 +6779,24 @@ function startViralMakerApp() {
         platformFilterChips.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const plat = btn.getAttribute('data-platform') || 'all';
-        renderViralCategory(currentViralCat, plat);
+
+        // 제휴몰 필터 변경 시 모든 카테고리에서 해당 쇼핑몰 상품을 볼 수 있도록 카테고리 'all'로 리셋
+        currentViralCat = 'all';
+        viralCatBtns.forEach(b => {
+          if (b.getAttribute('data-cat') === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+
+        renderViralCategory('all', plat);
+
+        const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[plat])
+          ? AffiliatePlatforms[plat]
+          : null;
+        if (plat !== 'all' && platMeta) {
+          showToast(`${platMeta.icon} ${platMeta.name} 모드로 전환되었습니다! (추천템 & 맞춤 카피 연동) ✨`);
+        } else {
+          showToast('🌟 전체 5대 제휴쇼핑몰 추천템을 모아봅니다! ✨');
+        }
       });
     });
   }
@@ -6844,21 +6843,48 @@ function startViralMakerApp() {
   // 초기 전체 카테고리 + 전체 몰 추천템 즉시 렌더링
   renderViralCategory('all', 'all');
 
-  // --- 🎯 2-Way 입력 모드 전환 (1초 추천템 vs 내 상품 링크) ---
-  if (btnModePreset && btnModeCustom && panelModePreset && panelModeCustom) {
-    btnModePreset.addEventListener('click', () => {
-      btnModePreset.classList.add('active');
-      btnModeCustom.classList.remove('active');
-      panelModePreset.style.display = 'block';
-      panelModeCustom.style.display = 'none';
+  // --- ✍️ 상품명 & 메모 직접 수정 및 1초 키워드 칩 연동 ---
+  if (inputProductName) {
+    inputProductName.addEventListener('input', () => {
+      const val = inputProductName.value.trim();
+      if (val) {
+        state.product.name = val;
+        if (selectedViralTitle) selectedViralTitle.textContent = val;
+        if (currentViralItem) currentViralItem.name = val;
+        renderPlatformSearchToolbar({ name: val, search: val, coupangSearch: val }, currentActivePlatform);
+        if (typeof updateCopyTextView === 'function') {
+          updateCopyTextView();
+        }
+      }
     });
+  }
 
-    btnModeCustom.addEventListener('click', () => {
-      btnModeCustom.classList.add('active');
-      btnModePreset.classList.remove('active');
-      panelModeCustom.style.display = 'block';
-      panelModePreset.style.display = 'none';
-      if (inputLink) inputLink.focus();
+  if (inputMemo) {
+    inputMemo.addEventListener('input', () => {
+      state.product.memo = inputMemo.value;
+      if (typeof updateCopyTextView === 'function') {
+        updateCopyTextView();
+      }
+    });
+  }
+
+  if (quickMemoChips && quickMemoChips.length > 0) {
+    quickMemoChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const memoText = chip.getAttribute('data-memo');
+        if (memoText && inputMemo) {
+          if (inputMemo.value && !inputMemo.value.includes(memoText)) {
+            inputMemo.value = `${inputMemo.value}, ${memoText}`;
+          } else if (!inputMemo.value) {
+            inputMemo.value = memoText;
+          }
+          state.product.memo = inputMemo.value;
+          if (typeof updateCopyTextView === 'function') {
+            updateCopyTextView();
+          }
+          showToast('✍️ 메모에 핵심 어필 키워드가 추가되었습니다! ✨');
+        }
+      });
     });
   }
 
@@ -7505,20 +7531,7 @@ function startViralMakerApp() {
 
 
 
-  // v3.0 수익화 전환 방식 (프로필/댓글 링크 vs 쿠팡 자동 DM)
-  monetizeModeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      monetizeModeChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const mode = chip.getAttribute('data-mode') || 'link';
-      state.monetizationMode = mode;
-      if (labelMonetizeHint) {
-        labelMonetizeHint.textContent = mode === 'dm' ? '💬 쿠팡 자동 DM' : '🔗 기본 링크';
-        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
-      }
-      showToast(mode === 'dm' ? '💬 쿠팡 인플루언서 자동 DM 모드로 전환되었습니다!' : '🔗 프로필/댓글 링크 모드로 전환되었습니다!');
-    });
-  });
+
 
   // v3.0 스레드 4종 젬 스타일 선택 (type1, type2, type3, type4)
   threadsTypeChips.forEach(chip => {
@@ -7646,11 +7659,6 @@ function startViralMakerApp() {
     });
   }
 
-  const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
-  const lblSlideCount = document.getElementById('lbl-slide-count');
-  const selectSlideCount = document.getElementById('select-slide-count');
-  const inputCustomSlideCount = document.getElementById('input-custom-slide-count');
-
   function syncSlideCountUI(count) {
     count = parseInt(count, 10) || 4;
     if (count < 1) count = 1;
@@ -7727,21 +7735,22 @@ function startViralMakerApp() {
   }
 
   // Tab 1 수익화 방식 칩 클릭 리스너 (프로필 링크 vs 댓글 자동 DM)
-  const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
-  monetizeModeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const mode = chip.getAttribute('data-mode') || 'link';
-      state.monetizationMode = mode;
-      monetizeModeChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const labelMonetizeHint = document.getElementById('label-monetize-hint');
-      if (labelMonetizeHint) {
-        labelMonetizeHint.textContent = mode === 'dm' ? '댓글 자동 DM' : '프로필 링크 (무료)';
-        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
-      }
-      showToast(mode === 'dm' ? '💬 수익화: 댓글 자동 DM 모드로 전환되었습니다.' : '🔗 수익화: 프로필 링크 (기본/무료) 모드로 전환되었습니다.');
+  if (monetizeModeChips) {
+    monetizeModeChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const mode = chip.getAttribute('data-mode') || 'link';
+        state.monetizationMode = mode;
+        monetizeModeChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const labelMonetizeHint = document.getElementById('label-monetize-hint');
+        if (labelMonetizeHint) {
+          labelMonetizeHint.textContent = mode === 'dm' ? '댓글 자동 DM' : '프로필 링크 (무료)';
+          labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
+        }
+        showToast(mode === 'dm' ? '💬 수익화: 댓글 자동 DM 모드로 전환되었습니다.' : '🔗 수익화: 프로필 링크 (기본/무료) 모드로 전환되었습니다.');
+      });
     });
-  });
+  }
 
   // Tab 1 화면 비율 칩 클릭 리스너 (4:5, 9:16, 1:1)
   const tab1RatioChips = document.querySelectorAll('.tab1-ratio-chip');
@@ -8191,27 +8200,33 @@ function startViralMakerApp() {
     });
   });
 
-  btnDownloadSlide.addEventListener('click', () => {
-    CardNewsStudio.downloadCurrentSlide();
-    showToast('현재 슬라이드가 다운로드되었습니다 📥');
-  });
-
-  btnDownloadAll.addEventListener('click', async () => {
-    showToast('전체 5장 슬라이드 일괄 다운로드를 시작합니다...');
-    await CardNewsStudio.downloadAllSlides();
-    showToast('전체 5장 다운로드 완료! 🎉');
-  });
-
-  btnMobileSave.addEventListener('click', async () => {
-    showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
-    const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
-      modalSaveImage.src = dataUrl;
-      modalMobileSave.classList.add('active');
+  if (btnDownloadSlide) {
+    btnDownloadSlide.addEventListener('click', () => {
+      CardNewsStudio.downloadCurrentSlide();
+      showToast('현재 슬라이드가 다운로드되었습니다 📥');
     });
-    if (shared) {
-      showToast('🎉 사진첩 저장 또는 공유가 완료되었습니다!');
-    }
-  });
+  }
+
+  if (btnDownloadAll) {
+    btnDownloadAll.addEventListener('click', async () => {
+      showToast('전체 슬라이드 일괄 다운로드를 시작합니다...');
+      await CardNewsStudio.downloadAllSlides();
+      showToast('전체 다운로드 완료! 🎉');
+    });
+  }
+
+  if (btnMobileSave) {
+    btnMobileSave.addEventListener('click', async () => {
+      showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
+      const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
+        if (modalSaveImage) modalSaveImage.src = dataUrl;
+        if (modalMobileSave) modalMobileSave.classList.add('active');
+      });
+      if (shared) {
+        showToast('🎉 사진첩 저장 또는 공유가 완료되었습니다!');
+      }
+    });
+  }
 
   // 📱 직장인 모바일 5장 일괄 사진첩 저장 버튼
   if (btnMobileSaveAll) {

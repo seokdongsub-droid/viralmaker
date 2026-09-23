@@ -58,12 +58,8 @@ function startViralMakerApp() {
   const navItems = document.querySelectorAll('.nav-item');
   const toastEl = document.getElementById('toast-msg');
 
-  // Tab 1 (2-Way 모드 스위처 & 입력)
-  const btnModePreset = document.getElementById('btn-mode-preset');
-  const btnModeCustom = document.getElementById('btn-mode-custom');
-  const panelModePreset = document.getElementById('panel-mode-preset');
-  const panelModeCustom = document.getElementById('panel-mode-custom');
-
+  // Tab 1 (통합 상품 & 제휴 설정)
+  const inputProductName = document.getElementById('input-product-name');
   const inputLink = document.getElementById('product-link');
   const inputMemo = document.getElementById('product-memo');
   const mediaFileInput = document.getElementById('product-media-file');
@@ -74,8 +70,12 @@ function startViralMakerApp() {
   const presetChips = document.querySelectorAll('.preset-chip');
 
   // v3.4 상단 셀렉터 DOM (슬라이드 장수 드롭다운 & 수익화 방식)
-  const selectSlideCountTop = document.getElementById('select-slide-count');
-  const inputCustomSlideCountTop = document.getElementById('input-custom-slide-count');
+  const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
+  const lblSlideCount = document.getElementById('lbl-slide-count');
+  const selectSlideCount = document.getElementById('select-slide-count');
+  const inputCustomSlideCount = document.getElementById('input-custom-slide-count');
+  const selectSlideCountTop = selectSlideCount;
+  const inputCustomSlideCountTop = inputCustomSlideCount;
   const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
   const labelMonetizeHint = document.getElementById('label-monetize-hint');
 
@@ -388,6 +388,9 @@ function startViralMakerApp() {
     const platPreset = PlatformPresets.find(p => p.id === platId);
     const sampleLink = `https://${platPreset ? platPreset.sampleDomain : 'link.coupang.com/a/'}${encodeURIComponent(item.search || 'item')}`;
 
+    if (inputProductName) {
+      inputProductName.value = item.name;
+    }
     inputLink.value = sampleLink;
     inputMemo.value = item.memo;
     state.product.name = item.name;
@@ -468,25 +471,25 @@ function startViralMakerApp() {
     });
   }
 
-  if (btnPasteModeARealLink && inputModeARealLink) {
+  if (btnPasteModeARealLink) {
     btnPasteModeARealLink.addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
         if (text && text.startsWith('http')) {
-          inputModeARealLink.value = text.trim();
-          inputLink.value = text.trim();
+          if (inputModeARealLink) inputModeARealLink.value = text.trim();
+          if (inputLink) inputLink.value = text.trim();
           state.product.link = text.trim();
           updateModeALinkStatus(text.trim());
           updateModeBBadge();
           if (typeof updateCopyTextView === 'function') updateCopyTextView();
           showToast('내 제휴 링크가 적용되었습니다! 수익 적립 준비 완료 🎉');
         } else {
-          inputModeARealLink.focus();
-          showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+          if (inputLink) inputLink.focus();
+          showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
         }
       } catch (err) {
-        inputModeARealLink.focus();
-        showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+        if (inputLink) inputLink.focus();
+        showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
       }
     });
   }
@@ -634,7 +637,24 @@ function startViralMakerApp() {
         platformFilterChips.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const plat = btn.getAttribute('data-platform') || 'all';
-        renderViralCategory(currentViralCat, plat);
+
+        // 제휴몰 필터 변경 시 모든 카테고리에서 해당 쇼핑몰 상품을 볼 수 있도록 카테고리 'all'로 리셋
+        currentViralCat = 'all';
+        viralCatBtns.forEach(b => {
+          if (b.getAttribute('data-cat') === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+
+        renderViralCategory('all', plat);
+
+        const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[plat])
+          ? AffiliatePlatforms[plat]
+          : null;
+        if (plat !== 'all' && platMeta) {
+          showToast(`${platMeta.icon} ${platMeta.name} 모드로 전환되었습니다! (추천템 & 맞춤 카피 연동) ✨`);
+        } else {
+          showToast('🌟 전체 5대 제휴쇼핑몰 추천템을 모아봅니다! ✨');
+        }
       });
     });
   }
@@ -681,21 +701,48 @@ function startViralMakerApp() {
   // 초기 전체 카테고리 + 전체 몰 추천템 즉시 렌더링
   renderViralCategory('all', 'all');
 
-  // --- 🎯 2-Way 입력 모드 전환 (1초 추천템 vs 내 상품 링크) ---
-  if (btnModePreset && btnModeCustom && panelModePreset && panelModeCustom) {
-    btnModePreset.addEventListener('click', () => {
-      btnModePreset.classList.add('active');
-      btnModeCustom.classList.remove('active');
-      panelModePreset.style.display = 'block';
-      panelModeCustom.style.display = 'none';
+  // --- ✍️ 상품명 & 메모 직접 수정 및 1초 키워드 칩 연동 ---
+  if (inputProductName) {
+    inputProductName.addEventListener('input', () => {
+      const val = inputProductName.value.trim();
+      if (val) {
+        state.product.name = val;
+        if (selectedViralTitle) selectedViralTitle.textContent = val;
+        if (currentViralItem) currentViralItem.name = val;
+        renderPlatformSearchToolbar({ name: val, search: val, coupangSearch: val }, currentActivePlatform);
+        if (typeof updateCopyTextView === 'function') {
+          updateCopyTextView();
+        }
+      }
     });
+  }
 
-    btnModeCustom.addEventListener('click', () => {
-      btnModeCustom.classList.add('active');
-      btnModePreset.classList.remove('active');
-      panelModeCustom.style.display = 'block';
-      panelModePreset.style.display = 'none';
-      if (inputLink) inputLink.focus();
+  if (inputMemo) {
+    inputMemo.addEventListener('input', () => {
+      state.product.memo = inputMemo.value;
+      if (typeof updateCopyTextView === 'function') {
+        updateCopyTextView();
+      }
+    });
+  }
+
+  if (quickMemoChips && quickMemoChips.length > 0) {
+    quickMemoChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const memoText = chip.getAttribute('data-memo');
+        if (memoText && inputMemo) {
+          if (inputMemo.value && !inputMemo.value.includes(memoText)) {
+            inputMemo.value = `${inputMemo.value}, ${memoText}`;
+          } else if (!inputMemo.value) {
+            inputMemo.value = memoText;
+          }
+          state.product.memo = inputMemo.value;
+          if (typeof updateCopyTextView === 'function') {
+            updateCopyTextView();
+          }
+          showToast('✍️ 메모에 핵심 어필 키워드가 추가되었습니다! ✨');
+        }
+      });
     });
   }
 
@@ -1342,20 +1389,7 @@ function startViralMakerApp() {
 
 
 
-  // v3.0 수익화 전환 방식 (프로필/댓글 링크 vs 쿠팡 자동 DM)
-  monetizeModeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      monetizeModeChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const mode = chip.getAttribute('data-mode') || 'link';
-      state.monetizationMode = mode;
-      if (labelMonetizeHint) {
-        labelMonetizeHint.textContent = mode === 'dm' ? '💬 쿠팡 자동 DM' : '🔗 기본 링크';
-        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
-      }
-      showToast(mode === 'dm' ? '💬 쿠팡 인플루언서 자동 DM 모드로 전환되었습니다!' : '🔗 프로필/댓글 링크 모드로 전환되었습니다!');
-    });
-  });
+
 
   // v3.0 스레드 4종 젬 스타일 선택 (type1, type2, type3, type4)
   threadsTypeChips.forEach(chip => {
@@ -1483,11 +1517,6 @@ function startViralMakerApp() {
     });
   }
 
-  const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
-  const lblSlideCount = document.getElementById('lbl-slide-count');
-  const selectSlideCount = document.getElementById('select-slide-count');
-  const inputCustomSlideCount = document.getElementById('input-custom-slide-count');
-
   function syncSlideCountUI(count) {
     count = parseInt(count, 10) || 4;
     if (count < 1) count = 1;
@@ -1564,21 +1593,22 @@ function startViralMakerApp() {
   }
 
   // Tab 1 수익화 방식 칩 클릭 리스너 (프로필 링크 vs 댓글 자동 DM)
-  const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
-  monetizeModeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      const mode = chip.getAttribute('data-mode') || 'link';
-      state.monetizationMode = mode;
-      monetizeModeChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const labelMonetizeHint = document.getElementById('label-monetize-hint');
-      if (labelMonetizeHint) {
-        labelMonetizeHint.textContent = mode === 'dm' ? '댓글 자동 DM' : '프로필 링크 (무료)';
-        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
-      }
-      showToast(mode === 'dm' ? '💬 수익화: 댓글 자동 DM 모드로 전환되었습니다.' : '🔗 수익화: 프로필 링크 (기본/무료) 모드로 전환되었습니다.');
+  if (monetizeModeChips) {
+    monetizeModeChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const mode = chip.getAttribute('data-mode') || 'link';
+        state.monetizationMode = mode;
+        monetizeModeChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const labelMonetizeHint = document.getElementById('label-monetize-hint');
+        if (labelMonetizeHint) {
+          labelMonetizeHint.textContent = mode === 'dm' ? '댓글 자동 DM' : '프로필 링크 (무료)';
+          labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
+        }
+        showToast(mode === 'dm' ? '💬 수익화: 댓글 자동 DM 모드로 전환되었습니다.' : '🔗 수익화: 프로필 링크 (기본/무료) 모드로 전환되었습니다.');
+      });
     });
-  });
+  }
 
   // Tab 1 화면 비율 칩 클릭 리스너 (4:5, 9:16, 1:1)
   const tab1RatioChips = document.querySelectorAll('.tab1-ratio-chip');
@@ -2028,27 +2058,33 @@ function startViralMakerApp() {
     });
   });
 
-  btnDownloadSlide.addEventListener('click', () => {
-    CardNewsStudio.downloadCurrentSlide();
-    showToast('현재 슬라이드가 다운로드되었습니다 📥');
-  });
-
-  btnDownloadAll.addEventListener('click', async () => {
-    showToast('전체 5장 슬라이드 일괄 다운로드를 시작합니다...');
-    await CardNewsStudio.downloadAllSlides();
-    showToast('전체 5장 다운로드 완료! 🎉');
-  });
-
-  btnMobileSave.addEventListener('click', async () => {
-    showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
-    const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
-      modalSaveImage.src = dataUrl;
-      modalMobileSave.classList.add('active');
+  if (btnDownloadSlide) {
+    btnDownloadSlide.addEventListener('click', () => {
+      CardNewsStudio.downloadCurrentSlide();
+      showToast('현재 슬라이드가 다운로드되었습니다 📥');
     });
-    if (shared) {
-      showToast('🎉 사진첩 저장 또는 공유가 완료되었습니다!');
-    }
-  });
+  }
+
+  if (btnDownloadAll) {
+    btnDownloadAll.addEventListener('click', async () => {
+      showToast('전체 슬라이드 일괄 다운로드를 시작합니다...');
+      await CardNewsStudio.downloadAllSlides();
+      showToast('전체 다운로드 완료! 🎉');
+    });
+  }
+
+  if (btnMobileSave) {
+    btnMobileSave.addEventListener('click', async () => {
+      showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
+      const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
+        if (modalSaveImage) modalSaveImage.src = dataUrl;
+        if (modalMobileSave) modalMobileSave.classList.add('active');
+      });
+      if (shared) {
+        showToast('🎉 사진첩 저장 또는 공유가 완료되었습니다!');
+      }
+    });
+  }
 
   // 📱 직장인 모바일 5장 일괄 사진첩 저장 버튼
   if (btnMobileSaveAll) {
