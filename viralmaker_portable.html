@@ -2391,8 +2391,8 @@ body {
             <button type="button" class="photo-method-btn" id="btn-tab-method-file">
               <span>📁</span> <span>내 사진첩</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);">
-              <span>✂️</span> <span>제미나이 4컷 분할</span>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이 2x2 격자 사진을 1초 만에 슬라이드 4장으로 자동 쪼개주는 단축 기능">
+              <span>✂️</span> <span>(옵션) 4분할 치트키</span>
             </button>
           </div>
 
@@ -2419,7 +2419,7 @@ body {
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
               <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
-              <div style="font-size: 11px; color: var(--text-muted);">인위적 줌 배율 왜곡 제거 ➔ 100% 원본 선명도 유지! (단독 1장 또는 4컷 콜라주 자동 분할)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">인위적 줌 배율 왜곡 제거 ➔ 100% 원본 선명도 유지! (3장·4장·5장 개별 사진 첨부 또는 4분할 단축키 지원)</div>
             </div>
           </label>
 
@@ -2727,8 +2727,8 @@ body {
           <input type="file" id="slide-single-file-input" accept="image/*" multiple style="display: none;">
           <input type="file" id="slide-collage-file-input" accept="image/*" style="display: none;">
           <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;">
-              ✂️ 4컷 콜라주 1초 분할
+            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;" title="4컷 카드뉴스 제작 시, 제미나이 2x2 콜라주 1장을 4장으로 분할해주는 편의 기능입니다.">
+              ✂️ (옵션) 4컷 콜라주 분할
             </button>
             <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
               🔗 URL 변경
