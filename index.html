@@ -15,7 +15,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <link rel="stylesheet" href="css/style.css?v=2.7">
+  <link rel="stylesheet" href="css/style.css?v=2.8">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v2.8 제휴몰 사진 1초 첨부</span>
+          <span class="logo-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; border-color: rgba(99, 102, 241, 0.4); font-weight: 800;">v3.0 올인원 스튜디오</span>
         </div>
       </div>
       <div class="header-actions">
@@ -44,12 +44,12 @@
     </header>
 
     <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
-    <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34D399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+    <div style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15)); border-bottom: 1px solid rgba(99, 102, 241, 0.35); padding: 7px 16px; font-size: 11px; color: #a5b4fc; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v2.8 제휴 쇼핑몰 사진 1초 첨부 시스템 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(이미지 주소 복붙·클립보드·자동 추출)</span></span>
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 8px #6366f1;"></span>
+        <span><strong>v3.0 올인원 에디션 적용됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(멀티 제휴사·제미나이 씬별 복붙·Dayz홈 카드뉴스·스레드 4종 젬)</span></span>
       </div>
-      <button type="button" id="btn-force-refresh" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.0_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99, 102, 241, 0.5); color: #c7d2fe; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -78,6 +78,31 @@
               <span class="mode-sub">오늘의집 / 컬리 / 쿠팡 / 토스 등</span>
             </div>
           </button>
+        </div>
+
+        <!-- 🎯 v3.0 슬라이드 장수 & 수익화 방식 선택 툴바 -->
+        <div class="custom-selector-row">
+          <div class="selector-group">
+            <div class="selector-group-label">
+              <span>🎞️ 카드뉴스 장수 선택</span>
+              <span id="label-slide-count-hint" style="color: var(--primary-light);">4장 추천</span>
+            </div>
+            <div class="chip-btn-group" id="slide-count-group">
+              <button type="button" class="chip-btn" data-count="3">⚡ 3장 (스피드)</button>
+              <button type="button" class="chip-btn active" data-count="4">🎯 4장 (데이즈홈)</button>
+              <button type="button" class="chip-btn" data-count="5">📚 5장 (스토리)</button>
+            </div>
+          </div>
+          <div class="selector-group">
+            <div class="selector-group-label">
+              <span>💰 수익화 전환 방식</span>
+              <span id="label-monetize-hint" style="color: var(--success);">기본 링크</span>
+            </div>
+            <div class="chip-btn-group" id="monetize-mode-group">
+              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필/댓글 링크 (기본)</button>
+              <button type="button" class="chip-btn" data-mode="dm">💬 쿠팡 자동 DM (선택)</button>
+            </div>
+          </div>
         </div>
 
         <!-- MODE A: 오늘 뭐 팔지? 바이럴 검증 추천템 치트키 (기본 활성화) -->
@@ -254,14 +279,14 @@
               <span class="ch-icon">⚡</span>
               <div class="ch-info">
                 <span class="ch-name">스레드 (Threads)</span>
-                <span class="ch-badge hot">🔥 도달률 1위</span>
+                <span class="ch-badge hot">🔥 4종 젬</span>
               </div>
             </button>
             <button type="button" class="channel-pill" data-channel="instagram">
               <span class="ch-icon">📸</span>
               <div class="ch-info">
                 <span class="ch-name">인스타그램</span>
-                <span class="ch-badge">감성요약</span>
+                <span class="ch-badge">감성피드</span>
               </div>
             </button>
             <button type="button" class="channel-pill" data-channel="naver-blog">
@@ -269,6 +294,20 @@
               <div class="ch-info">
                 <span class="ch-name">네이버 블로그</span>
                 <span class="ch-badge">상세리뷰</span>
+              </div>
+            </button>
+            <button type="button" class="channel-pill" data-channel="editorial-html">
+              <span class="ch-icon">🌿</span>
+              <div class="ch-info">
+                <span class="ch-name">에디토리얼 HTML</span>
+                <span class="ch-badge">아메바/티스토리</span>
+              </div>
+            </button>
+            <button type="button" class="channel-pill" data-channel="coupang-dm">
+              <span class="ch-icon">💬</span>
+              <div class="ch-info">
+                <span class="ch-name">쿠팡 자동 DM</span>
+                <span class="ch-badge" style="background: var(--accent-pink);">선택형</span>
               </div>
             </button>
           </div>
@@ -291,14 +330,29 @@
 
         <!-- 현재 채널 성격 안내 박스 -->
         <div class="channel-info-box" id="channel-info-text">
-          ⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 지원
+          ⚡ 스레드(Threads) 4종 젬 엔진: 본문 외부 링크·해시태그 제외(피드 도달 극대화), 1댓글 3회 링크 반복 안전 배치
         </div>
 
-        <!-- 1. 스레드 전용 2단계 안전 분리 패널 (threads-kr, threads-jp) -->
+        <!-- 1. 스레드 전용 4종 젬 & 2단계 안전 분리 패널 (threads-kr, threads-jp) -->
         <div id="threads-copy-container" class="section-card" style="margin-bottom: 12px; display: block;">
           <div class="threads-safety-banner">
-            <strong>🛡️ 스레드 계정 보호 2단계 업로드 (알고리즘 최적화)</strong><br>
+            <strong>🛡️ 스레드 계정 보호 2단계 업로드 (4종 젬 탑재)</strong><br>
             <span>본문에는 외부 링크 없이 사진/영상과 썰만 올리고, <strong>첫 번째 댓글</strong>에 링크를 남겨야 계정 정지(삭제)를 방지하고 추천 피드 노출이 폭발합니다!</span>
+          </div>
+
+          <!-- 4종 젬 선택 바 & 언어 토글 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--primary-light);">🔥 4가지 바이럴 톤앤매너 선택:</span>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" class="chip-btn active" id="btn-threads-lang-ko" style="padding: 2px 7px; font-size: 10px;">🇰🇷 한국어</button>
+              <button type="button" class="chip-btn" id="btn-threads-lang-ja" style="padding: 2px 7px; font-size: 10px;">🇯🇵 日本語 (タメ口)</button>
+            </div>
+          </div>
+          <div class="threads-type-pills" id="threads-type-pills">
+            <button type="button" class="threads-type-chip active" data-type="type1">🔥 1. 공포/반전</button>
+            <button type="button" class="threads-type-chip" data-type="type2">⚡ 2. 1초컷 (추천)</button>
+            <button type="button" class="threads-type-chip" data-type="type3">😩 3. 찡찡이/설거지</button>
+            <button type="button" class="threads-type-chip" data-type="type4">🧐 4. 훈수/장비병</button>
           </div>
 
           <!-- 1단계 본문 -->
@@ -316,7 +370,7 @@
           <!-- 2단계 댓글 -->
           <div class="threads-step-box">
             <div class="threads-step-header">
-              <span class="threads-step-title">💬 [2단계] 첫 번째 댓글 (내 글에 답글 달기, 링크 🔗)</span>
+              <span class="threads-step-title">💬 [2단계] 첫 번째 댓글 (내 글에 답글 달기, 링크 3회 🔗)</span>
               <button type="button" class="btn-copy-step comment-btn" id="btn-copy-threads-comment">
                 <span>💬 2단계 댓글 복사</span>
               </button>
@@ -336,17 +390,81 @@
         <!-- 2. 블로그 / 인스타 일반 채널 단일 출력 패널 (naver-blog, ameba-jp, instagram) -->
         <div id="standard-copy-container" class="section-card" style="margin-bottom: 12px; display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 13px; font-weight: 700; color: var(--primary-light);">📄 원클릭 복붙 텍스트 (수정 가능)</span>
+            <span style="font-size: 13px; font-weight: 700; color: var(--primary-light);" id="standard-panel-title">📄 원클릭 복붙 텍스트 (수정 가능)</span>
             <span class="char-counter" id="char-counter">0자</span>
           </div>
 
-          <textarea id="copy-textarea" class="copy-textarea" placeholder="생성된 홍보글이 여기에 표시됩니다."></textarea>
+          <textarea id="copy-textarea" class="copy-textarea" style="min-height: 220px;" placeholder="생성된 홍보글이 여기에 표시됩니다."></textarea>
           
           <div class="copy-footer-actions">
             <button type="button" class="btn-regen" id="btn-regen-channel">🔄 이 글만 다시 작성</button>
             <button type="button" class="btn-copy" id="btn-copy-text" style="font-size: 15px; padding: 12px 24px;">
               <span>📋 원클릭 복사 (복붙 완료)</span>
             </button>
+          </div>
+        </div>
+
+        <!-- 3. 에디토리얼 HTML 패널 (아메바 / 티스토리) -->
+        <div id="editorial-copy-container" class="section-card" style="margin-bottom: 12px; display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: 700; color: #71804a;">🌿 에디토리얼 인라인 HTML (피스타치오 & 크림 감성)</span>
+            <button type="button" class="btn-copy-step" id="btn-copy-editorial-html">
+              <span>📋 전체 HTML 코드 복사</span>
+            </button>
+          </div>
+          <div class="editorial-preview-box" id="editorial-html-preview" style="background: #f8f2e7; color: #2d3436; padding: 16px; border-radius: 8px; font-family: serif; max-height: 280px; overflow-y: auto; margin-bottom: 10px; border: 1px solid rgba(113,128,74,0.3);">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; color: var(--text-muted);">🖼️ 네이버/아메바 블로그 업로드용 이미지 Alt 태그 목록:</span>
+            <button type="button" class="btn-header" id="btn-copy-alt-tags" style="font-size: 11px; padding: 3px 8px;">
+              <span>📋 Alt 태그 목록 복사</span>
+            </button>
+          </div>
+          <textarea id="editorial-alt-textarea" class="copy-textarea" style="min-height: 70px; font-size: 11px; margin-bottom: 8px;" readonly></textarea>
+        </div>
+
+        <!-- 4. 쿠팡 인플루언서 자동 DM 키트 패널 -->
+        <div id="coupang-dm-container" class="section-card" style="margin-bottom: 12px; display: none;">
+          <div class="dm-kit-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="color: var(--accent-pink); font-size: 14px;">💬 쿠팡 인플루언서 자동 DM 세팅 키트</strong>
+              <span class="pill-badge" style="background: rgba(236,72,153,0.2); color: var(--accent-pink);">릴스/쇼츠/피드 대응</span>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
+              인스타 댓글에 트리거 단어를 남기면 쿠팡 파트너스 링크가 자동 DM으로 즉시 발송되는 최신 세팅값입니다.
+            </p>
+
+            <div class="dm-kit-row">
+              <div class="dm-kit-label">
+                <span>1. 추천 트리거 키워드 (댓글 유도 단어)</span>
+                <button type="button" class="btn-copy-step" id="btn-copy-dm-keywords" style="padding: 2px 8px; font-size: 10px;">📋 키워드 복사</button>
+              </div>
+              <div class="dm-kit-content" id="dm-keywords-content">정보, 링크, 좌표, 추천, 꿀템</div>
+            </div>
+
+            <div class="dm-kit-row">
+              <div class="dm-kit-label">
+                <span>2. 댓글 자동 답글 (피드 공개 댓글용)</span>
+                <button type="button" class="btn-copy-step" id="btn-copy-dm-reply" style="padding: 2px 8px; font-size: 10px;">📋 답글 복사</button>
+              </div>
+              <div class="dm-kit-content" id="dm-reply-content"></div>
+            </div>
+
+            <div class="dm-kit-row">
+              <div class="dm-kit-label">
+                <span>3. 팔로워 전용 발송 DM (친근/신뢰)</span>
+                <button type="button" class="btn-copy-step" id="btn-copy-dm-follower" style="padding: 2px 8px; font-size: 10px;">📋 팔로워 DM 복사</button>
+              </div>
+              <div class="dm-kit-content" id="dm-follower-content"></div>
+            </div>
+
+            <div class="dm-kit-row">
+              <div class="dm-kit-label">
+                <span>4. 미팔로워 발송 DM (팔로우 유도형)</span>
+                <button type="button" class="btn-copy-step" id="btn-copy-dm-nonfollower" style="padding: 2px 8px; font-size: 10px;">📋 미팔로워 DM 복사</button>
+              </div>
+              <div class="dm-kit-content" id="dm-nonfollower-content"></div>
+            </div>
           </div>
         </div>
 
@@ -364,8 +482,30 @@
       <!-- ============================================== -->
       <section id="tab-view-cardnews" class="tab-view">
         
-        <!-- 📸 슬라이드별 장면 상태 & 빠른 교체 바 -->
-        <div class="cardnews-photo-bar">
+        <!-- 상단 서브탭: 캔버스 스튜디오 vs 제미나이 프롬프트 -->
+        <div class="cardnews-subnav">
+          <button type="button" class="cardnews-subnav-btn active" id="btn-subtab-canvas">
+            📸 캔버스 카드뉴스 (Dayz홈)
+          </button>
+          <button type="button" class="cardnews-subnav-btn" id="btn-subtab-prompts">
+            📋 제미나이 씬별 프롬프트 (<span id="prompt-count-badge">4장</span>)
+          </button>
+        </div>
+
+        <!-- SUB-PANEL 1: 캔버스 스튜디오 -->
+        <div id="panel-subtab-canvas">
+          <!-- 퀵 툴바: 텍스트 위치 전환 & 폰트 전환 -->
+          <div class="canvas-quick-toolbar">
+            <button type="button" class="quick-tool-btn" id="btn-toggle-text-pos">
+              ↕️ 텍스트 위치: <strong id="lbl-text-pos" style="color: var(--primary-light);">하단 (데이즈홈)</strong>
+            </button>
+            <button type="button" class="quick-tool-btn" id="btn-toggle-font">
+              🎨 폰트: <strong id="lbl-font-family" style="color: var(--accent-pink);">감성 명조체</strong>
+            </button>
+          </div>
+
+          <!-- 📸 슬라이드별 장면 상태 & 빠른 교체 바 -->
+          <div class="cardnews-photo-bar">
           <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
             <span style="font-size: 16px;" id="slide-scene-icon">🌟</span>
             <div style="font-size: 12px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -537,6 +677,25 @@
           </div>
         </details>
 
+        </div> <!-- /#panel-subtab-canvas -->
+
+        <!-- SUB-PANEL 2: 제미나이 씬별 프롬프트 (개별 복붙) -->
+        <div id="panel-subtab-prompts" style="display: none;">
+          <div class="threads-safety-banner" style="margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong>💡 제미나이(Gemini) 앱에서 초고화질 사진 1초 생성</strong>
+              <a href="https://gemini.google.com/" target="_blank" class="pill-badge" style="background: var(--primary); color: #fff; text-decoration: none; padding: 4px 8px; font-weight: 700;">🔗 제미나이 열기 ↗</a>
+            </div>
+            <span style="font-size: 11.5px; line-height: 1.5; color: var(--text-main);">
+              각 슬라이드별 최적화된 Imagen 3 프롬프트입니다. 아래 <strong>[📋 프롬프트 복사]</strong> 버튼을 눌러 무료 제미나이 앱에 붙여넣기만 하면 포토리얼리스틱 실사가 완성됩니다! 다운로드한 사진은 [📸 캔버스] 탭의 [📷 갤러리 변경]으로 넣어주세요.
+            </span>
+          </div>
+
+          <div id="gemini-prompts-list">
+            <!-- JS 동적 렌더링 -->
+          </div>
+        </div>
+
       </section>
 
     </main>
@@ -650,10 +809,10 @@
 
   </div>
 
-  <!-- Scripts (캐시 방지 v2.8 적용) -->
-  <script src="js/templates.js?v=2.8"></script>
-  <script src="js/generator.js?v=2.8"></script>
-  <script src="js/cardnews.js?v=2.8"></script>
-  <script src="js/app.js?v=2.8"></script>
+  <!-- Scripts (캐시 방지 v3.0 적용) -->
+  <script src="js/templates.js?v=3.0"></script>
+  <script src="js/generator.js?v=3.0"></script>
+  <script src="js/cardnews.js?v=3.0"></script>
+  <script src="js/app.js?v=3.0"></script>
 </body>
 </html>

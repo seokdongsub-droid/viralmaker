@@ -14,9 +14,40 @@ class CardNewsStudioEngine {
     this.ratio = '9:16'; // '9:16' (1080x1920) 틱톡/네이버클립/릴스 기본, '1:1' 또는 '4:5'
     this.userImage = null; // Image object (from image or video capture)
     this.slideImages = [null, null, null, null, null]; // 5개 슬라이드별 독립 AI 실사 씬 이미지
+    this.fontFamilyMode = 'gothic'; // 'gothic' or 'serif' (감성 명조체)
     this.canvas = null;
     this.ctx = null;
     this.previewContainer = null;
+  }
+
+  setFontFamilyMode(mode) {
+    this.fontFamilyMode = mode;
+    this.render();
+  }
+
+  toggleFontFamily() {
+    this.fontFamilyMode = (this.fontFamilyMode === 'serif') ? 'gothic' : 'serif';
+    this.render();
+    return this.fontFamilyMode;
+  }
+
+  toggleTextPosition() {
+    const cur = this.getCurrentSlide();
+    if (!cur) return 'center';
+    const curPos = cur.textPosition || (cur.type === 'cover' ? 'bottom' : 'center');
+    if (curPos === 'bottom') cur.textPosition = 'top';
+    else if (curPos === 'top') cur.textPosition = 'center';
+    else cur.textPosition = 'bottom';
+    this.render();
+    return cur.textPosition;
+  }
+
+  setSlideCount(count) {
+    if (count < 3 || count > 5) return;
+    if (this.currentSlideIndex >= count) {
+      this.currentSlideIndex = count - 1;
+    }
+    this.render();
   }
 
   init(canvasElement, previewContainer) {
@@ -206,7 +237,12 @@ class CardNewsStudioEngine {
     const height = targetHeight || this.canvas.height;
     const theme = CardNewsThemes[this.themeKey] || CardNewsThemes['modern-dark'];
     const isJP = this.currentLanguage === 'ja';
-    const fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, sans-serif';
+    let fontFam = isJP ? '"Noto Sans JP", sans-serif' : '-apple-system, BlinkMacSystemFont, "Pretendard", sans-serif';
+    if (this.fontFamilyMode === 'serif') {
+      fontFam = isJP 
+        ? '"Hiragino Mincho ProN", "Yu Mincho", "MS PMincho", serif' 
+        : '"Nanum Myeongjo", "Batang", "Noto Serif KR", "Apple SD Gothic Neo", serif';
+    }
 
     if (!ctx || !slide) return;
 
@@ -458,8 +494,12 @@ class CardNewsStudioEngine {
       ctx.restore();
     };
 
-    if (slide.type === 'cover') {
-      // 1번 표지: 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀
+    const isSerif = this.fontFamilyMode === 'serif';
+    const strokeWidth = isSerif ? 7 : 9;
+    const pos = slide.textPosition || (slide.type === 'cover' ? 'bottom' : 'center');
+
+    if (slide.type === 'cover' && pos === 'bottom') {
+      // 1번 표지 (하단 배치): 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (Dayzhome 시그니처)
       const pad = is916 ? 70 : 65;
       let startY = is916 ? (height - 400) : (height - 160);
       const titleLines = slide.mainTitle.split('\n');
@@ -467,24 +507,42 @@ class CardNewsStudioEngine {
       const titleStep = is916 ? 88 : 82;
 
       for (let i = titleLines.length - 1; i >= 0; i--) {
-        drawOutlinedText(titleLines[i], pad, startY, `900 ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'left');
+        drawOutlinedText(titleLines[i], pad, startY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'left');
         startY -= titleStep;
       }
 
       const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
       const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
       const subSize = is916 ? 34 : 32;
-      drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', 7, 'left');
+      drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', strokeWidth - 2, 'left');
+    } else if (slide.type === 'cover' && pos === 'top') {
+      // 1번 표지 (상단 배치): 감성 푸드/라이프스타일 매거진 타이틀 (과일롤 스타일)
+      let curY = is916 ? 300 : 170;
+      const titleLines = slide.mainTitle.split('\n');
+      const titleSize = is916 ? 62 : 58;
+      const titleStep = is916 ? 84 : 78;
+
+      titleLines.forEach(line => {
+        drawOutlinedText(line, width / 2, curY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'center');
+        curY += titleStep;
+      });
+
+      const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
+      const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
+      const subSize = is916 ? 32 : 30;
+      drawOutlinedText(sub, width / 2, curY + 6, `600 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', strokeWidth - 2, 'center');
     } else {
-      // 2~5번 슬라이드: 화면 중앙부 세이프존에 2~4줄 감성 자막 (자동 줄바꿈 & 텍스트 잘림 방지)
-      const centerY = is916 ? (height * 0.46) : (height / 2);
+      // 2~5번 슬라이드 (또는 중앙 표지): 상단(top) / 중앙(center) / 하단(bottom) 유연한 배치
       const rawLines = [
         ...(slide.mainTitle || '').split('\n').filter(Boolean),
         ...(slide.subTitle || '').split('\n').filter(Boolean)
       ];
 
       if (slide.type === 'cta') {
-        rawLines.push(isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍');
+        const ctaLine = isJP ? '👉 詳細はプロフィールのリンクから！🤍' : '👉 제품 정보는 프로필 링크 확인! 🤍';
+        if (!rawLines.some(l => l.includes('링크') || l.includes('ナド') || l.includes('나도'))) {
+          rawLines.push(ctaLine);
+        }
       }
 
       // 긴 문장 스마트 자동 줄바꿈 (화면 밖 텍스트 잘림 원천 차단)
@@ -505,10 +563,19 @@ class CardNewsStudioEngine {
       const fontSize = is916 ? 46 : 42;
       const lineStep = is916 ? 78 : 70;
       const totalH = displayLines.length * (lineStep - 4);
-      let y = centerY - (totalH / 2) + 34;
+      
+      let y;
+      if (pos === 'top') {
+        y = is916 ? 320 : 190;
+      } else if (pos === 'bottom') {
+        y = is916 ? (height - 480 - totalH) : (height - 240 - totalH);
+      } else {
+        const centerY = is916 ? (height * 0.46) : (height / 2);
+        y = centerY - (totalH / 2) + 34;
+      }
 
       displayLines.forEach((line) => {
-        drawOutlinedText(line, width / 2, y, `800 ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', 10, 'center');
+        drawOutlinedText(line, width / 2, y, `${isSerif ? '700' : '800'} ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth, 'center');
         y += lineStep;
       });
     }

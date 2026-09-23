@@ -1592,5 +1592,290 @@ body {
   color: #FFFFFF;
 }
 
+/* ===================================================
+   v3.0 신규 스타일: 가변 슬라이드, 제미나이 프롬프트 복사,
+   스레드 4종 젬 탭, 캔버스 퀵 툴바 및 쿠팡 자동 DM 키트
+   =================================================== */
+
+/* 1. 슬라이드 장수 & 수익화 모드 셀렉터 바 */
+.custom-selector-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.selector-group {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.selector-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chip-btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.chip-btn {
+  flex: 1;
+  padding: 7px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chip-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--text-main);
+}
+
+.chip-btn.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.25);
+  color: #FFFFFF;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+}
+
+/* 2. 캔버스 모바일 퀵 툴바 (텍스트 위치 & 폰트) */
+.canvas-quick-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.canvas-tool-btn {
+  flex: 1;
+  padding: 9px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.canvas-tool-btn:hover {
+  border-color: var(--primary);
+  background: var(--bg-elevated);
+}
+
+.canvas-tool-btn.active-accent {
+  border-color: var(--accent-pink);
+  background: rgba(236, 72, 153, 0.15);
+  color: #F472B6;
+}
+
+/* 3. 제미나이 카드별 프롬프트 패널 */
+.prompt-panel-header {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.prompt-card-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.prompt-card-item:hover {
+  border-color: var(--primary-light);
+}
+
+.prompt-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.prompt-card-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary-light);
+}
+
+.prompt-copy-btn {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.prompt-copy-btn:hover {
+  background: var(--primary-hover);
+}
+
+.prompt-copy-btn.copied {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.prompt-textarea {
+  width: 100%;
+  min-height: 85px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 11.5px;
+  padding: 8px 10px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+/* 4. 스레드 4종 젬 타입 선택 바 */
+.threads-type-pills {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.threads-type-chip {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.threads-type-chip.active {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.25);
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* 5. 쿠팡 자동 DM 설정 키트 박스 */
+.dm-kit-card {
+  background: rgba(236, 72, 153, 0.06);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.dm-kit-row {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.dm-kit-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.dm-kit-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-pink);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dm-kit-content {
+  font-size: 12px;
+  color: var(--text-main);
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+/* CardNews Studio Subnav */
+.cardnews-subnav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cardnews-subnav-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.cardnews-subnav-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+
+
 
 

@@ -37,6 +37,11 @@ function startViralMakerApp() {
   const state = {
     activeTab: 'input',
     activeChannel: 'threads-kr',
+    slideCount: 4, // 3, 4 (기본: 데이즈홈), 5
+    monetizationMode: 'link', // 'link' (기본: 프로필/댓글 링크) | 'dm' (쿠팡 자동 DM)
+    threadsType: 'type1', // type1: 공포/반전, type2: 1초컷, type3: 찡찡이, type4: 훈수/장비병
+    threadsLang: 'ko', // 'ko' | 'ja'
+    activeCardSubtab: 'canvas', // 'canvas' | 'prompts'
     generatedData: null,
     product: {
       link: 'https://smartstore.naver.com/sample/products/neck-care',
@@ -67,6 +72,11 @@ function startViralMakerApp() {
   const btnGenerateAll = document.getElementById('btn-generate-all');
   const presetChips = document.querySelectorAll('.preset-chip');
 
+  // v3.0 상단 셀렉터 DOM (슬라이드 장수 & 수익화 방식)
+  const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
+  const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
+  const labelMonetizeHint = document.getElementById('label-monetize-hint');
+
   // 🚀 제휴몰 사진 1초 첨부 (URL 복붙 / 클립보드 / 파일)
   const btnTabMethodUrl = document.getElementById('btn-tab-method-url');
   const btnTabMethodClipboard = document.getElementById('btn-tab-method-clipboard');
@@ -91,6 +101,7 @@ function startViralMakerApp() {
   const channelInfoText = document.getElementById('channel-info-text');
   const btnCopyText = document.getElementById('btn-copy-text');
   const btnRegenChannel = document.getElementById('btn-regen-channel');
+  const standardPanelTitle = document.getElementById('standard-panel-title');
 
   // Tab 2 - Threads 전용 DOM
   const threadsContainer = document.getElementById('threads-copy-container');
@@ -103,6 +114,27 @@ function startViralMakerApp() {
   const btnCopyThreadsComment = document.getElementById('btn-copy-threads-comment');
   const btnRegenThreads = document.getElementById('btn-regen-threads');
   const btnCopyThreadsAll = document.getElementById('btn-copy-threads-all');
+  const threadsTypeChips = document.querySelectorAll('#threads-type-pills .threads-type-chip');
+  const btnThreadsLangKo = document.getElementById('btn-threads-lang-ko');
+  const btnThreadsLangJa = document.getElementById('btn-threads-lang-ja');
+
+  // Tab 2 - 에디토리얼 HTML DOM
+  const editorialCopyContainer = document.getElementById('editorial-copy-container');
+  const editorialHtmlPreview = document.getElementById('editorial-html-preview');
+  const editorialAltTextarea = document.getElementById('editorial-alt-textarea');
+  const btnCopyEditorialHtml = document.getElementById('btn-copy-editorial-html');
+  const btnCopyAltTags = document.getElementById('btn-copy-alt-tags');
+
+  // Tab 2 - 쿠팡 자동 DM 키트 DOM
+  const coupangDmContainer = document.getElementById('coupang-dm-container');
+  const dmKeywordsContent = document.getElementById('dm-keywords-content');
+  const dmReplyContent = document.getElementById('dm-reply-content');
+  const dmFollowerContent = document.getElementById('dm-follower-content');
+  const dmNonfollowerContent = document.getElementById('dm-nonfollower-content');
+  const btnCopyDmKeywords = document.getElementById('btn-copy-dm-keywords');
+  const btnCopyDmReply = document.getElementById('btn-copy-dm-reply');
+  const btnCopyDmFollower = document.getElementById('btn-copy-dm-follower');
+  const btnCopyDmNonfollower = document.getElementById('btn-copy-dm-nonfollower');
 
   // Tab 3 (카드뉴스)
   const canvasEl = document.getElementById('cardnews-canvas');
@@ -129,6 +161,19 @@ function startViralMakerApp() {
   const slideSceneIcon = document.getElementById('slide-scene-icon');
   const slideSceneLabel = document.getElementById('slide-scene-label');
   const slideSceneStatus = document.getElementById('slide-scene-status');
+
+  // Tab 3 - 서브탭 & 퀵 툴바 DOM
+  const btnSubtabCanvas = document.getElementById('btn-subtab-canvas');
+  const btnSubtabPrompts = document.getElementById('btn-subtab-prompts');
+  const panelSubtabCanvas = document.getElementById('panel-subtab-canvas');
+  const panelSubtabPrompts = document.getElementById('panel-subtab-prompts');
+  const promptCountBadge = document.getElementById('prompt-count-badge');
+  const geminiPromptsList = document.getElementById('gemini-prompts-list');
+
+  const btnToggleTextPos = document.getElementById('btn-toggle-text-pos');
+  const lblTextPos = document.getElementById('lbl-text-pos');
+  const btnToggleFont = document.getElementById('btn-toggle-font');
+  const lblFontFamily = document.getElementById('lbl-font-family');
 
   // AI 5단 사진 프로그레스 DOM
   const aiPhotoProgress = document.getElementById('ai-photo-progress');
@@ -161,11 +206,13 @@ function startViralMakerApp() {
 
   // 채널별 안내 텍스트
   const channelDescriptions = {
-    'threads-kr': '⚡ 한국 스레드(Threads): 구매 링크 자동 분리, 계정 보호 2단계 업로드 (본문 ➔ 첫 댓글)',
-    'threads-jp': '🇯🇵 일본 스레드(Threads JP): 구매 링크 자동 분리, 계정 보호 2단계 업로드 (本文 ➔ 返信コメント)',
-    'naver-blog': '📝 네이버 블로그: 링크 포함, 스마트에디터 최적화 [서론 ➔ 언박싱 ➔ 장점 ➔ 총평/구매링크]',
-    'ameba-jp': '🌸 일본 아메바 블로그: 구매 링크 포함, 상냥한 絵文字 문체 & 아메바 인기 해시태그',
-    'instagram': '📸 인스타그램 피드: 3줄 불렛포인트, 프로필 링크 CTA 및 인기 해시태그 20선'
+    'threads-kr': '⚡ 스레드(Threads) 4종 젬: 본문 외부 링크·해시태그 제외(피드 도달 극대화), 1댓글 3회 링크 반복 안전 배치',
+    'threads-jp': '🇯🇵 日本語 スレッズ (Threads JP): タメ口 2ステップ 投稿 (本文 ➔ 返信コメント3回リンク)',
+    'instagram': '📸 인스타그램: 감성 헤드카피, 3가지 실사용 반전, 프로필/댓글 링크 유도',
+    'naver-blog': '📝 네이버 블로그 상세리뷰: 1200x900 사진 삽입 가이드, 3단계 사용법, 꿀팁, 공정위 문구 포함',
+    'editorial-html': '🌿 에디토리얼 인라인 HTML: 피스타치오&크림 톤 감성 디자인, 아메바/티스토리 1초 복붙',
+    'coupang-dm': '💬 쿠팡 인플루언서 자동 DM: 키워드 트리거, 피드 답글, 팔로워/미팔로워 맞춤 DM',
+    'ameba-jp': '🌸 일본 아메바 블로그: 아마존 재팬 제휴, 상냥한 絵文字 문체 & 아메바 인기 해시태그'
   };
 
   // --- 초기화 ---
@@ -848,6 +895,8 @@ function startViralMakerApp() {
 
     state.product.link = link;
     state.product.memo = memo;
+    state.product.slideCount = state.slideCount;
+    state.product.monetizationMode = state.monetizationMode;
 
     btnGenerateAll.disabled = true;
     const origHtml = btnGenerateAll.innerHTML;
@@ -860,6 +909,9 @@ function startViralMakerApp() {
       // 카드뉴스 슬라이드 적용 (한국어 & 일본어 모두 세팅)
       CardNewsStudio.setGeneratedSlides(results.cardnews_ko, results.cardnews_ja);
 
+      // 제미나이 씬별 프롬프트 목록 렌더링
+      renderGeminiPromptsList(results.geminiPrompts || []);
+
       // 복붙 글 업데이트
       updateCopyTextView();
 
@@ -868,7 +920,7 @@ function startViralMakerApp() {
         CardNewsStudio.setUserMedia(currentViralItem.imageUrl);
       }
 
-      showToast('🎉 복붙용 글과 5단 카드뉴스가 완성되었습니다!');
+      showToast(`🎉 복붙용 글과 ${state.slideCount}장 카드뉴스 & 제미나이 프롬프트가 완성되었습니다!`);
       switchTab('copy');
 
     } catch (err) {
@@ -880,32 +932,140 @@ function startViralMakerApp() {
     }
   });
 
+  // --- 제미나이 씬별 프롬프트 렌더링 함수 ---
+  function renderGeminiPromptsList(prompts) {
+    if (!geminiPromptsList) return;
+    geminiPromptsList.innerHTML = '';
+    if (!prompts || prompts.length === 0) {
+      geminiPromptsList.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 24px; font-size: 12px;">[✨ 1초 만에 완성하기] 버튼을 누르면 슬라이드별 제미나이 프롬프트가 자동 생성됩니다.</div>';
+      return;
+    }
+
+    if (promptCountBadge) promptCountBadge.textContent = `${prompts.length}장`;
+
+    prompts.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'prompt-card-item';
+      card.innerHTML = `
+        <div class="prompt-card-header">
+          <div class="prompt-card-title">
+            <span>📷 슬라이드 ${idx + 1}: ${p.title}</span>
+            <span class="prompt-card-badge">${p.previewHint || '4:5 황금비율'}</span>
+          </div>
+          <button type="button" class="prompt-copy-btn" id="btn-copy-prompt-${idx}">
+            <span>📋 프롬프트 복사</span>
+          </button>
+        </div>
+        <textarea class="prompt-textarea" id="prompt-text-${idx}" readonly>${p.promptText}</textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10.5px; color: var(--text-dim);">
+          <span>💡 버튼을 눌러 복사 후 제미나이 앱에 붙여넣기만 하세요!</span>
+          <a href="https://gemini.google.com/" target="_blank" style="color: var(--primary-light); text-decoration: none; font-weight: 700;">제미나이 열기 ↗</a>
+        </div>
+      `;
+
+      const copyBtn = card.querySelector(`#btn-copy-prompt-${idx}`);
+      copyBtn.addEventListener('click', async () => {
+        const txt = p.promptText;
+        const textarea = card.querySelector(`#prompt-text-${idx}`);
+        const ok = await copyToClipboardSafe(txt, textarea);
+        if (ok) {
+          copyBtn.classList.add('copied');
+          copyBtn.innerHTML = '<span>✓ 복사 완료! ✨</span>';
+          showToast(`슬라이드 ${idx + 1}번 프롬프트가 복사되었습니다! 제미나이 앱에 붙여넣으세요 🚀`);
+          setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyBtn.innerHTML = '<span>📋 프롬프트 복사</span>';
+          }, 2200);
+        } else {
+          showToast('복사 실패: 텍스트를 길게 눌러 직접 복사해주세요.');
+        }
+      });
+
+      geminiPromptsList.appendChild(card);
+    });
+  }
+
+  // --- 스레드 전용 텍스트 뷰 갱신 ---
+  function updateThreadsTextView() {
+    let feedObj = null;
+    if (state.generatedData && state.generatedData.threads) {
+      feedObj = state.generatedData.threads[state.threadsType] || state.generatedData.threads.type1;
+    } else {
+      const prodName = ContentGenerator.inferProductName(state.product);
+      const affPlat = (typeof ContentGenerator !== 'undefined') ? ContentGenerator.detectPlatform(state.product.link) : 'general';
+      const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[affPlat]) ? AffiliatePlatforms[affPlat] : { ftcNotice: '※ 본 포스팅은 제휴마케팅 수수료를 제공받을 수 있습니다.' };
+      const ftc = platMeta.ftcNotice;
+      feedObj = {
+        body: `솔직히 ${prodName} 이거 쓸 때마다 드는 생각인데...\n왜 진작 안 샀나 싶음 ㅋㅋㅋ\n삶의 질 수직 상승함 진짜 ✨`,
+        firstComment: `질문 많아서 링크 남겨둘게!\n👉 ${state.product.link}\n\n${ftc}`,
+        commentWithLinks: `질문 많아서 링크 남겨둘게!\n👉 ${state.product.link}\n\n👇 혹시 위 링크 안 열리면 여기로!\n👉 ${state.product.link}\n\n${ftc}`,
+        jaBody: `正直、${prodName}これ使い始めてから人生変わった...\nなんで早く買わなかったんだろw\nめっちゃ便利すぎて手放せない✨`,
+        jaComment: `質問多かったからリンク貼っとくね！\n👉 ${state.product.link}\n\n👇リンク見れない人はこっちから！\n👉 ${state.product.link}\n\n※PR・アフィリエイトリンクを含みます`
+      };
+    }
+
+    const isJa = state.threadsLang === 'ja' || state.activeChannel === 'threads-jp';
+    const body = isJa ? (feedObj.jaBody || feedObj.body) : feedObj.body;
+    const comment = isJa ? (feedObj.jaComment || feedObj.commentWithLinks) : feedObj.commentWithLinks;
+
+    if (threadsBodyTextarea) threadsBodyTextarea.value = body;
+    if (threadsCommentTextarea) threadsCommentTextarea.value = comment;
+    if (threadsBodyCounter) threadsBodyCounter.textContent = `${body.length}자 (사진/영상과 함께 업로드)`;
+    if (threadsCommentCounter) threadsCommentCounter.textContent = `${comment.length}자 (내 글에 답글 달기)`;
+  }
+
   // --- Tab 2: 복붙 글 뷰 갱신 ---
   function updateCopyTextView() {
     const ch = state.activeChannel;
-    let text = '';
-    if (state.generatedData && state.generatedData.texts && state.generatedData.texts[ch]) {
-      text = state.generatedData.texts[ch];
-    } else {
-      text = ContentGenerator.generateLocalTemplate(ch, state.product);
-    }
-
     if (channelInfoText) {
       channelInfoText.textContent = channelDescriptions[ch] || '';
     }
 
+    // 모든 컨테이너 우선 숨김
+    if (threadsContainer) threadsContainer.style.display = 'none';
+    if (standardContainer) standardContainer.style.display = 'none';
+    if (editorialCopyContainer) editorialCopyContainer.style.display = 'none';
+    if (coupangDmContainer) coupangDmContainer.style.display = 'none';
+
     if (ch === 'threads-kr' || ch === 'threads-jp') {
       if (threadsContainer) threadsContainer.style.display = 'block';
-      if (standardContainer) standardContainer.style.display = 'none';
-
-      const split = ContentGenerator.splitThreadsPost(text);
-      if (threadsBodyTextarea) threadsBodyTextarea.value = split.body;
-      if (threadsCommentTextarea) threadsCommentTextarea.value = split.comment;
-      if (threadsBodyCounter) threadsBodyCounter.textContent = `${split.body.length}자 (사진/영상과 함께 업로드)`;
-      if (threadsCommentCounter) threadsCommentCounter.textContent = `${split.comment.length}자 (내 글에 답글 달기)`;
+      state.threadsLang = ch === 'threads-jp' ? 'ja' : 'ko';
+      if (btnThreadsLangKo && btnThreadsLangJa) {
+        if (state.threadsLang === 'ja') {
+          btnThreadsLangJa.classList.add('active');
+          btnThreadsLangKo.classList.remove('active');
+        } else {
+          btnThreadsLangKo.classList.add('active');
+          btnThreadsLangJa.classList.remove('active');
+        }
+      }
+      updateThreadsTextView();
+    } else if (ch === 'editorial-html') {
+      if (editorialCopyContainer) editorialCopyContainer.style.display = 'block';
+      const ed = state.generatedData?.editorialHtml || ContentGenerator.generateEditorialHtml(state.product);
+      if (editorialHtmlPreview) editorialHtmlPreview.innerHTML = ed.html || '';
+      if (editorialAltTextarea) editorialAltTextarea.value = (ed.altList || []).join('\n');
+    } else if (ch === 'coupang-dm') {
+      if (coupangDmContainer) coupangDmContainer.style.display = 'block';
+      const dm = state.generatedData?.coupangDmKit || ContentGenerator.generateCoupangAutoDmKit(state.product);
+      if (dmKeywordsContent) dmKeywordsContent.textContent = dm.triggerKeywords || '정보, 링크, 좌표, 추천, 꿀템';
+      if (dmReplyContent) dmReplyContent.textContent = dm.autoReplyComment || '';
+      if (dmFollowerContent) dmFollowerContent.textContent = dm.followerDm || '';
+      if (dmNonfollowerContent) dmNonfollowerContent.textContent = dm.nonFollowerDm || '';
     } else {
-      if (threadsContainer) threadsContainer.style.display = 'none';
+      // standard: instagram, naver-blog, ameba-jp
       if (standardContainer) standardContainer.style.display = 'block';
+      let text = '';
+      if (ch === 'instagram') {
+        if (standardPanelTitle) standardPanelTitle.textContent = '📸 인스타그램 캡션 & 인기 해시태그 20선';
+        text = state.generatedData?.instagram?.raw || (state.generatedData?.texts?.['instagram'] || ContentGenerator.generateLocalTemplate('instagram', state.product));
+      } else if (ch === 'naver-blog') {
+        if (standardPanelTitle) standardPanelTitle.textContent = '📝 네이버 블로그 상세리뷰 (1200x900 사진 삽입 가이드)';
+        text = state.generatedData?.naverBlog?.raw || (state.generatedData?.texts?.['naver-blog'] || ContentGenerator.generateLocalTemplate('naver-blog', state.product));
+      } else {
+        if (standardPanelTitle) standardPanelTitle.textContent = '📄 원클릭 복붙 텍스트 (수정 가능)';
+        text = state.generatedData?.texts?.[ch] || ContentGenerator.generateLocalTemplate(ch, state.product);
+      }
 
       if (copyTextarea) copyTextarea.value = text;
       if (charCounter) charCounter.textContent = `${text.length}자`;
@@ -1005,6 +1165,190 @@ function startViralMakerApp() {
         btnRegenThreads.disabled = false;
         btnRegenThreads.textContent = '🔄 이 글만 다시 작성';
       }
+    });
+  }
+
+  // v3.0 슬라이드 장수 선택 (3장 / 4장 / 5장)
+  slideCountChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      slideCountChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const count = parseInt(chip.getAttribute('data-count'), 10) || 4;
+      state.slideCount = count;
+      if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setSlideCount) {
+        CardNewsStudio.setSlideCount(count);
+      }
+      if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
+      updateSlideQuickBar(count);
+      updateSlideEditInputs();
+      showToast(`🎯 ${count}장 슬라이드 구성으로 전환되었습니다!`);
+    });
+  });
+
+  // v3.0 수익화 전환 방식 (프로필/댓글 링크 vs 쿠팡 자동 DM)
+  monetizeModeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      monetizeModeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const mode = chip.getAttribute('data-mode') || 'link';
+      state.monetizationMode = mode;
+      if (labelMonetizeHint) {
+        labelMonetizeHint.textContent = mode === 'dm' ? '💬 쿠팡 자동 DM' : '🔗 기본 링크';
+        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
+      }
+      showToast(mode === 'dm' ? '💬 쿠팡 인플루언서 자동 DM 모드로 전환되었습니다!' : '🔗 프로필/댓글 링크 모드로 전환되었습니다!');
+    });
+  });
+
+  // v3.0 스레드 4종 젬 스타일 선택 (type1, type2, type3, type4)
+  threadsTypeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      threadsTypeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.threadsType = chip.getAttribute('data-type') || 'type1';
+      updateThreadsTextView();
+      showToast(`스레드 스타일: '${chip.textContent.trim()}' 적용! 🔥`);
+    });
+  });
+
+  // v3.0 스레드 언어 토글 (한국어 vs 일본어 타메구치)
+  if (btnThreadsLangKo && btnThreadsLangJa) {
+    btnThreadsLangKo.addEventListener('click', () => {
+      btnThreadsLangKo.classList.add('active');
+      btnThreadsLangJa.classList.remove('active');
+      state.threadsLang = 'ko';
+      updateThreadsTextView();
+      showToast('🇰🇷 한국어 스레드 글로 전환되었습니다.');
+    });
+
+    btnThreadsLangJa.addEventListener('click', () => {
+      btnThreadsLangJa.classList.add('active');
+      btnThreadsLangKo.classList.remove('active');
+      state.threadsLang = 'ja';
+      updateThreadsTextView();
+      showToast('🇯🇵 日本語 (タメ口) スレッズ投稿に切り替えました。');
+    });
+  }
+
+  // v3.0 에디토리얼 HTML 복사 버튼
+  if (btnCopyEditorialHtml) {
+    btnCopyEditorialHtml.addEventListener('click', async () => {
+      const html = (state.generatedData && state.generatedData.editorialHtml && state.generatedData.editorialHtml.html) || '';
+      if (!html) {
+        showToast('복사할 HTML 코드가 없습니다. [1초 완성하기]를 먼저 눌러주세요.');
+        return;
+      }
+      const ok = await copyToClipboardSafe(html);
+      if (ok) showToast('📋 에디토리얼 HTML 전체 복사 완료! 블로그 HTML 모드에 붙여넣으세요 ✨');
+      else showToast('⚠️ 복사 실패: 직접 복사해주세요.');
+    });
+  }
+
+  if (btnCopyAltTags) {
+    btnCopyAltTags.addEventListener('click', async () => {
+      const altText = editorialAltTextarea ? editorialAltTextarea.value : '';
+      if (!altText) {
+        showToast('복사할 Alt 태그가 없습니다.');
+        return;
+      }
+      const ok = await copyToClipboardSafe(altText, editorialAltTextarea);
+      if (ok) showToast('📋 이미지 Alt 태그 목록 복사 완료!');
+      else showToast('⚠️ 복사 실패');
+    });
+  }
+
+  // v3.0 쿠팡 자동 DM 키트 개별 복사 버튼들
+  if (btnCopyDmKeywords && dmKeywordsContent) {
+    btnCopyDmKeywords.addEventListener('click', async () => {
+      const ok = await copyToClipboardSafe(dmKeywordsContent.textContent.trim());
+      if (ok) showToast('📋 트리거 키워드 복사 완료!');
+    });
+  }
+  if (btnCopyDmReply && dmReplyContent) {
+    btnCopyDmReply.addEventListener('click', async () => {
+      const ok = await copyToClipboardSafe(dmReplyContent.textContent.trim());
+      if (ok) showToast('📋 댓글 자동 답글 복사 완료!');
+    });
+  }
+  if (btnCopyDmFollower && dmFollowerContent) {
+    btnCopyDmFollower.addEventListener('click', async () => {
+      const ok = await copyToClipboardSafe(dmFollowerContent.textContent.trim());
+      if (ok) showToast('📋 팔로워 전용 발송 DM 복사 완료!');
+    });
+  }
+  if (btnCopyDmNonfollower && dmNonfollowerContent) {
+    btnCopyDmNonfollower.addEventListener('click', async () => {
+      const ok = await copyToClipboardSafe(dmNonfollowerContent.textContent.trim());
+      if (ok) showToast('📋 미팔로워 발송 DM 복사 완료!');
+    });
+  }
+
+  // v3.0 카드뉴스 서브탭 전환 (📸 캔버스 vs 📋 제미나이 프롬프트)
+  if (btnSubtabCanvas && btnSubtabPrompts && panelSubtabCanvas && panelSubtabPrompts) {
+    btnSubtabCanvas.addEventListener('click', () => {
+      btnSubtabCanvas.classList.add('active');
+      btnSubtabPrompts.classList.remove('active');
+      panelSubtabCanvas.style.display = 'block';
+      panelSubtabPrompts.style.display = 'none';
+      state.activeCardSubtab = 'canvas';
+      if (window.CardNewsStudio) window.CardNewsStudio.render();
+    });
+
+    btnSubtabPrompts.addEventListener('click', () => {
+      btnSubtabPrompts.classList.add('active');
+      btnSubtabCanvas.classList.remove('active');
+      panelSubtabPrompts.style.display = 'block';
+      panelSubtabCanvas.style.display = 'none';
+      state.activeCardSubtab = 'prompts';
+    });
+  }
+
+  // v3.0 캔버스 퀵 툴바 (자막 위치 전환 & 폰트 전환)
+  if (btnToggleTextPos && lblTextPos) {
+    btnToggleTextPos.addEventListener('click', () => {
+      if (window.CardNewsStudio && window.CardNewsStudio.toggleTextPosition) {
+        const newPos = window.CardNewsStudio.toggleTextPosition();
+        const posMap = { top: '상단 (과일롤 스타일)', center: '중앙', bottom: '하단 (데이즈홈)' };
+        lblTextPos.textContent = posMap[newPos] || newPos;
+        showToast(`자막 위치: ${posMap[newPos] || newPos}로 전환! ↕️`);
+      }
+    });
+  }
+
+  if (btnToggleFont && lblFontFamily) {
+    btnToggleFont.addEventListener('click', () => {
+      if (window.CardNewsStudio && window.CardNewsStudio.toggleFontFamily) {
+        const newFont = window.CardNewsStudio.toggleFontFamily();
+        const fontMap = { gothic: '볼드 고딕체', serif: '감성 명조체 (Dayz)' };
+        lblFontFamily.textContent = fontMap[newFont] || newFont;
+        showToast(`폰트: ${fontMap[newFont] || newFont}로 전환! 🎨`);
+      }
+    });
+  }
+
+  // 슬라이드 퀵 바 동적 렌더링 헬퍼 (3장 / 4장 / 5장 대응)
+  function updateSlideQuickBar(count) {
+    const bar = document.getElementById('slide-quick-bar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    const labels3 = ['1. 표지(풀샷)', '2. 고민(과정)', '3. 완성(CTA)'];
+    const labels4 = ['1. 표지(풀샷)', '2. 스와치(액션)', '3. 디테일(질감)', '4. 완성(CTA)'];
+    const labels5 = ['1. 표지(풀샷)', '2. 고민(줌)', '3. 사용(액션)', '4. 디테일(접사)', '5. 완성(CTA)'];
+    const labels = count === 3 ? labels3 : (count === 4 ? labels4 : labels5);
+
+    labels.forEach((lbl, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `slide-quick-chip ${idx === CardNewsStudio.currentSlideIndex ? 'active' : ''}`;
+      btn.setAttribute('data-slide', idx);
+      btn.textContent = lbl;
+      btn.addEventListener('click', () => {
+        CardNewsStudio.currentSlideIndex = idx;
+        CardNewsStudio.render();
+        updateSlideEditInputs();
+        if (typeof updateSimulator === 'function') updateSimulator();
+      });
+      bar.appendChild(btn);
     });
   }
 

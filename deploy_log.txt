@@ -1,21 +1,15 @@
-=== ViralMaker Deploy Log (2026-09-22 17:17:56) ===
+=== ViralMaker Deploy Log (2026-09-22 17:18:27) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
 ▶ [Git Add] 실행: git add -A
-  [알림/오류]
-warning: in the working copy of 'PROJECT.md', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171756)
+▶ [Git Commit] 실행: git commit -m ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171827)
   [출력]
-[main b32af26] ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171756)
- 7 files changed, 651 insertions(+), 54 deletions(-)
+[main ae5145b] ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171827)
+ 1 file changed, 12 insertions(+), 6 deletions(-)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -23,9 +17,9 @@ warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the nex
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   9ba0044..b32af26  main -> main
+   b32af26..ae5145b  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=2.8_20260922_171756
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=2.8_20260922_171827
 
 === End of Log ===

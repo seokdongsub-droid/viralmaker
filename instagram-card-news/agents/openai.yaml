@@ -1,0 +1,7 @@
+interface:
+  display_name: "Instagram Card News"
+  short_description: "소재 추천과 벤치마킹 변환 기반 인스타 카드뉴스 기획"
+  brand_color: "#E1306C"
+  default_prompt: "Use $instagram-card-news to recommend or adapt a viral Korean food Instagram carousel with a strong hook, flexible story flow, and comment/save/share CTA."
+policy:
+  allow_implicit_invocation: true
