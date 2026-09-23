@@ -2134,6 +2134,21 @@ body {
                 <!-- JS 동적 생성 -->
               </div>
             </div>
+
+            <!-- 💰 수익 창출 핵심: 내 파트너스 링크 1초 등록 바 -->
+            <div class="affiliate-link-swap-box" style="margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11.5px; font-weight: 700; color: #fbbf24;">💰 내 제휴마케팅 링크 (수익 입금용):</span>
+                <span id="badge-mode-a-link-status" style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #fbbf24;">⚠️ 샘플 링크 (교체 권장)</span>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <input type="url" id="input-mode-a-real-link" class="input-control" style="font-size: 11.5px; padding: 7px 10px;" placeholder="내 쿠팡 파트너스 링크 붙여넣기 (예: https://link.coupang.com/a/...)">
+                <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
+              </div>
+              <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;">
+                💡 <strong>수익 보장 팁:</strong> 위 검색 버튼을 눌러 쿠팡 파트너스에서 내 링크를 복사해 넣으세요! 내 링크가 들어가야 구매 발생 시 수수료(3%)가 내 통장으로 입금됩니다.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -3609,6 +3624,7 @@ class ContentGeneratorEngine {
 
     // 멀티모달(Vision) 공통 지침: 첨부된 실제 제품 사진/상세페이지 캡처를 레퍼런스로 활용
     const multimodalHeader = `[📌 제미나이 멀티모달 시각 참조 지침]\n함께 첨부한 제품 사진(또는 상세페이지 캡처) 속 실제 제품의 외형, 디자인, 색상, 재질을 100% 동일하게 반영하여 생성할 것.\n\n`;
+    const cleanNegative = 'Strict negative prompt: no text, no words, no letters, no hangul, no typography, no alphabet, no labels, no watermark, no logo, no cheap sales graphics, no blurry noise, pure clean photograph only.';
 
     if (count === 3) {
       // ⚡ 3장: 스피드 임팩트형 (수납/정리/간편레시피)
@@ -3616,19 +3632,19 @@ class ContentGeneratorEngine {
 Scene: Professional appetizing editorial lifestyle photography of finished ${name}.
 Composition: Close-up hero shot placed cleanly on a modern table or slate plate.
 Lighting: Warm soft studio lighting with gentle natural reflections.
-Strict negative prompt: no watermark, no logo, no cheap templates, no blurry textures.
+${cleanNegative}
 이미지 생성해줘.`;
 
       const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Neat demonstration or flat-lay preparation shot of ${name} in actual practical use.
 Composition: Clean kitchen/home countertop setting, showing effortless step-by-step handling.
-Strict negative prompt: no watermark, no logo, no messy clutter, no distorted hands.
+${cleanNegative}
 이미지 생성해줘.`;
 
       const p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Extreme macro close-up showing stunning details, texture, and satisfying results of ${name}.
 Composition: High clarity detail shot eliciting strong desire and engagement.
-Strict negative prompt: no watermark, no logo, no artificial plastic look.
+${cleanNegative}
 이미지 생성해줘.`;
 
       prompts.push({
@@ -3669,25 +3685,25 @@ Strict negative prompt: no watermark, no logo, no artificial plastic look.
       const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Ultra-high quality authentic lifestyle product shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
 Composition: Clean focus on the product, natural soft bokeh in background. Bottom-left gradient vignette for text readability.
-Strict negative prompt: no watermark, no logo, no cheap sales flyer graphics, no cluttered background.
+${cleanNegative}
 이미지 생성해줘.`;
 
       const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Hands-on real demonstration shot showing practical usage of ${name}. ${isBeauty ? 'Showing realistic texture swatch on the palm of hand with natural skin tone.' : 'Human hands actively demonstrating how effortlessly the product works.'}
 Composition: Centered hands-on action, genuine home/studio lighting.
-Strict negative prompt: no watermark, no logo, no awkward AI fingers, no messy background.
+${cleanNegative}
 이미지 생성해줘.`;
 
       const p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Macro zoom close-up highlighting the superior finish, moisture, and fine craftsmanship of ${name}.
 Composition: High-detail close-up shot capturing reflections, gloss, and premium build quality.
-Strict negative prompt: no watermark, no logo, no blurry noise, no fake CGI look.
+${cleanNegative}
 이미지 생성해줘.`;
 
       const p4 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: ${isBeauty ? 'Aesthetic close-up of beautiful model lips or skin wearing the product, holding the item gracefully.' : 'Satisfying final outcome scene showing the product proudly placed in a clean, modern home environment.'}
 Composition: Confident, aesthetic, highly desirable visual.
-Strict negative prompt: no watermark, no logo, no unnatural skin, no cluttered UI.
+${cleanNegative}
 이미지 생성해줘.`;
 
       // 4컷 개별 씬 등록
@@ -3738,7 +3754,7 @@ Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage an
 Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
 Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
 Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
-Strict negative prompt: no watermark, no cheap sales graphics, no distorted hands, no blurry artifacts.
+${cleanNegative}
 이미지 생성해줘.`;
 
       prompts.push({
@@ -3756,7 +3772,7 @@ Strict negative prompt: no watermark, no cheap sales graphics, no distorted hand
 
     // 5장 기본
     return this.generate5ScenePrompts(name, cat).map((pPrompt, idx) => {
-      const fullP = `${multimodalHeader}${pPrompt}\n이미지 생성해줘.`;
+      const fullP = `${multimodalHeader}${pPrompt}\n${cleanNegative}\n이미지 생성해줘.`;
       return {
         slideNum: idx + 1,
         title: `${idx + 1}번 슬라이드 씬`,
@@ -3840,27 +3856,18 @@ Strict negative prompt: no watermark, no cheap sales graphics, no distorted hand
       capture: `완성된 깔끔한 결과물과 함께 ${name}의 디자인이 돋보이는 클로즈업 사진 추천`
     };
 
-    // 3단계: 첫 댓글 고정용 수익화 문구 (링크 3회 반복 탑재!)
-    const pinned_comment_ko = `${ftcDisclaimer}
+    // 3단계: 첫 댓글 고정용 수익화 문구 (스팸 필터 안전 단일 링크 + 공정위 문구 완비)
+    const pinned_comment_ko = `다들 이거 어디서 샀냐고 물어보셔서 링크 남겨둘게! 🤍
 
-다들 이거 쓸 때 제일 빡치는 게 뭐야? 😂
+👉 최저가 바로가기: ${link}
 
-✓ ${name} 하나로 시간 단축 & 설거지 1개로 끝
-✓ 손목에 무리 없이 누구나 1초 컷 완성
+(※ ${ftcDisclaimer})`;
 
-🔽 영상/사진 속 추천템 보러가기 🔽
-${link}
-${link}
-${link}`;
+    const pinned_comment_ja = `みんなこれどこで買ったか気になってるみたいだからリンク貼っとくね！✨
 
-    const pinned_comment_ja = `みんながこれ使う時、一番イライラすることって何？ ✨
+👉 最安値はこちら: ${isAmazon ? link : 'https://amzn.to/example'}
 
-✓ ${name} で時短＆洗い物から完全に解放
-✓ 手首に負担なく誰でも1秒でプロ並みの仕上がり
-
-🔽 動画で使った愛用アイテムはこちら 🔽
-${isAmazon ? link : 'https://amzn.to/example'}
-${isAmazon ? link : 'https://amzn.to/example'}
+(※ Amazonアソシエイト・プログラムの参加者として適格販売により収入を得ています。)`;
 
 └ 💡 일본어 뜻 (한국어 해석):
 다들 이거 쓸 때 제일 짜증 나는 게 뭐야? ✨
@@ -4048,11 +4055,19 @@ ${ftcText}
     return {
       keywords: ['나도', '나두', '링크', '정보', '513', '구매처'],
       keywordsText: '나도, 나두, 링크, 정보, 513, 구매처',
+      triggerKeywords: '나도, 나두, 링크, 정보, 513, 구매처',
       autoReply: `DM으로 요청하신 최저가 구매 링크와 상세 정보 보내드렸어요! 확인해 보세요 💌`,
-      followerDm: `안녕하세요! 요청하신 [${name}] 최저가 구매 정보입니다.
-늘 응원해 주셔서 감사합니다 ❤️ 아래 상품링크 버튼을 눌러 확인해 보세요!`,
-      nonFollowerDm: `요청하신 [${name}] 최저가 구매 정보입니다! 아래 상품링크 버튼을 확인해 보세요.
-팔로우해 두시면 매주 삶의 질 상승 대란템 정보를 가장 먼저 받아보실 수 있어요 ✨`,
+      autoReplyComment: `DM으로 요청하신 최저가 구매 링크와 상세 정보 보내드렸어요! 확인해 보세요 💌`,
+      followerDm: `안녕하세요! 요청하신 [${name}] 최저가 구매 좌표입니다 🤍
+늘 응원해 주셔서 감사합니다 ❤️ 아래 링크에서 할인 혜택을 확인해 보세요!
+👉 최저가 구매하기: ${link}
+
+(※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로 수수료를 제공받습니다.)`,
+      nonFollowerDm: `요청하신 [${name}] 최저가 구매 좌표입니다 🤍
+👉 최저가 구매하기: ${link}
+
+팔로우해 두시면 매주 삶의 질 상승 대란템 정보를 가장 먼저 받아보실 수 있어요 ✨
+(※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로 수수료를 제공받습니다.)`,
       productLink: link
     };
   }
@@ -4865,7 +4880,7 @@ class CardNewsStudioEngine {
     if (slide.type === 'cover' && pos === 'bottom') {
       // 1번 표지 (하단 배치): 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (Dayzhome 시그니처)
       const pad = is916 ? 70 : 65;
-      let startY = is916 ? (height - 400) : (height - 160);
+      let startY = is916 ? (height - 400) : (height - 190);
       const titleLines = slide.mainTitle.split('\n');
       const titleSize = is916 ? 66 : 62;
       const titleStep = is916 ? 88 : 82;
@@ -5765,6 +5780,11 @@ function startViralMakerApp() {
     state.product.platform = platId;
     state.generatedData = null;
 
+    if (inputModeARealLink) {
+      inputModeARealLink.value = sampleLink;
+      updateModeALinkStatus(sampleLink);
+    }
+
     if (selectedViralTitle) selectedViralTitle.textContent = item.name;
     if (selectedPlatformBadge && platMeta) {
       selectedPlatformBadge.textContent = `${platMeta.icon} ${platMeta.shortName} 모드`;
@@ -5788,6 +5808,61 @@ function startViralMakerApp() {
       updateCopyTextView();
     }
     showToast(`'${platMeta ? platMeta.name : platId}' 스타일로 전환되었습니다! ✨`);
+  }
+
+  // 💰 Mode A 실시간 제휴 링크 상태 판별 & 동기화
+  const inputModeARealLink = document.getElementById('input-mode-a-real-link');
+  const btnPasteModeARealLink = document.getElementById('btn-paste-mode-a-real-link');
+  const badgeModeALinkStatus = document.getElementById('badge-mode-a-link-status');
+
+  function updateModeALinkStatus(url) {
+    if (!badgeModeALinkStatus) return;
+    const isSample = !url || url.includes('/a/item') || url.includes('sample') || url.endsWith('/a/') || /%[0-9A-Fa-f]{2}/.test(url);
+    if (isSample) {
+      badgeModeALinkStatus.textContent = '⚠️ 샘플 링크 (교체 권장)';
+      badgeModeALinkStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+      badgeModeALinkStatus.style.color = '#fbbf24';
+    } else {
+      badgeModeALinkStatus.textContent = '✅ 내 파트너스 링크 적용됨 (수익 적립 OK)';
+      badgeModeALinkStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+      badgeModeALinkStatus.style.color = '#34d399';
+    }
+  }
+
+  if (inputModeARealLink) {
+    inputModeARealLink.addEventListener('input', () => {
+      const val = inputModeARealLink.value.trim();
+      if (val) {
+        inputLink.value = val;
+        state.product.link = val;
+        updateModeALinkStatus(val);
+        updateModeBBadge();
+        if (typeof updateCopyTextView === 'function') updateCopyTextView();
+      }
+    });
+  }
+
+  if (btnPasteModeARealLink && inputModeARealLink) {
+    btnPasteModeARealLink.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && text.startsWith('http')) {
+          inputModeARealLink.value = text.trim();
+          inputLink.value = text.trim();
+          state.product.link = text.trim();
+          updateModeALinkStatus(text.trim());
+          updateModeBBadge();
+          if (typeof updateCopyTextView === 'function') updateCopyTextView();
+          showToast('내 제휴 링크가 적용되었습니다! 수익 적립 준비 완료 🎉');
+        } else {
+          inputModeARealLink.focus();
+          showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+        }
+      } catch (err) {
+        inputModeARealLink.focus();
+        showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+      }
+    });
   }
 
   function applyViralItem(item) {
@@ -6455,9 +6530,9 @@ function startViralMakerApp() {
       if (editorialAltTextarea) editorialAltTextarea.value = (ed.altList || []).join('\n');
     } else if (ch === 'coupang-dm') {
       if (coupangDmContainer) coupangDmContainer.style.display = 'block';
-      const dm = state.generatedData?.coupangDmKit || ContentGenerator.generateCoupangAutoDmKit(state.product);
-      if (dmKeywordsContent) dmKeywordsContent.textContent = dm.triggerKeywords || '정보, 링크, 좌표, 추천, 꿀템';
-      if (dmReplyContent) dmReplyContent.textContent = dm.autoReplyComment || '';
+      const dm = state.generatedData?.coupangAutoDmKit || state.generatedData?.coupangDmKit || ContentGenerator.generateCoupangAutoDmKit(state.product);
+      if (dmKeywordsContent) dmKeywordsContent.textContent = dm.triggerKeywords || dm.keywordsText || '나도, 나두, 링크, 정보, 513, 구매처';
+      if (dmReplyContent) dmReplyContent.textContent = dm.autoReplyComment || dm.autoReply || '';
       if (dmFollowerContent) dmFollowerContent.textContent = dm.followerDm || '';
       if (dmNonfollowerContent) dmNonfollowerContent.textContent = dm.nonFollowerDm || '';
     } else {

@@ -390,6 +390,11 @@ function startViralMakerApp() {
     state.product.platform = platId;
     state.generatedData = null;
 
+    if (inputModeARealLink) {
+      inputModeARealLink.value = sampleLink;
+      updateModeALinkStatus(sampleLink);
+    }
+
     if (selectedViralTitle) selectedViralTitle.textContent = item.name;
     if (selectedPlatformBadge && platMeta) {
       selectedPlatformBadge.textContent = `${platMeta.icon} ${platMeta.shortName} 모드`;
@@ -413,6 +418,61 @@ function startViralMakerApp() {
       updateCopyTextView();
     }
     showToast(`'${platMeta ? platMeta.name : platId}' 스타일로 전환되었습니다! ✨`);
+  }
+
+  // 💰 Mode A 실시간 제휴 링크 상태 판별 & 동기화
+  const inputModeARealLink = document.getElementById('input-mode-a-real-link');
+  const btnPasteModeARealLink = document.getElementById('btn-paste-mode-a-real-link');
+  const badgeModeALinkStatus = document.getElementById('badge-mode-a-link-status');
+
+  function updateModeALinkStatus(url) {
+    if (!badgeModeALinkStatus) return;
+    const isSample = !url || url.includes('/a/item') || url.includes('sample') || url.endsWith('/a/') || /%[0-9A-Fa-f]{2}/.test(url);
+    if (isSample) {
+      badgeModeALinkStatus.textContent = '⚠️ 샘플 링크 (교체 권장)';
+      badgeModeALinkStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+      badgeModeALinkStatus.style.color = '#fbbf24';
+    } else {
+      badgeModeALinkStatus.textContent = '✅ 내 파트너스 링크 적용됨 (수익 적립 OK)';
+      badgeModeALinkStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+      badgeModeALinkStatus.style.color = '#34d399';
+    }
+  }
+
+  if (inputModeARealLink) {
+    inputModeARealLink.addEventListener('input', () => {
+      const val = inputModeARealLink.value.trim();
+      if (val) {
+        inputLink.value = val;
+        state.product.link = val;
+        updateModeALinkStatus(val);
+        updateModeBBadge();
+        if (typeof updateCopyTextView === 'function') updateCopyTextView();
+      }
+    });
+  }
+
+  if (btnPasteModeARealLink && inputModeARealLink) {
+    btnPasteModeARealLink.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && text.startsWith('http')) {
+          inputModeARealLink.value = text.trim();
+          inputLink.value = text.trim();
+          state.product.link = text.trim();
+          updateModeALinkStatus(text.trim());
+          updateModeBBadge();
+          if (typeof updateCopyTextView === 'function') updateCopyTextView();
+          showToast('내 제휴 링크가 적용되었습니다! 수익 적립 준비 완료 🎉');
+        } else {
+          inputModeARealLink.focus();
+          showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+        }
+      } catch (err) {
+        inputModeARealLink.focus();
+        showToast('입력창을 꾹 눌러 복사한 쿠팡 링크를 붙여넣으세요.');
+      }
+    });
   }
 
   function applyViralItem(item) {
@@ -1080,9 +1140,9 @@ function startViralMakerApp() {
       if (editorialAltTextarea) editorialAltTextarea.value = (ed.altList || []).join('\n');
     } else if (ch === 'coupang-dm') {
       if (coupangDmContainer) coupangDmContainer.style.display = 'block';
-      const dm = state.generatedData?.coupangDmKit || ContentGenerator.generateCoupangAutoDmKit(state.product);
-      if (dmKeywordsContent) dmKeywordsContent.textContent = dm.triggerKeywords || '정보, 링크, 좌표, 추천, 꿀템';
-      if (dmReplyContent) dmReplyContent.textContent = dm.autoReplyComment || '';
+      const dm = state.generatedData?.coupangAutoDmKit || state.generatedData?.coupangDmKit || ContentGenerator.generateCoupangAutoDmKit(state.product);
+      if (dmKeywordsContent) dmKeywordsContent.textContent = dm.triggerKeywords || dm.keywordsText || '나도, 나두, 링크, 정보, 513, 구매처';
+      if (dmReplyContent) dmReplyContent.textContent = dm.autoReplyComment || dm.autoReply || '';
       if (dmFollowerContent) dmFollowerContent.textContent = dm.followerDm || '';
       if (dmNonfollowerContent) dmNonfollowerContent.textContent = dm.nonFollowerDm || '';
     } else {

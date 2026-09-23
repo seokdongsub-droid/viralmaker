@@ -535,7 +535,7 @@ class CardNewsStudioEngine {
     if (slide.type === 'cover' && pos === 'bottom') {
       // 1번 표지 (하단 배치): 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (Dayzhome 시그니처)
       const pad = is916 ? 70 : 65;
-      let startY = is916 ? (height - 400) : (height - 160);
+      let startY = is916 ? (height - 400) : (height - 190);
       const titleLines = slide.mainTitle.split('\n');
       const titleSize = is916 ? 66 : 62;
       const titleStep = is916 ? 88 : 82;

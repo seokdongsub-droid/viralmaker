@@ -1,47 +1,47 @@
-=== ViralMaker Deploy Log (2026-09-23 23:06:18) ===
+=== ViralMaker Deploy Log (2026-09-23 23:25:25) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
-M deploy.py
- M deploy_log.txt
+M deploy_log.txt
  M index.html
  M js/app.js
  M js/cardnews.js
+ M js/generator.js
  M viralmaker_portable.html
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
-warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/cardnews.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/generator.js', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
-M  deploy.py
 M  deploy_log.txt
 M  index.html
 M  js/app.js
 M  js/cardnews.js
+M  js/generator.js
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_230618)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_232525)
   [출력]
-[main f0d5bee] ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_230618)
- 6 files changed, 161 insertions(+), 37 deletions(-)
+[main 0b72338] ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_232525)
+ 6 files changed, 418 insertions(+), 253 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+0b72338 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_232525)
 f0d5bee ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_230618)
 7b2fc46 ViralMaker v3.1: Fix 4:5 Instagram Aspect Ratio & Add Canvas Quick Ratio Bar (20260923_212502)
-6c8ccf1 ViralMaker v3.1: 4-Cut Collage Splitter & 1-Tap Workplace Automation (20260923_211137)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -49,9 +49,9 @@ f0d5bee ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   7b2fc46..f0d5bee  main -> main
+   f0d5bee..0b72338  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.1_20260923_230618
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.1_20260923_232525
 
 === End of Log ===
