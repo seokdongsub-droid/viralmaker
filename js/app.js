@@ -1490,7 +1490,7 @@ function startViralMakerApp() {
 
   function syncSlideCountUI(count) {
     count = parseInt(count, 10) || 4;
-    if (count < 3) count = 3;
+    if (count < 1) count = 1;
     if (count > 10) count = 10;
     state.slideCount = count;
 
@@ -1498,6 +1498,8 @@ function startViralMakerApp() {
       CardNewsStudio.setSlideCount(count);
     }
     const countMap = {
+      1: '1장 (원컷 피드)',
+      2: '2장 (비포&애프터)',
       3: '3장 (스피드)',
       4: '4장 (인스타 표준)',
       5: '5장 (스토리)',
@@ -1542,7 +1544,7 @@ function startViralMakerApp() {
   if (inputCustomSlideCount) {
     inputCustomSlideCount.addEventListener('change', () => {
       let val = parseInt(inputCustomSlideCount.value, 10) || 4;
-      if (val < 3) val = 3;
+      if (val < 1) val = 1;
       if (val > 10) val = 10;
       inputCustomSlideCount.value = val;
       syncSlideCountUI(val);
@@ -1597,16 +1599,20 @@ function startViralMakerApp() {
     });
   });
 
-  // 슬라이드 퀵 바 동적 렌더링 헬퍼 (3장 ~ 10장 대응)
+  // 슬라이드 퀵 바 동적 렌더링 헬퍼 (1장 ~ 10장 대응)
   function updateSlideQuickBar(count) {
     const bar = document.getElementById('slide-quick-bar');
     if (!bar) return;
     bar.innerHTML = '';
+    const labels1 = ['1. 원컷 피드(풀샷)'];
+    const labels2 = ['1. 비포(고민/문제)', '2. 애프터(완벽해결)'];
     const labels3 = ['1. 표지(풀샷)', '2. 고민(과정)', '3. 완성(CTA)'];
     const labels4 = ['1. 표지(풀샷)', '2. 스와치(액션)', '3. 디테일(질감)', '4. 완성(CTA)'];
     const labels5 = ['1. 표지(풀샷)', '2. 고민(줌)', '3. 사용(액션)', '4. 디테일(접사)', '5. 완성(CTA)'];
     let labels = [];
-    if (count === 3) labels = labels3;
+    if (count === 1) labels = labels1;
+    else if (count === 2) labels = labels2;
+    else if (count === 3) labels = labels3;
     else if (count === 4) labels = labels4;
     else if (count === 5) labels = labels5;
     else {

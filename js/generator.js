@@ -179,6 +179,80 @@ class ContentGeneratorEngine {
     const isBeauty = cat === 'beauty';
     const isDM = monetizationMode === 'dm';
 
+    if (count === 1) {
+      // 🌟 1장: 단독 피드 / 원컷 임팩트 / 썸네일
+      if (isJa) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'bottom',
+            badge: '神アイテム 찐レビュー 🔥',
+            mainTitle: `${name}\n本音で使ってみた感想 ✨`,
+            subTitle: isDM ? '詳細はコメントで「ナド」と書くとDMでお届け💌' : `${memo}\n👉 商品リンクはプロフィールのリンクから🔗`,
+            extra: 'QOL爆上がり確定'
+          }
+        ];
+      }
+      return [
+        {
+          slideNum: 1,
+          type: 'cover',
+          textPosition: 'bottom',
+          badge: 'SNS 대란템 찐후기 🔥',
+          mainTitle: `${name}\n솔직 실사용 리뷰 ✨`,
+          subTitle: isDM ? '구매처 정보는 댓글로 "나도" 남겨주시면 DM 쏴드려요!' : `${memo}\n👉 제품 상세 정보는 프로필 링크 확인🔗`,
+          extra: '삶의 질 수직상승 꿀템'
+        }
+      ];
+    }
+
+    if (count === 2) {
+      // ⚡ 2장: 비포 & 애프터 / 초간단 2컷 완성형
+      if (isJa) {
+        return [
+          {
+            slideNum: 1,
+            type: 'problem',
+            textPosition: 'center',
+            badge: 'BEFORE & お悩み 🤔',
+            mainTitle: 'まだこれで悩んでいませんか？\n毎日のプチストレス解消！',
+            subTitle: `${memo}\n一日も早く買い替えて生活を快適に！`,
+            extra: 'チェックポイント'
+          },
+          {
+            slideNum: 2,
+            type: 'cta',
+            textPosition: 'center',
+            badge: 'AFTER & 解決 💡',
+            mainTitle: `${name}\nこれ1つで完全解決！`,
+            subTitle: isDM ? 'コメントで「ナド」と書くと最安値リンクをDMでお届け💌' : `👉 プロフィールのリンクから [${name}] をチェック！🔗`,
+            extra: '今すぐチェック！'
+          }
+        ];
+      }
+      return [
+        {
+          slideNum: 1,
+          type: 'problem',
+          textPosition: 'center',
+          badge: 'BEFORE & 고민 🤔',
+          mainTitle: '아직도 이것 때문에\n스트레스 받고 계신가요?',
+          subTitle: `${memo}\n더 이상 참지 말고 하루라도 빨리 바꿔보세요!`,
+          extra: 'SNS 화제의 꿀템'
+        },
+        {
+          slideNum: 2,
+          type: 'cta',
+          textPosition: 'center',
+          badge: 'AFTER & 완벽 해결 💡',
+          mainTitle: `${name}\n하나로 고민 완전 해결!`,
+          subTitle: isDM ? '댓글에 "나도" 남겨주시면 최저가 구매처 DM 바로 쏴드려요!' : `👉 프로필 링크에서 [${name}] 상세 정보를 확인하세요! 🔗`,
+          extra: '삶의 질 수직상승'
+        }
+      ];
+    }
+
     if (count === 3) {
       // ⚡ 3장: 스피드 임팩트형 (과일 라이스페이퍼 롤 스타일)
       if (isJa) {
@@ -378,6 +452,60 @@ class ContentGeneratorEngine {
     // 멀티모달(Vision) 공통 지침: 첨부된 실제 제품 사진/상세페이지 캡처를 레퍼런스로 활용
     const multimodalHeader = `[📌 제미나이 멀티모달 시각 참조 지침]\n함께 첨부한 제품 사진(또는 상세페이지 캡처) 속 실제 제품의 외형, 디자인, 색상, 재질을 100% 동일하게 반영하여 생성할 것.\n\n`;
     const cleanNegative = 'Strict negative prompt: no text, no words, no letters, no hangul, no typography, no alphabet, no labels, no watermark, no logo, no cheap sales graphics, no blurry noise, pure clean photograph only.';
+
+    if (count === 1) {
+      const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Commercial hero lifestyle shot of ${name} beautifully positioned in aesthetic modern interior.
+Composition: Clean center framing, studio rim lighting, crisp sharp focus.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 1,
+        title: '1번 단독 원컷 피드 (Single Hero Shot)',
+        role: '1번 단독 원컷 피드 (Single Hero Shot)',
+        previewHint: '4:5 인스타 | 단독 피드',
+        exactText: `${name}\n솔직 실사용 리뷰`,
+        promptText: p1,
+        prompt: p1
+      });
+      return prompts;
+    }
+
+    if (count === 2) {
+      const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Realistic relatable before scene highlighting daily frustration or inconvenience related to ${name}.
+Composition: Authentic lifestyle setting conveying the need for an effortless solution.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Dramatic satisfying after scene showcasing ${name} solving the issue with perfection.
+Composition: Pristine, tidy, bright, harmonious lifestyle environment highlighting the product.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 1,
+        title: '1번 비포/고민 컷 (Before Hook)',
+        role: '1번 비포/고민 컷 (Before Hook)',
+        previewHint: '4:5 인스타 | 고민 유발',
+        exactText: '아직도 이것 때문에 스트레스 받고 계신가요?',
+        promptText: p1,
+        prompt: p1
+      });
+
+      prompts.push({
+        slideNum: 2,
+        title: '2번 애프터/해결 컷 (After Solution CTA)',
+        role: '2번 애프터/해결 컷 (After Solution CTA)',
+        previewHint: '4:5 인스타 | 완벽 해결',
+        exactText: `${name}\n하나로 고민 완전 해결!`,
+        promptText: p2,
+        prompt: p2
+      });
+      return prompts;
+    }
 
     if (count === 3) {
       // ⚡ 3장: 스피드 임팩트형 (수납/정리/간편레시피)

@@ -44,7 +44,7 @@ class CardNewsStudioEngine {
   }
 
   setSlideCount(count) {
-    if (count < 3 || count > 10) return;
+    if (count < 1 || count > 10) return;
     this.slideCount = count;
     if (this.currentSlideIndex >= count) {
       this.currentSlideIndex = count - 1;
@@ -53,9 +53,9 @@ class CardNewsStudioEngine {
   }
 
   toggleSlideCount() {
-    const list = [3, 4, 5, 6, 7, 8, 10];
+    const list = [1, 2, 3, 4, 5, 6, 7, 8, 10];
     const currIdx = list.indexOf(this.slideCount);
-    const nextCount = (currIdx >= 0 && currIdx < list.length - 1) ? list[currIdx + 1] : 3;
+    const nextCount = (currIdx >= 0 && currIdx < list.length - 1) ? list[currIdx + 1] : 1;
     this.setSlideCount(nextCount);
     return nextCount;
   }
