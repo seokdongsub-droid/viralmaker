@@ -2084,11 +2084,11 @@ body {
           <div class="selector-group">
             <div class="selector-group-label">
               <span>💰 수익화 방식</span>
-              <span id="label-monetize-hint" style="color: var(--success);">기본 링크</span>
+              <span id="label-monetize-hint" style="color: var(--success);">프로필 링크 (무료)</span>
             </div>
             <div class="chip-btn-group" id="monetize-mode-group">
-              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필/댓글 링크</button>
-              <button type="button" class="chip-btn" data-mode="dm">💬 자동 DM</button>
+              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필 링크 (무료/기본)</button>
+              <button type="button" class="chip-btn" data-mode="dm">💬 댓글 DM (선택옵션)</button>
             </div>
           </div>
         </div>
@@ -6849,6 +6849,54 @@ function startViralMakerApp() {
       }
     });
   }
+
+  // Tab 1 슬라이드 장수 칩 클릭 리스너
+  const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
+  slideCountChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const count = parseInt(chip.getAttribute('data-count'), 10);
+      if (count && typeof syncSlideCountUI === 'function') {
+        syncSlideCountUI(count);
+        showToast(`🎞️ 카드뉴스 장수: ${count}장으로 선택되었습니다!`);
+      }
+    });
+  });
+
+  // Tab 1 수익화 방식 칩 클릭 리스너 (프로필 링크 vs 댓글 자동 DM)
+  const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
+  monetizeModeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const mode = chip.getAttribute('data-mode') || 'link';
+      state.monetizationMode = mode;
+      monetizeModeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const labelMonetizeHint = document.getElementById('label-monetize-hint');
+      if (labelMonetizeHint) {
+        labelMonetizeHint.textContent = mode === 'dm' ? '댓글 자동 DM' : '프로필 링크 (무료)';
+        labelMonetizeHint.style.color = mode === 'dm' ? 'var(--accent-pink)' : 'var(--success)';
+      }
+      showToast(mode === 'dm' ? '💬 수익화: 댓글 자동 DM 모드로 전환되었습니다.' : '🔗 수익화: 프로필 링크 (기본/무료) 모드로 전환되었습니다.');
+    });
+  });
+
+  // Tab 1 화면 비율 칩 클릭 리스너 (4:5, 9:16, 1:1)
+  const tab1RatioChips = document.querySelectorAll('.tab1-ratio-chip');
+  tab1RatioChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const r = chip.getAttribute('data-ratio');
+      if (r && typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setAspectRatio) {
+        CardNewsStudio.setAspectRatio(r);
+        tab1RatioChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const ratioBtns = document.querySelectorAll('.ratio-btn');
+        ratioBtns.forEach(btn => {
+          if (btn.getAttribute('data-ratio') === r) btn.classList.add('active');
+          else btn.classList.remove('active');
+        });
+        showToast(`화면 비율: ${r}로 변경되었습니다! 📐`);
+      }
+    });
+  });
 
   // 슬라이드 퀵 바 동적 렌더링 헬퍼 (3장 / 4장 / 5장 대응)
   function updateSlideQuickBar(count) {
