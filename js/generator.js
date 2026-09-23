@@ -516,8 +516,13 @@ ${cleanNegative}
     const platId = p.platform || 'coupang';
     const isAmazon = platId === 'amazon_jp';
 
-    // 쿠팡 파트너스 공정위 문구
-    const ftcDisclaimer = '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';
+    // 제휴 플랫폼 맞춤 공정위 문구 (쿠팡, 오늘의집, 컬리, 오아시스, 토스 등)
+    const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId])
+      ? AffiliatePlatforms[platId]
+      : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['coupang'] : null);
+    const ftcDisclaimer = (platMeta && platMeta.disclaimer) 
+      ? platMeta.disclaimer.replace(/^※\s*/, '') 
+      : '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';
 
     // 유형 1: 공포자극/의외성형
     const type1 = {
@@ -616,9 +621,12 @@ ${cleanNegative}
     const memo = p.memo;
     const link = p.link || 'https://link.coupang.com/...';
     const platId = p.platform || 'coupang';
-    const isFood = p.category === 'kitchen_food';
-
-    const ftcText = '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';
+    const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId])
+      ? AffiliatePlatforms[platId]
+      : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['coupang'] : null);
+    const ftcText = (platMeta && platMeta.disclaimer)
+      ? platMeta.disclaimer.replace(/^※\s*/, '')
+      : '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';
 
     const fullText = `[${name}] 솔직 후기! 내돈내산 삶의 질 수직상승템 추천
 

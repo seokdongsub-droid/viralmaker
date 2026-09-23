@@ -1,4 +1,4 @@
-=== ViralMaker Deploy Log (2026-09-23 23:50:59) ===
+=== ViralMaker Deploy Log (2026-09-24 00:02:15) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
@@ -25,17 +25,17 @@ M  js/app.js
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_235059)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_000215)
   [출력]
-[main 2d253d5] ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_235059)
- 4 files changed, 109 insertions(+), 13 deletions(-)
+[main d7a6187] ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_000215)
+ 4 files changed, 47 insertions(+), 37 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+d7a6187 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_000215)
 2d253d5 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_235059)
 0949422 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_234052)
-0b72338 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260923_232525)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -43,9 +43,9 @@ M  viralmaker_portable.html
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   0949422..2d253d5  main -> main
+   2d253d5..d7a6187  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.1_20260923_235059
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.1_20260924_000215
 
 === End of Log ===

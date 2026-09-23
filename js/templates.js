@@ -14,6 +14,12 @@ const AffiliatePlatforms = {
     badgeText: '🚀 로켓배송 내돈내산',
     deliveryBenefit: '로켓배송으로 다음 날 아침 문앞 바로 도착!',
     disclaimer: '※ 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.',
+    portalUrl: 'https://partners.coupang.com',
+    portalName: '쿠팡 파트너스 공식 웹사이트',
+    commissionRate: '구매 결제액의 3% 무제한 현금 입금',
+    guideHowTo: '1. 쿠팡 파트너스(partners.coupang.com) 로그인\n2. 상단 검색창에 상품명 검색 후 [간편 링크 생성] 클릭\n3. 복사한 링크를 아래 [내 제휴마케팅 링크] 칸에 붙여넣기',
+    linkPlaceholder: '내 쿠팡 파트너스 링크 붙여넣기 (예: https://link.coupang.com/a/...)',
+    tipText: '💡 쿠팡 파트너스에서 [링크 생성]하여 붙여넣으세요! 구매 발생 시 3% 수수료가 내 계좌로 입금됩니다.',
     searchUrl: (q) => `https://www.coupang.com/np/search?component=&q=${encodeURIComponent(q)}`
   },
   ohou: {
@@ -25,6 +31,12 @@ const AffiliatePlatforms = {
     badgeText: '🏠 오늘의집 감성픽',
     deliveryBenefit: '오늘의집 단독 특가 & 감성 인테리어 만족도 1위!',
     disclaimer: '※ 본 게시물은 오늘의집 큐레이터/크리에이터 활동을 통해 일정 수수료를 제공받을 수 있습니다.',
+    portalUrl: 'https://ohou.se',
+    portalName: '오늘의집 큐레이터 프로그램',
+    commissionRate: '가구/인테리어/살림템 판매 건당 3%~5% 현금 정산',
+    guideHowTo: '1. 오늘의집 앱 ➔ 마이페이지 ➔ [큐레이터 신청] (누구나 1초 승인)\n2. 추천하고 싶은 상품 페이지에서 우측 상단 [공유] ➔ [큐레이터 링크 복사]\n3. 복사한 링크를 아래 칸에 붙여넣기',
+    linkPlaceholder: '내 오늘의집 큐레이터 링크 붙여넣기 (예: https://ohou.se/productions/...)',
+    tipText: '💡 오늘의집 상품 페이지에서 [공유 ➔ 큐레이터 링크 복사]를 붙여넣으세요! 구매 발생 시 3~5% 수익이 내 통장으로 입금됩니다.',
     searchUrl: (q) => `https://ohou.se/productions/feed?query=${encodeURIComponent(q)}`
   },
   kurly: {
@@ -36,6 +48,12 @@ const AffiliatePlatforms = {
     badgeText: '💜 컬리 샛별배송',
     deliveryBenefit: '내일 아침 7시 전 신선하게 문앞 도착하는 샛별배송!',
     disclaimer: '※ 본 포스팅은 마켓컬리 추천인/제휴 활동의 일환으로 일정 혜택을 제공받을 수 있습니다.',
+    portalUrl: 'https://www.kurly.com',
+    portalName: '마켓컬리 친구초대 & 크리에이터',
+    commissionRate: '친구초대 첫 주문 시 건당 5,000원 적립금 & 제휴 리워드',
+    guideHowTo: '1. 마켓컬리 앱 ➔ [마이컬리] ➔ [친구초대 5,000원 적립]\n2. 친구초대 전용 링크(또는 컬리 크리에이터 제휴 링크) 복사\n3. 복사한 링크를 아래 칸에 붙여넣기',
+    linkPlaceholder: '내 마켓컬리 초대/제휴 링크 붙여넣기 (예: https://www.kurly.com/...)',
+    tipText: '💡 마이컬리 [친구초대 링크]나 크리에이터 링크를 붙여넣으세요! 첫 주문 시 건당 5,000원 적립금(현금처럼 사용)이 들어옵니다.',
     searchUrl: (q) => `https://www.kurly.com/search?sword=${encodeURIComponent(q)}`
   },
   oasis: {
@@ -47,6 +65,12 @@ const AffiliatePlatforms = {
     badgeText: '🌱 오아시스 새벽배송',
     deliveryBenefit: '산지직송 안심 유기농·친환경 새벽 신선배송!',
     disclaimer: '※ 본 게시물은 오아시스마켓 추천/서포터즈 활동의 일환으로 일정 혜택을 받을 수 있습니다.',
+    portalUrl: 'https://www.oasis.co.kr',
+    portalName: '오아시스마켓 추천인 & 서포터즈',
+    commissionRate: '추천 가입 및 첫 주문 시 건당 5,000원 쿠폰/포인트 적립',
+    guideHowTo: '1. 오아시스마켓 앱/웹 ➔ 마이페이지 ➔ [친구 추천 이벤트]\n2. 내 추천인 링크 복사\n3. 복사한 링크를 아래 칸에 붙여넣기',
+    linkPlaceholder: '내 오아시스마켓 추천 링크 붙여넣기 (예: https://www.oasis.co.kr/...)',
+    tipText: '💡 오아시스마켓 [친구추천 링크]를 붙여넣으세요! 추천받은 사람이 가입 후 주문하면 건당 5,000원 포인트가 적립됩니다.',
     searchUrl: (q) => `https://www.oasis.co.kr/product/search?keyword=${encodeURIComponent(q)}`
   },
   toss: {
@@ -58,6 +82,12 @@ const AffiliatePlatforms = {
     badgeText: '⚡ 토스쇼핑 쉐어링크 핫딜',
     deliveryBenefit: '토스쇼핑 단독 특가 & 토스페이 포인트 추가 적립 혜택!',
     disclaimer: '※ 본 게시물은 토스쇼핑 쉐어링크/제휴 활동의 일환으로 일정 혜택을 제공받을 수 있습니다.',
+    portalUrl: 'https://toss.im',
+    portalName: '토스쇼핑 쉐어링크 (토스 앱)',
+    commissionRate: '구매 결제액의 2%~5% 토스포인트 즉시 적립 (현금 1:1 출금 가능)',
+    guideHowTo: '1. 스마트폰 [토스 앱] 실행 ➔ 하단 [토스쇼핑] 탭 이동\n2. 핫딜 상품 상세페이지에서 [공유하고 포인트 받기] 버튼 터치\n3. 복사된 쉐어링크를 아래 칸에 붙여넣기',
+    linkPlaceholder: '내 토스쇼핑 쉐어링크 붙여넣기 (예: https://toss.im/...)',
+    tipText: '💡 토스 앱 ➔ 토스쇼핑 ➔ 상품 [공유하고 포인트 받기] 링크를 붙여넣으세요! 구매 발생 시 2~5% 토스포인트(현금 1:1 출금)가 즉시 적립됩니다.',
     searchUrl: (q) => `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q + ' 토스쇼핑')}`
   },
   smartstore: {
@@ -69,6 +99,12 @@ const AffiliatePlatforms = {
     badgeText: '📦 네이버 도착보장',
     deliveryBenefit: '네이버 도착보장 & 공식 스토어 찐리뷰 보장!',
     disclaimer: '※ 본 포스팅은 공식 제휴/서포터즈 활동의 일환으로 작성되었습니다.',
+    portalUrl: 'https://sell.smartstore.naver.com',
+    portalName: '네이버 스마트스토어 센터',
+    commissionRate: '스토어 판매 수익 및 네이버페이 포인트 혜택',
+    guideHowTo: '1. 내 스마트스토어 상품 URL 또는 네이버 제휴 링크 복사\n2. 복사한 링크를 아래 칸에 붙여넣기',
+    linkPlaceholder: '내 스마트스토어 링크 붙여넣기 (예: https://smartstore.naver.com/...)',
+    tipText: '💡 내 스마트스토어 상품 링크나 네이버 제휴 링크를 붙여넣으시면 네이버 도착보장/정품인증 스타일로 자동 세팅됩니다.',
     searchUrl: (q) => `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q)}`
   },
   amazon_jp: {
@@ -80,6 +116,12 @@ const AffiliatePlatforms = {
     badgeText: 'Amazonベストセラー 🔥',
     deliveryBenefit: 'Amazonプライム翌日配送対応！',
     disclaimer: '※ 当アカウントはAmazonアソシエイト・プログラムの参加者です。',
+    portalUrl: 'https://affiliate.amazon.co.jp',
+    portalName: 'Amazon アソシエイト・プログラム',
+    commissionRate: '売上の 2%~10% 現金またはAmazonギフト券還元',
+    guideHowTo: '1. Amazonアソシエイトにログインし商品URLから短縮アソシエイトリンク(amzn.to/...)を生成\n2. 下記の入力欄に貼り付け',
+    linkPlaceholder: 'Amazonアソシエイトリンク (例: https://amzn.to/...)',
+    tipText: '💡 Amazonアソシエイトの短縮リンクを入力すると、日本の薬機法および景表法に準拠した文面が自動生成されます。',
     searchUrl: (q) => `https://www.amazon.co.jp/s?k=${encodeURIComponent(q)}`
   },
   general: {
@@ -91,6 +133,12 @@ const AffiliatePlatforms = {
     badgeText: 'MY FAVORITE 🤍',
     deliveryBenefit: '직접 써보고 너무 만족스러워서 공유하는 찐추천템 🥹',
     disclaimer: '※ 링크 내 상품은 제휴 활동에 따른 일정 수수료를 제공받을 수 있습니다.',
+    portalUrl: 'https://inpock.co.kr',
+    portalName: '인포크링크 / 링크트리',
+    commissionRate: '프로필 링크를 통한 다중 상품 바이럴 판매',
+    guideHowTo: '인포크링크, 링크온, 링크트리 등 내 멀티링크 주소를 복사해 입력하세요.',
+    linkPlaceholder: '내 프로필 링크 붙여넣기 (예: https://inpock.co.kr/...)',
+    tipText: '💡 인포크링크나 개인 블로그/스토어 주소를 넣으시면 감성 찐후기 스타일로 맞춤 생성됩니다.',
     searchUrl: (q) => `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q)}`
   }
 };
@@ -287,6 +335,24 @@ const ViralProductLibrary = {
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-multipan',
       memo: '냄비랑 프라이팬 하나로 합쳐진 딥 디자인! 볶음, 국물, 파스타 다 되고 감성 화이트라 플레이팅 필요 없음'
+    },
+    {
+      icon: '🥣',
+      name: '컬리 시그니처 수제 꾸덕 그릭요거트 & 유기농 그래놀라',
+      title: '컬리 수제 그릭요거트',
+      search: '수제 그릭요거트 유기농 그래놀라',
+      defaultPlatform: 'kurly',
+      link: 'https://www.kurly.com/goods/sample-greek-yogurt',
+      memo: '크림치즈처럼 쫀득꾸덕 단백질 폭탄! 꿀이랑 그래놀라 올려서 아침 1분 만에 먹으면 카페 요거트볼 저리 가라'
+    },
+    {
+      icon: '🍅',
+      name: '오아시스 유기농 스테비아 방울토마토 & 제주 감귤',
+      title: '오아시스 유기농 방울토마토',
+      search: '오아시스 유기농 방울토마토',
+      defaultPlatform: 'oasis',
+      link: 'https://www.oasis.co.kr/product/detail/sample-tomato',
+      memo: '설탕 뿌린 것처럼 달콤한데 당류 부담 제로! 아이들 간식, 다이어트 야식으로 새벽 문앞 배송 1위'
     }
   ],
   living: [
@@ -345,6 +411,15 @@ const ViralProductLibrary = {
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-shelf',
       memo: '못 박을 필요 1도 없이 1초 초간편 설치! 지저분하던 주방 상판이 호텔 조리대처럼 깔끔해지는 마법'
+    },
+    {
+      icon: '🧻',
+      name: '컬리 무형광 3겹 천연펄프 프리미엄 롤화장지',
+      title: '컬리 3겹 천연펄프 화장지',
+      search: '무형광 3겹 천연펄프 롤화장지',
+      defaultPlatform: 'kurly',
+      link: 'https://www.kurly.com/goods/sample-tissue',
+      memo: '먼지 날림 0% 피부 자극 없는 100% 천연펄프! 마켓컬리 샛별배송 장바구니 필수 쟁여템'
     }
   ],
   lifestyle: [
@@ -393,6 +468,33 @@ const ViralProductLibrary = {
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/portable-fan',
       memo: '주머니에 쏙 들어가는 90g 초경량! 출퇴근 만원 지하철에서 나 혼자 시원함. 3단 풍속에 배터리 종일 감'
+    },
+    {
+      icon: '🔫',
+      name: '토스 공동구매 초경량 4단 미니 마사지건',
+      title: '토스 초경량 미니 마사지건',
+      search: '토스쇼핑 초경량 미니 마사지건',
+      defaultPlatform: 'toss',
+      link: 'https://toss.im/sample/massage-gun',
+      memo: '스마트폰 크기 360g인데 분당 3200RPM 파워 타격! 승모근, 종아리 알 5분 만에 싹 풀리는 쉐어링크 핫딜'
+    },
+    {
+      icon: '🧶',
+      name: '토스쇼핑 6중날 강력 충전식 보풀제거기',
+      title: '토스 6중날 보풀제거기',
+      search: '6중날 충전식 보풀제거기',
+      defaultPlatform: 'toss',
+      link: 'https://toss.im/sample/lint-remover',
+      memo: '보풀 가득하던 니트, 코트 1분 만에 새 옷 비주얼로 부활! 원단 손상 없이 슥 지나가면 끝'
+    },
+    {
+      icon: '🥩',
+      name: '오아시스 무항생제 1등급 한돈 칼집 삼겹살',
+      title: '오아시스 무항생제 삼겹살',
+      search: '오아시스 무항생제 한돈 삼겹살',
+      defaultPlatform: 'oasis',
+      link: 'https://www.oasis.co.kr/product/detail/sample-pork',
+      memo: '육즙 팡팡 터지는 당일 도축 새벽배송! 잡내 1도 없고 겉바속촉 에어프라이어 구이 최강자'
     }
   ]
 };

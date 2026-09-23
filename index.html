@@ -30,10 +30,13 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.2 멀티모달 프롬프트</span>
+          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.3 5대 제휴몰 전용관</span>
         </div>
       </div>
       <div class="header-actions">
+        <button type="button" class="btn-header" id="btn-open-affiliate-modal" style="border-color: #f59e0b; color: #fbbf24; font-weight: 700;" title="5대 제휴쇼핑몰 바로가기 & 수익 링크 발급 센터">
+          <span>🏬</span> <span>제휴센터</span>
+        </button>
         <button type="button" class="btn-header" id="btn-open-guide-modal" style="border-color: #6366f1; color: #a5b4fc; font-weight: 700;" title="초보자 30초 사용법 가이드">
           <span>💡</span> <span>사용법</span>
         </button>
@@ -44,12 +47,12 @@
     </header>
 
     <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
-    <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34d399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+    <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 16px; font-size: 11px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.2 줌 왜곡 제거 • 3/4컷 장수 추천 • 제미나이 멀티모달 완벽 탑재</strong></span>
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
+        <span><strong>v3.3 5대 제휴몰(오늘의집·컬리·오아시스·토스·쿠팡) 전용관 &amp; 1초 수익화 센터 탑재</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.2_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.3_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(245, 158, 11, 0.5); color: #FCD34D; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -126,11 +129,30 @@
               🎲 랜덤 추천 1초 픽
             </button>
           </div>
-          <p class="section-desc" style="margin-bottom: 10px;">제품 고민 끝! 실제로 영상 조회수 터진 검증된 상품을 터치만 하세요.</p>
+          <p class="section-desc" style="margin-bottom: 8px;">제품 고민 끝! 실제로 영상 조회수 터진 검증된 상품을 터치만 하세요.</p>
 
-          <!-- 카테고리 탭 (레시피/조리도구, 살림/수납, 자취/꿀템) -->
-          <div class="category-scroll-row">
-            <button type="button" class="viral-cat-btn active" data-cat="kitchen">🍳 레시피/조리도구</button>
+          <!-- 🏬 5대 제휴쇼핑몰 전용관 바로가기 필터 탭 -->
+          <div style="margin-bottom: 8px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 8px 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 800; color: #fbbf24;">🏬 제휴쇼핑몰별 모아보기:</span>
+              <button type="button" id="btn-quick-open-affiliate-guide" style="font-size: 10.5px; color: #38bdf8; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; font-weight: 700;">
+                💡 5대 제휴몰 링크 따는 법 ↗
+              </button>
+            </div>
+            <div class="platform-filter-bar" id="platform-filter-group">
+              <button type="button" class="platform-filter-chip active" data-platform="all">🌟 전체 몰</button>
+              <button type="button" class="platform-filter-chip" data-platform="ohou">🏠 오늘의집 큐레이터</button>
+              <button type="button" class="platform-filter-chip" data-platform="kurly">💜 마켓컬리 샛별배송</button>
+              <button type="button" class="platform-filter-chip" data-platform="oasis">🌱 오아시스 새벽배송</button>
+              <button type="button" class="platform-filter-chip" data-platform="toss">⚡ 토스쇼핑 쉐어링크</button>
+              <button type="button" class="platform-filter-chip" data-platform="coupang">🚀 쿠팡 파트너스</button>
+            </div>
+          </div>
+
+          <!-- 카테고리 탭 (전체, 레시피/조리도구, 살림/수납, 자취/꿀템) -->
+          <div class="category-scroll-row" id="category-filter-group">
+            <button type="button" class="viral-cat-btn active" data-cat="all">✨ 전체 카테고리</button>
+            <button type="button" class="viral-cat-btn" data-cat="kitchen">🍳 레시피/조리도구</button>
             <button type="button" class="viral-cat-btn" data-cat="living">🏠 살림/수납/청소</button>
             <button type="button" class="viral-cat-btn" data-cat="lifestyle">🛋️ 자취/삶의질</button>
           </div>
@@ -152,7 +174,7 @@
             </div>
             
             <div class="platform-search-toolbar">
-              <span class="platform-search-label">🔍 내 제휴 링크 찾기 (원클릭 검색 & 스타일 전환):</span>
+              <span class="platform-search-label">🔍 5대 제휴몰에서 내 링크 찾기 (원클릭 검색 &amp; 스타일 전환):</span>
               <div id="platform-search-buttons" class="platform-btn-row">
                 <!-- JS 동적 생성 -->
               </div>
@@ -161,15 +183,15 @@
             <!-- 💰 수익 창출 핵심: 내 파트너스 링크 1초 등록 바 -->
             <div class="affiliate-link-swap-box" style="margin-top: 10px; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px 12px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11.5px; font-weight: 700; color: #fbbf24;">💰 내 제휴마케팅 링크 (수익 입금용):</span>
+                <span id="label-mode-a-link-title" style="font-size: 11.5px; font-weight: 700; color: #fbbf24;">💰 내 제휴마케팅 링크 (수익 입금용):</span>
                 <span id="badge-mode-a-link-status" style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #fbbf24;">⚠️ 샘플 링크 (교체 권장)</span>
               </div>
               <div style="display: flex; gap: 6px;">
-                <input type="url" id="input-mode-a-real-link" class="input-control" style="font-size: 11.5px; padding: 7px 10px;" placeholder="내 쿠팡 파트너스 링크 붙여넣기 (예: https://link.coupang.com/a/...)">
+                <input type="url" id="input-mode-a-real-link" class="input-control" style="font-size: 11.5px; padding: 7px 10px;" placeholder="내 제휴 링크 붙여넣기 (예: https://...)">
                 <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
               </div>
-              <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;">
-                💡 <strong>수익 보장 팁:</strong> 위 검색 버튼을 눌러 쿠팡 파트너스에서 내 링크를 복사해 넣으세요! 내 링크가 들어가야 구매 발생 시 수수료(3%)가 내 통장으로 입금됩니다.
+              <div id="tip-mode-a-link" style="font-size: 10.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;">
+                💡 <strong>수익 보장 팁:</strong> 위 검색 버튼을 눌러 해당 제휴몰에서 내 링크를 복사해 넣으세요! 내 링크가 들어가야 구매 발생 시 수수료가 내 통장으로 입금됩니다.
               </div>
             </div>
           </div>
@@ -895,12 +917,143 @@
       </div>
     </div>
 
+    <!-- MODAL 4: 5대 제휴쇼핑몰 포털 & 수익 링크 발급 안내 -->
+    <div class="modal-overlay" id="modal-affiliate-portal">
+      <div class="modal-card affiliate-modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <span style="font-size: 11px; font-weight: 800; background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 4px;">💰 모든 제휴프로그램 수익화 센터</span>
+            <h3 style="font-size: 17px; font-weight: 900; color: #FFFFFF; margin: 0;">🏬 5대 제휴몰 공식 사이트 &amp; 링크 발급법</h3>
+          </div>
+          <button type="button" id="btn-close-affiliate-modal" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px; line-height: 1;">✕</button>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5;">
+          쿠팡뿐만 아니라 <strong>오늘의집, 마켓컬리, 오아시스, 토스쇼핑</strong> 어떤 쇼핑몰 링크든 넣으시면 ViralMaker가 <strong>플랫폼 로고·배송 혜택·공정위 문구까지 1초 만에 100% 자동 세팅</strong>합니다! 아래 사이트에서 내 제휴 링크를 발급받으세요.
+        </p>
+
+        <!-- 1. 쿠팡 파트너스 -->
+        <div class="affiliate-mall-card" style="border-left: 4px solid #E42528;">
+          <div class="affiliate-mall-header">
+            <div class="affiliate-mall-title">
+              <span>🚀</span> <strong>쿠팡 (쿠팡 파트너스)</strong>
+            </div>
+            <span class="affiliate-mall-commission" style="background: rgba(228, 37, 40, 0.18); color: #ff6b6b;">결제액 3% 현금 정산</span>
+          </div>
+          <div class="affiliate-mall-how">
+            • <strong>링크 발급:</strong> 쿠팡 파트너스 로그인 ➔ 상품 검색 ➔ [간편 링크 생성] 복사<br>
+            • <strong>수익 특징:</strong> 내가 올린 링크로 24시간 내 구매 시 모든 장바구니 품목의 3% 수수료 입금
+          </div>
+          <div class="affiliate-mall-actions">
+            <a href="https://partners.coupang.com" target="_blank" class="affiliate-mall-btn" style="border-color: rgba(228, 37, 40, 0.4); color: #ff6b6b;">
+              <span>🌐 공식 사이트 가기 ↗</span>
+            </a>
+            <button type="button" class="affiliate-mall-btn btn-filter-to-platform" data-target-platform="coupang">
+              <span>📦 쿠팡 대란템 보기 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. 오늘의집 큐레이터 -->
+        <div class="affiliate-mall-card" style="border-left: 4px solid #35C5F0;">
+          <div class="affiliate-mall-header">
+            <div class="affiliate-mall-title">
+              <span>🏠</span> <strong>오늘의집 (큐레이터 프로그램)</strong>
+            </div>
+            <span class="affiliate-mall-commission" style="background: rgba(53, 197, 240, 0.18); color: #38bdf8;">판매 건당 3%~5% 현금</span>
+          </div>
+          <div class="affiliate-mall-how">
+            • <strong>링크 발급:</strong> 오늘의집 앱 ➔ 마이페이지 ➔ [큐레이터 신청] ➔ 상품 우측 상단 [공유] ➔ [큐레이터 링크 복사]<br>
+            • <strong>수익 특징:</strong> 감성 인테리어·원룸 가구·주방 살림용품 전환율 매우 높음
+          </div>
+          <div class="affiliate-mall-actions">
+            <a href="https://ohou.se" target="_blank" class="affiliate-mall-btn" style="border-color: rgba(53, 197, 240, 0.4); color: #38bdf8;">
+              <span>🌐 오늘의집 바로가기 ↗</span>
+            </a>
+            <button type="button" class="affiliate-mall-btn btn-filter-to-platform" data-target-platform="ohou">
+              <span>🏠 오늘의집 대란템 보기 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. 마켓컬리 샛별배송 -->
+        <div class="affiliate-mall-card" style="border-left: 4px solid #9333EA;">
+          <div class="affiliate-mall-header">
+            <div class="affiliate-mall-title">
+              <span>💜</span> <strong>마켓컬리 (샛별배송 &amp; 추천인/크리에이터)</strong>
+            </div>
+            <span class="affiliate-mall-commission" style="background: rgba(147, 51, 234, 0.18); color: #c084fc;">건당 5,000원 적립금/수익</span>
+          </div>
+          <div class="affiliate-mall-how">
+            • <strong>링크 발급:</strong> 마켓컬리 앱 ➔ [마이컬리] ➔ [친구초대 5,000원 적립] 전용 링크 복사<br>
+            • <strong>수익 특징:</strong> 내 링크로 첫 주문 시 나도 5,000원, 상대도 5,000원 무제한 지급 (장보기 현금 동일 사용)
+          </div>
+          <div class="affiliate-mall-actions">
+            <a href="https://www.kurly.com" target="_blank" class="affiliate-mall-btn" style="border-color: rgba(147, 51, 234, 0.4); color: #c084fc;">
+              <span>🌐 마켓컬리 바로가기 ↗</span>
+            </a>
+            <button type="button" class="affiliate-mall-btn btn-filter-to-platform" data-target-platform="kurly">
+              <span>💜 컬리 대란템 보기 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. 오아시스마켓 새벽배송 -->
+        <div class="affiliate-mall-card" style="border-left: 4px solid #10B981;">
+          <div class="affiliate-mall-header">
+            <div class="affiliate-mall-title">
+              <span>🌱</span> <strong>오아시스마켓 (유기농 새벽배송 &amp; 추천인)</strong>
+            </div>
+            <span class="affiliate-mall-commission" style="background: rgba(16, 185, 129, 0.18); color: #34d399;">건당 5,000원 쿠폰/포인트</span>
+          </div>
+          <div class="affiliate-mall-how">
+            • <strong>링크 발급:</strong> 오아시스마켓 앱 ➔ 마이페이지 ➔ [친구 추천 이벤트] 내 링크 복사<br>
+            • <strong>수익 특징:</strong> 유기농·친환경 식품 찐단골 주부층 두터워 재구매율 극대화
+          </div>
+          <div class="affiliate-mall-actions">
+            <a href="https://www.oasis.co.kr" target="_blank" class="affiliate-mall-btn" style="border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
+              <span>🌐 오아시스 바로가기 ↗</span>
+            </a>
+            <button type="button" class="affiliate-mall-btn btn-filter-to-platform" data-target-platform="oasis">
+              <span>🌱 오아시스 대란템 보기 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. 토스쇼핑 쉐어링크 -->
+        <div class="affiliate-mall-card" style="border-left: 4px solid #0064FF;">
+          <div class="affiliate-mall-header">
+            <div class="affiliate-mall-title">
+              <span>⚡</span> <strong>토스쇼핑 (토스 쉐어링크 &amp; 공동구매)</strong>
+            </div>
+            <span class="affiliate-mall-commission" style="background: rgba(0, 100, 255, 0.18); color: #60a5fa;">결제액 2%~5% 토스포인트</span>
+          </div>
+          <div class="affiliate-mall-how">
+            • <strong>링크 발급:</strong> 스마트폰 [토스 앱] ➔ [토스쇼핑] ➔ 상품 페이지 [공유하고 포인트 받기] 복사<br>
+            • <strong>수익 특징:</strong> 적립된 토스포인트는 내 은행 통장으로 <strong>현금 1:1 즉시 출금</strong> 가능!
+          </div>
+          <div class="affiliate-mall-actions">
+            <a href="https://toss.im" target="_blank" class="affiliate-mall-btn" style="border-color: rgba(0, 100, 255, 0.4); color: #60a5fa;">
+              <span>🌐 토스 안내 바로가기 ↗</span>
+            </a>
+            <button type="button" class="affiliate-mall-btn btn-filter-to-platform" data-target-platform="toss">
+              <span>⚡ 토스 대란템 보기 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary-large" id="btn-confirm-affiliate-modal" style="padding: 13px; font-weight: 800; font-size: 14.5px; margin-top: 10px;">
+          🚀 이해했어요! 상품 선택하러 가기
+        </button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Scripts (캐시 방지 v3.1 적용) -->
-  <script src="js/templates.js?v=3.1"></script>
-  <script src="js/generator.js?v=3.1"></script>
-  <script src="js/cardnews.js?v=3.1"></script>
-  <script src="js/app.js?v=3.1"></script>
+  <!-- Scripts (캐시 방지 v3.3 적용) -->
+  <script src="js/templates.js?v=3.3"></script>
+  <script src="js/generator.js?v=3.3"></script>
+  <script src="js/cardnews.js?v=3.3"></script>
+  <script src="js/app.js?v=3.3"></script>
 </body>
 </html>

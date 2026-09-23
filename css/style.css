@@ -397,6 +397,163 @@ body {
   transition: all 0.2s ease;
 }
 
+/* 🏬 5대 제휴쇼핑몰 모아보기 필터 바 */
+.platform-filter-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.platform-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.platform-filter-chip {
+  padding: 6px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.platform-filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+}
+
+.platform-filter-chip.active {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.platform-filter-chip[data-platform="ohou"].active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+.platform-filter-chip[data-platform="kurly"].active {
+  background: rgba(192, 132, 252, 0.2);
+  border-color: #c084fc;
+  color: #c084fc;
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.25);
+}
+
+.platform-filter-chip[data-platform="oasis"].active {
+  background: rgba(52, 211, 153, 0.2);
+  border-color: #34d399;
+  color: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.25);
+}
+
+.platform-filter-chip[data-platform="toss"].active {
+  background: rgba(96, 165, 250, 0.2);
+  border-color: #60a5fa;
+  color: #60a5fa;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.25);
+}
+
+.platform-filter-chip[data-platform="coupang"].active {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.25);
+}
+
+/* 🏬 5대 제휴센터 모달 카드 */
+.affiliate-modal-card {
+  max-width: 520px;
+  width: 95%;
+  text-align: left;
+  padding: 22px 18px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.affiliate-mall-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.affiliate-mall-card:hover {
+  border-color: var(--primary-light);
+}
+
+.affiliate-mall-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.affiliate-mall-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.affiliate-mall-commission {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.affiliate-mall-how {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 8px;
+  white-space: pre-line;
+}
+
+.affiliate-mall-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.affiliate-mall-btn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.affiliate-mall-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
 .photo-upload-card {
   margin-top: 12px;
 }

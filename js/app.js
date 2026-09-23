@@ -331,8 +331,10 @@ function startViralMakerApp() {
   const modeBDetectedBadge = document.getElementById('mode-b-detected-badge');
   const btnRandomPick = document.getElementById('btn-random-pick');
   const viralCatBtns = document.querySelectorAll('.viral-cat-btn');
+  const platformFilterChips = document.querySelectorAll('#platform-filter-group .platform-filter-chip');
 
-  let currentViralCat = 'kitchen';
+  let currentViralCat = 'all';
+  let currentPlatformFilter = 'all';
   let currentViralItem = null;
   let currentActivePlatform = 'coupang';
 
@@ -373,6 +375,9 @@ function startViralMakerApp() {
     });
   }
 
+  const labelModeALinkTitle = document.getElementById('label-mode-a-link-title');
+  const tipModeALink = document.getElementById('tip-mode-a-link');
+
   function selectPlatformForItem(item, platId) {
     currentActivePlatform = platId;
     const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId]) 
@@ -393,6 +398,16 @@ function startViralMakerApp() {
     if (inputModeARealLink) {
       inputModeARealLink.value = sampleLink;
       updateModeALinkStatus(sampleLink);
+    }
+
+    if (labelModeALinkTitle && platMeta) {
+      labelModeALinkTitle.textContent = `💰 내 ${platMeta.shortName} 링크 (수익 입금용):`;
+    }
+    if (inputModeARealLink && platMeta && platMeta.linkPlaceholder) {
+      inputModeARealLink.placeholder = platMeta.linkPlaceholder;
+    }
+    if (tipModeALink && platMeta && platMeta.tipText) {
+      tipModeALink.innerHTML = platMeta.tipText;
     }
 
     if (selectedViralTitle) selectedViralTitle.textContent = item.name;
@@ -433,7 +448,7 @@ function startViralMakerApp() {
       badgeModeALinkStatus.style.background = 'rgba(245, 158, 11, 0.2)';
       badgeModeALinkStatus.style.color = '#fbbf24';
     } else {
-      badgeModeALinkStatus.textContent = '✅ 내 파트너스 링크 적용됨 (수익 적립 OK)';
+      badgeModeALinkStatus.textContent = '✅ 내 제휴 링크 적용됨 (수익 적립 OK)';
       badgeModeALinkStatus.style.background = 'rgba(16, 185, 129, 0.2)';
       badgeModeALinkStatus.style.color = '#34d399';
     }
@@ -549,16 +564,54 @@ function startViralMakerApp() {
     });
   }
 
-  function renderViralCategory(catKey) {
+  function renderViralCategory(catKey, platFilter) {
     if (!viralItemsContainer || typeof ViralProductLibrary === 'undefined') return;
-    const items = ViralProductLibrary[catKey] || [];
+    if (catKey !== undefined) currentViralCat = catKey;
+    if (platFilter !== undefined) currentPlatformFilter = platFilter;
+
+    let pool = [];
+    if (currentViralCat === 'all') {
+      const allKeys = Object.keys(ViralProductLibrary);
+      allKeys.forEach(k => {
+        if (Array.isArray(ViralProductLibrary[k])) {
+          pool.push(...ViralProductLibrary[k]);
+        }
+      });
+      // 중복 제거
+      const seen = new Set();
+      pool = pool.filter(item => {
+        if (seen.has(item.name)) return false;
+        seen.add(item.name);
+        return true;
+      });
+    } else {
+      pool = ViralProductLibrary[currentViralCat] || [];
+    }
+
+    // 제휴쇼핑몰 플랫폼 필터 적용
+    if (currentPlatformFilter !== 'all') {
+      pool = pool.filter(item => (item.defaultPlatform || 'coupang') === currentPlatformFilter);
+    }
+
     viralItemsContainer.innerHTML = '';
 
-    items.forEach((item, idx) => {
+    if (pool.length === 0) {
+      viralItemsContainer.innerHTML = '<div style="font-size: 11.5px; color: var(--text-dim); padding: 14px 8px; width: 100%; text-align: center;">선택하신 조건의 상품이 없습니다. 다른 카테고리를 누르시거나 [🌟 전체 몰]을 눌러보세요.</div>';
+      return;
+    }
+
+    pool.forEach((item, idx) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `preset-chip ${idx === 0 ? 'active' : ''}`;
-      btn.innerHTML = `${item.icon || '✨'} ${item.title || item.name}`;
+
+      const itemPlat = item.defaultPlatform || 'coupang';
+      const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[itemPlat])
+        ? AffiliatePlatforms[itemPlat]
+        : null;
+      const platTag = platMeta ? `<span style="font-size: 9.5px; opacity: 0.9; margin-right: 3px;">[${platMeta.shortName}]</span>` : '';
+
+      btn.innerHTML = `${item.icon || '✨'} ${platTag}<strong>${item.title || item.name}</strong>`;
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         viralItemsContainer.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
@@ -568,41 +621,64 @@ function startViralMakerApp() {
       viralItemsContainer.appendChild(btn);
     });
 
-    if (items.length > 0) {
-      applyViralItem(items[0]);
+    if (pool.length > 0) {
+      applyViralItem(pool[0]);
     }
   }
 
+  // 🏬 5대 제휴쇼핑몰 모아보기 필터 클릭 리스너
+  if (platformFilterChips && platformFilterChips.length > 0) {
+    platformFilterChips.forEach(btn => {
+      btn.addEventListener('click', () => {
+        platformFilterChips.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const plat = btn.getAttribute('data-platform') || 'all';
+        renderViralCategory(currentViralCat, plat);
+      });
+    });
+  }
+
+  // 카테고리 탭 클릭 리스너
   viralCatBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       viralCatBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      currentViralCat = btn.getAttribute('data-cat') || 'kitchen';
-      renderViralCategory(currentViralCat);
+      const cat = btn.getAttribute('data-cat') || 'all';
+      renderViralCategory(cat, currentPlatformFilter);
     });
   });
 
   if (btnRandomPick) {
     btnRandomPick.addEventListener('click', () => {
       if (typeof ViralProductLibrary === 'undefined') return;
-      const allCats = Object.keys(ViralProductLibrary);
-      const randCat = allCats[Math.floor(Math.random() * allCats.length)];
-      const items = ViralProductLibrary[randCat];
-      const randItem = items[Math.floor(Math.random() * items.length)];
+      let allItems = [];
+      Object.keys(ViralProductLibrary).forEach(k => {
+        if (Array.isArray(ViralProductLibrary[k])) allItems.push(...ViralProductLibrary[k]);
+      });
+      if (allItems.length === 0) return;
+      const randItem = allItems[Math.floor(Math.random() * allItems.length)];
 
+      currentViralCat = 'all';
+      currentPlatformFilter = 'all';
       viralCatBtns.forEach(b => {
-        if (b.getAttribute('data-cat') === randCat) b.classList.add('active');
+        if (b.getAttribute('data-cat') === 'all') b.classList.add('active');
         else b.classList.remove('active');
       });
+      if (platformFilterChips) {
+        platformFilterChips.forEach(b => {
+          if (b.getAttribute('data-platform') === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
 
-      renderViralCategory(randCat);
+      renderViralCategory('all', 'all');
       applyViralItem(randItem);
       showToast(`🎲 랜덤 픽: '${randItem.name}' 추천!`);
     });
   }
 
-  // 초기 요리/조리도구 추천템 즉시 렌더링
-  renderViralCategory('kitchen');
+  // 초기 전체 카테고리 + 전체 몰 추천템 즉시 렌더링
+  renderViralCategory('all', 'all');
 
   // --- 🎯 2-Way 입력 모드 전환 (1초 추천템 vs 내 상품 링크) ---
   if (btnModePreset && btnModeCustom && panelModePreset && panelModeCustom) {
@@ -2128,6 +2204,66 @@ function startViralMakerApp() {
     }
     modalApiKey.classList.remove('active');
   });
+
+  // --- 🏬 5대 제휴쇼핑몰 포털 & 수익화 가이드 모달 제어 ---
+  const modalAffiliatePortal = document.getElementById('modal-affiliate-portal');
+  const btnOpenAffiliateModal = document.getElementById('btn-open-affiliate-modal');
+  const btnCloseAffiliateModal = document.getElementById('btn-close-affiliate-modal');
+  const btnConfirmAffiliateModal = document.getElementById('btn-confirm-affiliate-modal');
+  const btnQuickOpenAffiliateGuide = document.getElementById('btn-quick-open-affiliate-guide');
+
+  if (modalAffiliatePortal) {
+    if (btnOpenAffiliateModal) {
+      btnOpenAffiliateModal.addEventListener('click', () => {
+        modalAffiliatePortal.classList.add('active');
+      });
+    }
+    if (btnQuickOpenAffiliateGuide) {
+      btnQuickOpenAffiliateGuide.addEventListener('click', () => {
+        modalAffiliatePortal.classList.add('active');
+      });
+    }
+    if (btnCloseAffiliateModal) {
+      btnCloseAffiliateModal.addEventListener('click', () => {
+        modalAffiliatePortal.classList.remove('active');
+      });
+    }
+    if (btnConfirmAffiliateModal) {
+      btnConfirmAffiliateModal.addEventListener('click', () => {
+        modalAffiliatePortal.classList.remove('active');
+      });
+    }
+    modalAffiliatePortal.addEventListener('click', (e) => {
+      if (e.target === modalAffiliatePortal) modalAffiliatePortal.classList.remove('active');
+    });
+
+    // 모달 내부 각 플랫폼 상품 모아보기 바로가기 버튼
+    modalAffiliatePortal.querySelectorAll('.btn-filter-to-platform').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetPlat = btn.getAttribute('data-target-platform');
+        modalAffiliatePortal.classList.remove('active');
+        if (targetPlat) {
+          currentPlatformFilter = targetPlat;
+          if (platformFilterChips) {
+            platformFilterChips.forEach(chip => {
+              if (chip.getAttribute('data-platform') === targetPlat) chip.classList.add('active');
+              else chip.classList.remove('active');
+            });
+          }
+          currentViralCat = 'all';
+          viralCatBtns.forEach(b => {
+            if (b.getAttribute('data-cat') === 'all') b.classList.add('active');
+            else b.classList.remove('active');
+          });
+          renderViralCategory('all', targetPlat);
+          const meta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[targetPlat]) ? AffiliatePlatforms[targetPlat] : null;
+          showToast(`'${meta ? meta.name : targetPlat}' 전용관 상품으로 필터링되었습니다! 🛍️`);
+          const panelPreset = document.getElementById('panel-mode-preset');
+          if (panelPreset) panelPreset.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
 
   // 기본 화면 규격 4:5 (인스타 세로 황금비율) 초기화
   applyRatio('4:5', false);
