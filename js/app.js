@@ -77,13 +77,16 @@ function startViralMakerApp() {
   const monetizeModeChips = document.querySelectorAll('#monetize-mode-group .chip-btn');
   const labelMonetizeHint = document.getElementById('label-monetize-hint');
 
-  // 🚀 제휴몰 사진 1초 첨부 (URL 복붙 / 클립보드 / 파일)
+  // 🚀 제휴몰 사진 1초 첨부 (URL 복붙 / 클립보드 / 파일 / 4컷 분할)
   const btnTabMethodUrl = document.getElementById('btn-tab-method-url');
   const btnTabMethodClipboard = document.getElementById('btn-tab-method-clipboard');
   const btnTabMethodFile = document.getElementById('btn-tab-method-file');
+  const btnTabMethodCollage = document.getElementById('btn-tab-method-collage');
   const panelPhotoUrl = document.getElementById('panel-photo-url');
   const inputImageUrl = document.getElementById('input-image-url');
   const btnApplyImageUrl = document.getElementById('btn-apply-image-url');
+  const btnQuickSplit4grid = document.getElementById('btn-quick-split-4grid');
+  const slideCollageFileInput = document.getElementById('slide-collage-file-input');
 
   // AI 비전 분석 DOM
   const visionActionPanel = document.getElementById('vision-action-panel');
@@ -1459,6 +1462,57 @@ function startViralMakerApp() {
         if (typeof updateSimulator === 'function') updateSimulator();
         showToast(`슬라이드 ${curIdx + 1}번 사진이 URL로 변경되었습니다! ✨`);
       }
+    });
+  }
+
+  // ✂️ 제미나이 2x2 4분할 격자 콜라주 사진 1초 분할 핸들러
+  function handleCollageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    showToast('✂️ 제미나이 4컷 콜라주 사진을 4장의 개별 슬라이드로 1초 분할 중...');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      CardNewsStudio.splitAndSet4GridCollage(dataUrl, (splitUrls) => {
+        state.slideCount = 4;
+        slideCountChips.forEach(c => {
+          if (c.getAttribute('data-count') === '4') c.classList.add('active');
+          else c.classList.remove('active');
+        });
+        updateSlideQuickBar(4);
+        updateSlideEditInputs();
+        if (typeof updateSimulator === 'function') updateSimulator();
+
+        if (uploadPreview && uploadPrompt) {
+          uploadPreview.src = splitUrls[0];
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+        }
+
+        showToast('🎉 제미나이 4컷 사진이 슬라이드 1~4번에 1초 만에 자동 분할되었습니다! 🚀');
+        switchTab('cardnews');
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (slideCollageFileInput) {
+    slideCollageFileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        handleCollageFile(files[0]);
+      }
+    });
+  }
+
+  if (btnTabMethodCollage) {
+    btnTabMethodCollage.addEventListener('click', () => {
+      if (slideCollageFileInput) slideCollageFileInput.click();
+    });
+  }
+
+  if (btnQuickSplit4grid) {
+    btnQuickSplit4grid.addEventListener('click', () => {
+      if (slideCollageFileInput) slideCollageFileInput.click();
     });
   }
 

@@ -166,6 +166,54 @@ class CardNewsStudioEngine {
     this.render();
   }
 
+  // ✂️ 2x2 4분할 격자 콜라주 사진 1장을 4장의 개별 슬라이드로 자동 분할 & 배분
+  splitAndSet4GridCollage(dataOrImg, callback) {
+    const handleImage = (img) => {
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      const halfW = Math.floor(w / 2);
+      const halfH = Math.floor(h / 2);
+
+      // 미세한 테두리 공백/구분선을 정밀하게 고려한 4분할 좌표
+      const quadrants = [
+        { sx: 0, sy: 0 },         // 1번: 좌상단 (표지 풀샷)
+        { sx: halfW, sy: 0 },     // 2번: 우상단 (사용 액션)
+        { sx: 0, sy: halfH },     // 3번: 좌하단 (디테일/특징)
+        { sx: halfW, sy: halfH }  // 4번: 우하단 (완성/결과)
+      ];
+
+      const splitDataUrls = quadrants.map(q => {
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = halfW;
+        offCanvas.height = halfH;
+        const ctx = offCanvas.getContext('2d');
+        ctx.drawImage(img, q.sx, q.sy, halfW, halfH, 0, 0, halfW, halfH);
+        return offCanvas.toDataURL('image/jpeg', 0.95);
+      });
+
+      this.clearSlideImages();
+      this.setSlideCount(4); // 4장 모드로 자동 동기화
+      splitDataUrls.forEach((url, idx) => {
+        this.setSlideImage(idx, url);
+      });
+      this.setUserMedia(splitDataUrls[0]);
+      this.render();
+
+      if (typeof callback === 'function') {
+        callback(splitDataUrls);
+      }
+    };
+
+    if (typeof dataOrImg === 'string') {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => handleImage(img);
+      img.src = dataOrImg;
+    } else if (dataOrImg instanceof HTMLImageElement) {
+      handleImage(dataOrImg);
+    }
+  }
+
   // 현재 슬라이드의 활성 이미지 반환
   getCurrentSlideImage() {
     return this.slideImages[this.currentSlideIndex] || this.userImage;

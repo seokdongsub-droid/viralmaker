@@ -198,16 +198,19 @@
             💡 <strong>사진 딱 1장만 올려도 5개 슬라이드가 5가지 앵글로 자동 연출</strong>됩니다! (상세페이지 캡처 여러 장 동시 선택도 가능)
           </p>
 
-          <!-- 🚀 제휴몰 제품 사진 초간단 첨부 3-Way 툴바 -->
+          <!-- 🚀 제휴몰 제품 사진 초간단 첨부 4-Way 툴바 -->
           <div class="photo-method-tabs">
             <button type="button" class="photo-method-btn active" id="btn-tab-method-url">
               <span>🔗</span> <span>이미지 주소 복붙</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
-              <span>📋</span> <span>사진 클립보드 붙여넣기</span>
+              <span>📋</span> <span>사진 클립보드</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-file">
-              <span>📁</span> <span>내 사진첩 선택</span>
+              <span>📁</span> <span>내 사진첩</span>
+            </button>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);">
+              <span>✂️</span> <span>제미나이 4컷 분할</span>
             </button>
           </div>
 
@@ -531,9 +534,13 @@
             </div>
           </div>
           <input type="file" id="slide-single-file-input" accept="image/*" multiple style="display: none;">
-          <div style="display: flex; gap: 4px;">
+          <input type="file" id="slide-collage-file-input" accept="image/*" style="display: none;">
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;">
+              ✂️ 4컷 콜라주 1초 분할
+            </button>
             <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
-              🔗 URL로 사진 변경
+              🔗 URL 변경
             </button>
             <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
               📷 사진 교체 (1장/여러장)
