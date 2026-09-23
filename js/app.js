@@ -422,6 +422,19 @@ function startViralMakerApp() {
     renderPlatformSearchToolbar(item, initialPlat);
     selectPlatformForItem(item, initialPlat);
 
+    // 💡 제품군별 최적 카드뉴스 장수 자동 추천 및 세팅 (조리도구/뷰티 4컷, 수납/레시피 3컷)
+    if (typeof ContentGenerator !== 'undefined' && ContentGenerator.recommendCutCount) {
+      const rec = ContentGenerator.recommendCutCount({ name: item.name || item.title, memo: item.memo || '' });
+      if (rec && typeof syncSlideCountUI === 'function') {
+        syncSlideCountUI(rec.count);
+        const labelSlideCountHint = document.getElementById('label-slide-count-hint');
+        if (labelSlideCountHint) {
+          labelSlideCountHint.textContent = `${rec.badge}`;
+          labelSlideCountHint.title = rec.reason;
+        }
+      }
+    }
+
     // 추천템에 감성 실사 사진이 등록되어 있으면 카드뉴스 및 업로드 미리보기에 즉시 자동 연출
     if (item.imageUrl) {
       state.product.mediaSrc = item.imageUrl;
@@ -909,7 +922,7 @@ function startViralMakerApp() {
     btnGenerateAll.innerHTML = '<span>⚡ 복붙용 글 & 한/일 카드뉴스 생성 중...</span>';
 
     try {
-      const results = await ContentGenerator.generateAll(state.product, state.geminiKey);
+      const results = await ContentGenerator.generateAll(state.product, state.geminiKey, state.slideCount, state.monetizationMode);
       state.generatedData = results;
 
       // 카드뉴스 슬라이드 적용 (한국어 & 일본어 모두 세팅)
@@ -947,40 +960,54 @@ function startViralMakerApp() {
       return;
     }
 
-    if (promptCountBadge) promptCountBadge.textContent = `${prompts.length}장`;
+    const individualCount = prompts.filter(p => p.slideNum !== 'ALL').length;
+    if (promptCountBadge) promptCountBadge.textContent = `${individualCount}장`;
 
     prompts.forEach((p, idx) => {
+      const isAll = p.slideNum === 'ALL';
+      const title = p.title || p.role || (isAll ? '4컷 콜라주 올인원' : `슬라이드 ${idx + 1}`);
+      const promptText = p.promptText || p.prompt || '';
+      const previewHint = p.previewHint || (isAll ? '1초 분할 연동 ✂️' : '4:5 인스타 | 첨부 이미지 참조');
+
       const card = document.createElement('div');
-      card.className = 'prompt-card-item';
+      card.className = `prompt-card-item ${isAll ? 'prompt-card-allinone' : ''}`;
+      if (isAll) {
+        card.style.border = '1px solid #10b981';
+        card.style.background = 'rgba(16, 185, 129, 0.06)';
+        card.style.borderRadius = '10px';
+        card.style.padding = '12px';
+        card.style.marginBottom = '14px';
+      }
+
       card.innerHTML = `
         <div class="prompt-card-header">
           <div class="prompt-card-title">
-            <span>📷 슬라이드 ${idx + 1}: ${p.title}</span>
-            <span class="prompt-card-badge">${p.previewHint || '4:5 황금비율'}</span>
+            <span>📷 ${isAll ? '⚡' : `슬라이드 ${p.slideNum || idx + 1}`}: ${title}</span>
+            <span class="prompt-card-badge" style="${isAll ? 'background: #10b981; color: #fff; font-weight: 800;' : ''}">${previewHint}</span>
           </div>
-          <button type="button" class="prompt-copy-btn" id="btn-copy-prompt-${idx}">
-            <span>📋 프롬프트 복사</span>
+          <button type="button" class="prompt-copy-btn" id="btn-copy-prompt-${idx}" style="${isAll ? 'background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399;' : ''}">
+            <span>📋 ${isAll ? '올인원 프롬프트 복사' : '프롬프트 복사'}</span>
           </button>
         </div>
-        <textarea class="prompt-textarea" id="prompt-text-${idx}" readonly>${p.promptText}</textarea>
+        <textarea class="prompt-textarea" id="prompt-text-${idx}" readonly style="${isAll ? 'min-height: 110px; border-color: rgba(16, 185, 129, 0.3);' : ''}">${promptText}</textarea>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10.5px; color: var(--text-dim);">
-          <span>💡 버튼을 눌러 복사 후 제미나이 앱에 붙여넣기만 하세요!</span>
+          <span>💡 제미나이에 <strong>제품 상세페이지/사진을 첨부</strong>하고 프롬프트를 전송하세요!</span>
           <a href="https://gemini.google.com/" target="_blank" style="color: var(--primary-light); text-decoration: none; font-weight: 700;">제미나이 열기 ↗</a>
         </div>
       `;
 
       const copyBtn = card.querySelector(`#btn-copy-prompt-${idx}`);
       copyBtn.addEventListener('click', async () => {
-        const txt = p.promptText;
+        const txt = promptText;
         const textarea = card.querySelector(`#prompt-text-${idx}`);
         const ok = await copyToClipboardSafe(txt, textarea);
         if (ok) {
           copyBtn.classList.add('copied');
           copyBtn.innerHTML = '<span>✓ 복사 완료! ✨</span>';
-          showToast(`슬라이드 ${idx + 1}번 프롬프트가 복사되었습니다! 제미나이 앱에 붙여넣으세요 🚀`);
+          showToast(`'${title}' 프롬프트가 복사되었습니다! 제미나이에 제품 사진과 함께 붙여넣으세요 🚀`);
           setTimeout(() => {
             copyBtn.classList.remove('copied');
-            copyBtn.innerHTML = '<span>📋 프롬프트 복사</span>';
+            copyBtn.innerHTML = `<span>📋 ${isAll ? '올인원 프롬프트 복사' : '프롬프트 복사'}</span>`;
           }, 2200);
         } else {
           showToast('복사 실패: 텍스트를 길게 눌러 직접 복사해주세요.');
@@ -1420,20 +1447,23 @@ function startViralMakerApp() {
   // 🚀 제미나이 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료)
   if (btnCopyAllGeminiPrompts) {
     btnCopyAllGeminiPrompts.addEventListener('click', async () => {
-      const prompts = state.generatedData?.geminiPrompts || [];
-      if (!prompts || prompts.length === 0) {
+      const allPrompts = state.generatedData?.geminiPrompts || [];
+      if (!allPrompts || allPrompts.length === 0) {
         showToast('생성된 프롬프트가 없습니다. 먼저 [✨ 1초 만에 완성하기]를 눌러주세요.');
         return;
       }
-      const count = prompts.length;
+      // ALL(콜라주) 제외한 개별 씬 프롬프트 필터링
+      const individual = allPrompts.filter(p => p.slideNum !== 'ALL');
+      const count = individual.length;
       const combined = [
-        `아래 ${count}가지 장면을 순서대로 각각 4:5 세로 비율(1080x1350)의 고화질 포토리얼리스틱 실사 사진으로 ${count}장 연속 생성해줘:\n`,
-        ...prompts.map((p, i) => `[장면 ${i + 1}: ${p.title}]\n${p.promptText}\n`)
+        `[📌 제미나이(Gemini) 4:5 인스타그램 카드뉴스 생성 가이드]`,
+        `※ 스마트폰으로 캡처한 제품 사진이나 상세페이지를 첨부한 뒤, 아래 ${count}가지 장면을 순서대로 각각 4:5 세로 비율(1080x1350)의 고화질 포토리얼리스틱 실사로 생성해줘:\n`,
+        ...individual.map((p, i) => `--- 📷 [장면 ${i + 1}: ${p.title || p.role}] ---\n${p.promptText || p.prompt}\n`)
       ].join('\n');
 
       const ok = await copyToClipboardSafe(combined);
       if (ok) {
-        showToast(`🎉 ${count}장 전체 프롬프트 일괄 복사 완료! 제미나이 앱에 1번만 붙여넣으세요 🚀`);
+        showToast(`🎉 ${count}장 전체 프롬프트 일괄 복사 완료! 제미나이에 제품 사진 첨부 후 붙여넣으세요 🚀`);
       } else {
         showToast('⚠️ 복사 실패: 개별 프롬프트 복사를 이용해주세요.');
       }

@@ -2007,7 +2007,7 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.1 4컷 분할 탑재</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.2 멀티모달 프롬프트</span>
         </div>
       </div>
       <div class="header-actions">
@@ -2024,9 +2024,9 @@ body {
     <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 16px; font-size: 11px; color: #34d399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.1 제미나이 4컷 콜라주 1초 분할 탑재됨</strong> <span style="color: rgba(255,255,255,0.7); font-size: 10px;">(4컷 사진 ➔ 슬라이드 1~4번 자동 배분)</span></span>
+        <span><strong>v3.2 줌 왜곡 제거 • 3/4컷 장수 추천 • 제미나이 멀티모달 완벽 탑재</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.1_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.2_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(16, 185, 129, 0.5); color: #6EE7B7; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -2225,7 +2225,7 @@ body {
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
               <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
-              <div style="font-size: 11px; color: var(--text-muted);">사진 1장만 올려도 풀샷/줌/디테일 5장으로 자동 완성! (여러 장 선택 가능)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">인위적 줌 배율 왜곡 제거 ➔ 100% 원본 선명도 유지! (단독 1장 또는 4컷 콜라주 자동 분할)</div>
             </div>
           </label>
 
@@ -2724,7 +2724,7 @@ body {
               <a href="https://gemini.google.com/" target="_blank" class="pill-badge" style="background: var(--primary); color: #fff; text-decoration: none; padding: 4px 8px; font-weight: 700;">🔗 제미나이 열기 ↗</a>
             </div>
             <span style="font-size: 11.5px; line-height: 1.5; color: var(--text-main);">
-              각 슬라이드별 최적화된 Imagen 3 프롬프트입니다. 아래 <strong>[📋 프롬프트 복사]</strong> 버튼을 눌러 무료 제미나이 앱에 붙여넣기만 하면 포토리얼리스틱 실사가 완성됩니다! 다운로드한 사진은 [📸 캔버스] 탭의 [📷 사진 교체]로 넣어주세요.
+              📌 <strong>초간단 제미나이 활용법</strong>: 제미나이(gemini.google.com)에 <strong>제품 사진이나 상세페이지 캡처를 첨부</strong>한 후, 아래 복사한 프롬프트를 전송하세요! 제미나이가 첨부된 사진 속 실제 제품 외형과 색상을 그대로 인식하여 4:5 고화질 실사 씬을 완성합니다.
             </span>
           </div>
 
@@ -3345,6 +3345,40 @@ class ContentGeneratorEngine {
     return 'general';
   }
 
+  // 💡 카테고리별 최적 이미지 장수(3컷 vs 4컷) 및 추천 근거 제공
+  recommendCutCount(product) {
+    const cat = this.inferCategory(product);
+    const text = `${product.name || ''} ${product.memo || ''}`.toLowerCase();
+    
+    // 조리도구 / 프라이팬 / 냄비 / 칼 / 뷰티 / 화장품: 4컷 추천
+    if (cat === 'beauty' || /팬|도마|칼|냄비|그릇|조리|주방|식기|다지기|프라이팬|뚝배기/.test(text)) {
+      return {
+        count: 4,
+        categoryName: cat === 'beauty' ? '뷰티/코스메틱' : '주방용품/조리도구',
+        reason: '표지 ➔ 실사용 액션 ➔ 소재/발색 초근접 접사 ➔ 완성/CTA 4단계 풀스토리가 가장 전환율이 높습니다.',
+        badge: '🎯 4컷 추천 (풀스토리)'
+      };
+    }
+
+    // 수납 / 정리 / 청소 / 욕실 / 간편식 레시피: 3컷 추천
+    if (cat === 'living' || /수납|정리|선반|압축|청소|욕실|페이퍼|과일|디저트|레시피/.test(text)) {
+      return {
+        count: 3,
+        categoryName: /페이퍼|과일|디저트|레시피/.test(text) ? '간편 레시피' : '살림/수납/정리',
+        reason: '비포(고민 후킹) ➔ 1초 해결 과정 ➔ 완벽한 애프터 3단계 스피드 임팩트가 가장 효과적입니다.',
+        badge: '⚡ 3컷 추천 (스피드 임팩트)'
+      };
+    }
+
+    // 기본: 인스타그램 표준 4컷 데이즈홈 스타일
+    return {
+      count: 4,
+      categoryName: '생활/일반 상품',
+      reason: '인스타그램 피드에서 가장 검증된 4컷 스토리텔링을 권장합니다.',
+      badge: '🎯 4컷 권장'
+    };
+  }
+
   // 전체 결과 일괄 생성 (3~5장 가변 장수 및 수익화 모드 지원)
   async generateAll(product, apiKey = '', slideCount = 4, monetizationMode = 'link') {
     const name = this.inferProductName(product);
@@ -3562,6 +3596,9 @@ class ContentGeneratorEngine {
   // ==========================================
   // ② 제미나이(Gemini) 카드별 씬 프롬프트 생성기
   // ==========================================
+  // ==========================================
+  // ② 제미나이(Gemini) 카드별 씬 프롬프트 생성기 (멀티모달 이미지 첨부 완벽 대응)
+  // ==========================================
   generateGeminiPrompts(p, count = 4, lang = 'ko', monetizationMode = 'link') {
     const name = p.name;
     const cat = p.category;
@@ -3570,112 +3607,166 @@ class ContentGeneratorEngine {
     const isDM = monetizationMode === 'dm';
     const prompts = [];
 
+    // 멀티모달(Vision) 공통 지침: 첨부된 실제 제품 사진/상세페이지 캡처를 레퍼런스로 활용
+    const multimodalHeader = `[📌 제미나이 멀티모달 시각 참조 지침]\n함께 첨부한 제품 사진(또는 상세페이지 캡처) 속 실제 제품의 외형, 디자인, 색상, 재질을 100% 동일하게 반영하여 생성할 것.\n\n`;
+
     if (count === 3) {
+      // ⚡ 3장: 스피드 임팩트형 (수납/정리/간편레시피)
+      const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Professional appetizing editorial lifestyle photography of finished ${name}.
+Composition: Close-up hero shot placed cleanly on a modern table or slate plate.
+Lighting: Warm soft studio lighting with gentle natural reflections.
+Strict negative prompt: no watermark, no logo, no cheap templates, no blurry textures.
+이미지 생성해줘.`;
+
+      const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Neat demonstration or flat-lay preparation shot of ${name} in actual practical use.
+Composition: Clean kitchen/home countertop setting, showing effortless step-by-step handling.
+Strict negative prompt: no watermark, no logo, no messy clutter, no distorted hands.
+이미지 생성해줘.`;
+
+      const p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Extreme macro close-up showing stunning details, texture, and satisfying results of ${name}.
+Composition: High clarity detail shot eliciting strong desire and engagement.
+Strict negative prompt: no watermark, no logo, no artificial plastic look.
+이미지 생성해줘.`;
+
       prompts.push({
         slideNum: 1,
+        title: '1번 표지/완성 컷 (Hero Hook)',
         role: '1번 완성 메인 컷 (Hero Hook)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: `쫀득상큼\n${name}`,
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Professional appetizing editorial food/product photography of delicious finished ${name}.
-Composition: Close-up hero shot placed cleanly on a dark slate board or premium stone plate. Fresh ingredients arranged tastefully in background.
-Lighting: Warm soft studio lighting with gentle natural reflections.
-Exact Korean text: 쫀득상큼 ${name}
-Text layout rules: Large readable modern Korean serif typography at the top center with subtle soft multi-layer shadow. No other text anywhere.
-Strict negative prompt: no watermark, no logo, no cheap templates, no extra English words, no blurry textures.
-이미지 생성해줘.`
+        promptText: p1,
+        prompt: p1
       });
 
       prompts.push({
         slideNum: 2,
+        title: '2번 준비 & 실사용 컷 (Prep & Action)',
         role: '2번 재료 준비 & 조리 컷 (Ingredients & Prep)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: '재료는 간단하게\n살짝 적신 뒤 돌돌 말면 끝',
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Neat flat-lay top-down shot of prepared ingredients and transparent water bowl on a clean marble countertop.
-Composition: Sliced fresh ingredients neatly arranged on small ceramic dishes, alongside ${name}.
-Exact Korean text: 재료는 간단하게 살짝 적신 뒤 돌돌 말면 끝
-Text layout rules: Clean readable typography at top. No coordinate marks or red boxes.
-Strict negative prompt: no watermark, no logo, no messy table, no extra random words.
-이미지 생성해줘.`
+        promptText: p2,
+        prompt: p2
       });
 
       prompts.push({
         slideNum: 3,
+        title: '3번 클라이맥스 디테일 & CTA 컷 (Detail & CTA)',
         role: '3번 단면 클로즈업 & CTA 컷 (Cutaway & Question)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: isDM ? '어떤 거 넣어보고 싶나요?\n정보는 "나도" 남겨줘!🤍' : '어떤 거 넣어보고 싶나요?\n저장하고 만들어보세요',
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Extreme macro close-up of ${name} cleanly sliced in half, showing vivid, juicy interior textures and appetizing cross-sections.
-Composition: Cut pieces facing camera with dipping sauce bowl and mint garnish in background.
-Exact Korean text: ${isDM ? '어떤 거 넣어보고 싶나요? 정보는 "나도" 남겨줘!🤍' : '어떤 거 넣어보고 싶나요? 저장하고 만들어보세요'}
-Text layout rules: Centered readable Korean text with soft shadow.
-Strict negative prompt: no watermark, no logo, no artificial plastic colors.
-이미지 생성해줘.`
+        promptText: p3,
+        prompt: p3
       });
+
       return prompts;
     }
 
     if (count === 4) {
-      // 🎯 4장 데이즈홈 스타일 프롬프트
-      prompts.push({
-        slideNum: 1,
-        role: '1번 표지 씬 (Social Proof & Hero)',
-        exactText: isBeauty ? `여배우 립 이쁘다.. 싶으면 전부 이거였음;\n${name} 부동의 1위` : `살림 편해졌다 싶으면 전부 이거였음;\n${name} 부동의 1위`,
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+      // 🎯 4장: 데이즈홈 스타일 (조리도구/뷰티/생활용품 추천)
+      const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
 Scene: Ultra-high quality authentic lifestyle product shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
 Composition: Clean focus on the product, natural soft bokeh in background. Bottom-left gradient vignette for text readability.
-Exact Korean text: ${isBeauty ? '여배우 립 이쁘다.. 싶으면 전부 이거였음; ' + name + ' 부동의 1위' : '살림 편해졌다 싶으면 전부 이거였음; ' + name + ' 부동의 1위'}
-Text layout rules: Heavy bold white text positioned at the bottom-left corner with gentle drop shadow.
 Strict negative prompt: no watermark, no logo, no cheap sales flyer graphics, no cluttered background.
-이미지 생성해줘.`
+이미지 생성해줘.`;
+
+      const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Hands-on real demonstration shot showing practical usage of ${name}. ${isBeauty ? 'Showing realistic texture swatch on the palm of hand with natural skin tone.' : 'Human hands actively demonstrating how effortlessly the product works.'}
+Composition: Centered hands-on action, genuine home/studio lighting.
+Strict negative prompt: no watermark, no logo, no awkward AI fingers, no messy background.
+이미지 생성해줘.`;
+
+      const p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Macro zoom close-up highlighting the superior finish, moisture, and fine craftsmanship of ${name}.
+Composition: High-detail close-up shot capturing reflections, gloss, and premium build quality.
+Strict negative prompt: no watermark, no logo, no blurry noise, no fake CGI look.
+이미지 생성해줘.`;
+
+      const p4 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: ${isBeauty ? 'Aesthetic close-up of beautiful model lips or skin wearing the product, holding the item gracefully.' : 'Satisfying final outcome scene showing the product proudly placed in a clean, modern home environment.'}
+Composition: Confident, aesthetic, highly desirable visual.
+Strict negative prompt: no watermark, no logo, no unnatural skin, no cluttered UI.
+이미지 생성해줘.`;
+
+      // 4컷 개별 씬 등록
+      prompts.push({
+        slideNum: 1,
+        title: '1번 표지 씬 (Social Proof & Hero)',
+        role: '1번 표지 씬 (Social Proof & Hero)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
+        exactText: isBeauty ? `여배우 립 이쁘다.. 싶으면 전부 이거였음;\n${name} 부동의 1위` : `살림 편해졌다 싶으면 전부 이거였음;\n${name} 부동의 1위`,
+        promptText: p1,
+        prompt: p1
       });
 
       prompts.push({
         slideNum: 2,
+        title: '2번 1차 실사용/발색 씬 (Hands-on Action)',
         role: '2번 1차 실사용/발색 씬 (Hands-on Action & Proof)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: isBeauty ? '발색력에 색감까지 미쳤다는 추천템ㅠㅠ\n여배우들도 촬영 때 진짜 많이 쓴다고 함' : '1초 만에 끝나서 감탄 나오는 추천템ㅠㅠ\n직접 써보니까 왜 대란템인지 바로 납득됨',
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Hands-on real demonstration shot showing practical usage of ${name}. ${isBeauty ? 'Showing realistic texture swatch on the palm of hand with natural skin tone.' : 'Human hands actively demonstrating how effortlessly the product works.'}
-Composition: Centered hands-on action, genuine home/studio lighting.
-Exact Korean text: ${isBeauty ? '발색력에 색감까지 미쳤다는 추천템ㅠㅠ 여배우들도 촬영 때 진짜 많이 쓴다고 함' : '1초 만에 끝나서 감탄 나오는 추천템ㅠㅠ 직접 써보니까 왜 대란템인지 바로 납득됨'}
-Text layout rules: Centered white outlined text with black stroke (9px) and soft shadow.
-Strict negative prompt: no watermark, no logo, no awkward AI fingers, no messy background.
-이미지 생성해줘.`
+        promptText: p2,
+        prompt: p2
       });
 
       prompts.push({
         slideNum: 3,
+        title: '3번 제형/질감/디테일 씬 (Macro Texture & Sheen)',
         role: '3번 제형/질감/디테일 씬 (Macro Texture & Sheen)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: isBeauty ? '바르는 순간 확 화사해지고\n청순한 느낌은 물론 분위기까지 우아해짐 ㅠㅠ❤️' : '사용하는 순간 일상 스트레스 확 줄어들고\n설거지·시간 낭비 1초 만에 해결됨 ㅠㅠ❤️',
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Macro zoom close-up highlighting the superior finish, moisture, and fine craftsmanship of ${name}.
-Composition: High-detail close-up shot capturing reflections, gloss, and premium build quality.
-Exact Korean text: ${isBeauty ? '바르는 순간 확 화사해지고 청순한 느낌은 물론 분위기까지 우아해짐 ㅠㅠ❤️' : '사용하는 순간 일상 스트레스 확 줄어들고 설거지·시간 낭비 1초 만에 해결됨 ㅠㅠ❤️'}
-Text layout rules: Centered white outlined text with soft black shadow.
-Strict negative prompt: no watermark, no logo, no blurry noise, no fake CGI look.
-이미지 생성해줘.`
+        promptText: p3,
+        prompt: p3
       });
 
       prompts.push({
         slideNum: 4,
+        title: '4번 최종 결과 & 댓글 트리거 씬 (Climax & CTA)',
         role: '4번 최종 결과 & 댓글 트리거 씬 (Climax & CTA)',
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: isDM ? '인생템 찾고 있다면 무조건 이거임!!!!\n정보는 "나도" 남겨줘!🤍' : '인생템 찾고 있다면 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗',
-        prompt: `Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: ${isBeauty ? 'Aesthetic close-up of beautiful model lips wearing the product, holding the lipstick bullet next to it.' : 'Satisfying final outcome scene showing the product proudly placed in a clean, modern home environment.'}
-Composition: Confident, aesthetic, desirable visual.
-Exact Korean text: ${isDM ? '인생템 찾고 있다면 무조건 이거임!!!! 정보는 "나도" 남겨줘!🤍' : '인생템 찾고 있다면 무조건 이거임!!!! 제품 정보는 프로필 링크 확인🔗'}
-Text layout rules: Centered or bottom bold text.
-Strict negative prompt: no watermark, no logo, no unnatural skin, no cluttered UI.
-이미지 생성해줘.`
+        promptText: p4,
+        prompt: p4
       });
+
+      // 🌟 [추가 보너스] 1장에 4컷 콜라주를 한 번에 만드는 올인원 프롬프트
+      const collagePrompt = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right).
+Panel 1 (Top-Left): Aesthetic hero lifestyle shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
+Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage and action of ${name}.
+Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
+Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
+Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
+Strict negative prompt: no watermark, no cheap sales graphics, no distorted hands, no blurry artifacts.
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 4컷 콜라주 올인원 프롬프트 (2x2 그리드)',
+        role: '4컷 콜라주 올인원 (2x2 그리드)',
+        previewHint: '1초 분할 연동 ✂️',
+        exactText: '4컷 일괄 생성 ➔ 1초 분할',
+        promptText: collagePrompt,
+        prompt: collagePrompt
+      });
+
       return prompts;
     }
 
     // 5장 기본
-    return this.generate5ScenePrompts(name, cat).map((pPrompt, idx) => ({
-      slideNum: idx + 1,
-      role: `${idx + 1}번 슬라이드 씬`,
-      exactText: `${name} 추천 후기`,
-      prompt: `${pPrompt}\n이미지 생성해줘.`
-    }));
+    return this.generate5ScenePrompts(name, cat).map((pPrompt, idx) => {
+      const fullP = `${multimodalHeader}${pPrompt}\n이미지 생성해줘.`;
+      return {
+        slideNum: idx + 1,
+        title: `${idx + 1}번 슬라이드 씬`,
+        role: `${idx + 1}번 슬라이드 씬`,
+        previewHint: '4:5 인스타 | 첨부 이미지 참조',
+        exactText: `${name} 추천 후기`,
+        promptText: fullP,
+        prompt: fullP
+      };
+    });
   }
 
   // ==========================================
@@ -4687,51 +4778,14 @@ class CardNewsStudioEngine {
         baseH = width / imgRatio;
       }
 
-      // 💡 [스마트 5단 앵글 연출]: 단일 사진일 때 각도·줌·초점을 다르게 자동 연출
-      const isSingleImage = !this.slideImages[slideIdx] && Boolean(this.userImage);
-      let scale = 1.0;
-      let focalShiftY = 0; // 중심 이동
-
-      if (isSingleImage) {
-        if (slideIdx === 0) {
-          // 1번 표지: 정구도 안정적인 풀스크린 샷 (100%)
-          scale = 1.0;
-          focalShiftY = 0;
-        } else if (slideIdx === 1) {
-          // 2번 고민: 시선 집중 은은한 줌인 (112%) + 감성 비네팅
-          scale = 1.12;
-          focalShiftY = -0.04;
-        } else if (slideIdx === 2) {
-          // 3번 사용: 중심부 다이내믹 액션 클로즈업 줌 (128%)
-          scale = 1.28;
-          focalShiftY = 0.04;
-        } else if (slideIdx === 3) {
-          // 4번 디테일: 소재·질감 초근접 매크로 접사 줌 (146%)
-          scale = 1.46;
-          focalShiftY = 0.08;
-        } else if (slideIdx === 4) {
-          // 5번 완성: 피니시 와이드 컷 (106%)
-          scale = 1.06;
-          focalShiftY = -0.02;
-        }
-      }
-
-      const drawW = baseW * scale;
-      const drawH = baseH * scale;
+      // 자연스러운 100% 원본 선명도 유지 (인위적 줌 배율/크롭 왜곡 완전 제거)
+      const drawW = baseW;
+      const drawH = baseH;
       const drawX = (width - drawW) / 2;
-      const drawY = (height - drawH) / 2 + (focalShiftY * height * 0.15);
+      const drawY = (height - drawH) / 2;
 
       ctx.save();
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
-
-      // 2번 슬라이드: 문제/고민 연출용 감성 비네팅 효과
-      if (isSingleImage && slideIdx === 1) {
-        const vignGrad = ctx.createRadialGradient(width / 2, height / 2, width * 0.25, width / 2, height / 2, width * 0.75);
-        vignGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        vignGrad.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
-        ctx.fillStyle = vignGrad;
-        ctx.fillRect(0, 0, width, height);
-      }
       ctx.restore();
     } else {
       // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
@@ -5743,6 +5797,19 @@ function startViralMakerApp() {
     renderPlatformSearchToolbar(item, initialPlat);
     selectPlatformForItem(item, initialPlat);
 
+    // 💡 제품군별 최적 카드뉴스 장수 자동 추천 및 세팅 (조리도구/뷰티 4컷, 수납/레시피 3컷)
+    if (typeof ContentGenerator !== 'undefined' && ContentGenerator.recommendCutCount) {
+      const rec = ContentGenerator.recommendCutCount({ name: item.name || item.title, memo: item.memo || '' });
+      if (rec && typeof syncSlideCountUI === 'function') {
+        syncSlideCountUI(rec.count);
+        const labelSlideCountHint = document.getElementById('label-slide-count-hint');
+        if (labelSlideCountHint) {
+          labelSlideCountHint.textContent = `${rec.badge}`;
+          labelSlideCountHint.title = rec.reason;
+        }
+      }
+    }
+
     // 추천템에 감성 실사 사진이 등록되어 있으면 카드뉴스 및 업로드 미리보기에 즉시 자동 연출
     if (item.imageUrl) {
       state.product.mediaSrc = item.imageUrl;
@@ -6230,7 +6297,7 @@ function startViralMakerApp() {
     btnGenerateAll.innerHTML = '<span>⚡ 복붙용 글 & 한/일 카드뉴스 생성 중...</span>';
 
     try {
-      const results = await ContentGenerator.generateAll(state.product, state.geminiKey);
+      const results = await ContentGenerator.generateAll(state.product, state.geminiKey, state.slideCount, state.monetizationMode);
       state.generatedData = results;
 
       // 카드뉴스 슬라이드 적용 (한국어 & 일본어 모두 세팅)
@@ -6268,40 +6335,54 @@ function startViralMakerApp() {
       return;
     }
 
-    if (promptCountBadge) promptCountBadge.textContent = `${prompts.length}장`;
+    const individualCount = prompts.filter(p => p.slideNum !== 'ALL').length;
+    if (promptCountBadge) promptCountBadge.textContent = `${individualCount}장`;
 
     prompts.forEach((p, idx) => {
+      const isAll = p.slideNum === 'ALL';
+      const title = p.title || p.role || (isAll ? '4컷 콜라주 올인원' : `슬라이드 ${idx + 1}`);
+      const promptText = p.promptText || p.prompt || '';
+      const previewHint = p.previewHint || (isAll ? '1초 분할 연동 ✂️' : '4:5 인스타 | 첨부 이미지 참조');
+
       const card = document.createElement('div');
-      card.className = 'prompt-card-item';
+      card.className = `prompt-card-item ${isAll ? 'prompt-card-allinone' : ''}`;
+      if (isAll) {
+        card.style.border = '1px solid #10b981';
+        card.style.background = 'rgba(16, 185, 129, 0.06)';
+        card.style.borderRadius = '10px';
+        card.style.padding = '12px';
+        card.style.marginBottom = '14px';
+      }
+
       card.innerHTML = `
         <div class="prompt-card-header">
           <div class="prompt-card-title">
-            <span>📷 슬라이드 ${idx + 1}: ${p.title}</span>
-            <span class="prompt-card-badge">${p.previewHint || '4:5 황금비율'}</span>
+            <span>📷 ${isAll ? '⚡' : `슬라이드 ${p.slideNum || idx + 1}`}: ${title}</span>
+            <span class="prompt-card-badge" style="${isAll ? 'background: #10b981; color: #fff; font-weight: 800;' : ''}">${previewHint}</span>
           </div>
-          <button type="button" class="prompt-copy-btn" id="btn-copy-prompt-${idx}">
-            <span>📋 프롬프트 복사</span>
+          <button type="button" class="prompt-copy-btn" id="btn-copy-prompt-${idx}" style="${isAll ? 'background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399;' : ''}">
+            <span>📋 ${isAll ? '올인원 프롬프트 복사' : '프롬프트 복사'}</span>
           </button>
         </div>
-        <textarea class="prompt-textarea" id="prompt-text-${idx}" readonly>${p.promptText}</textarea>
+        <textarea class="prompt-textarea" id="prompt-text-${idx}" readonly style="${isAll ? 'min-height: 110px; border-color: rgba(16, 185, 129, 0.3);' : ''}">${promptText}</textarea>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10.5px; color: var(--text-dim);">
-          <span>💡 버튼을 눌러 복사 후 제미나이 앱에 붙여넣기만 하세요!</span>
+          <span>💡 제미나이에 <strong>제품 상세페이지/사진을 첨부</strong>하고 프롬프트를 전송하세요!</span>
           <a href="https://gemini.google.com/" target="_blank" style="color: var(--primary-light); text-decoration: none; font-weight: 700;">제미나이 열기 ↗</a>
         </div>
       `;
 
       const copyBtn = card.querySelector(`#btn-copy-prompt-${idx}`);
       copyBtn.addEventListener('click', async () => {
-        const txt = p.promptText;
+        const txt = promptText;
         const textarea = card.querySelector(`#prompt-text-${idx}`);
         const ok = await copyToClipboardSafe(txt, textarea);
         if (ok) {
           copyBtn.classList.add('copied');
           copyBtn.innerHTML = '<span>✓ 복사 완료! ✨</span>';
-          showToast(`슬라이드 ${idx + 1}번 프롬프트가 복사되었습니다! 제미나이 앱에 붙여넣으세요 🚀`);
+          showToast(`'${title}' 프롬프트가 복사되었습니다! 제미나이에 제품 사진과 함께 붙여넣으세요 🚀`);
           setTimeout(() => {
             copyBtn.classList.remove('copied');
-            copyBtn.innerHTML = '<span>📋 프롬프트 복사</span>';
+            copyBtn.innerHTML = `<span>📋 ${isAll ? '올인원 프롬프트 복사' : '프롬프트 복사'}</span>`;
           }, 2200);
         } else {
           showToast('복사 실패: 텍스트를 길게 눌러 직접 복사해주세요.');
@@ -6741,20 +6822,23 @@ function startViralMakerApp() {
   // 🚀 제미나이 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료)
   if (btnCopyAllGeminiPrompts) {
     btnCopyAllGeminiPrompts.addEventListener('click', async () => {
-      const prompts = state.generatedData?.geminiPrompts || [];
-      if (!prompts || prompts.length === 0) {
+      const allPrompts = state.generatedData?.geminiPrompts || [];
+      if (!allPrompts || allPrompts.length === 0) {
         showToast('생성된 프롬프트가 없습니다. 먼저 [✨ 1초 만에 완성하기]를 눌러주세요.');
         return;
       }
-      const count = prompts.length;
+      // ALL(콜라주) 제외한 개별 씬 프롬프트 필터링
+      const individual = allPrompts.filter(p => p.slideNum !== 'ALL');
+      const count = individual.length;
       const combined = [
-        `아래 ${count}가지 장면을 순서대로 각각 4:5 세로 비율(1080x1350)의 고화질 포토리얼리스틱 실사 사진으로 ${count}장 연속 생성해줘:\n`,
-        ...prompts.map((p, i) => `[장면 ${i + 1}: ${p.title}]\n${p.promptText}\n`)
+        `[📌 제미나이(Gemini) 4:5 인스타그램 카드뉴스 생성 가이드]`,
+        `※ 스마트폰으로 캡처한 제품 사진이나 상세페이지를 첨부한 뒤, 아래 ${count}가지 장면을 순서대로 각각 4:5 세로 비율(1080x1350)의 고화질 포토리얼리스틱 실사로 생성해줘:\n`,
+        ...individual.map((p, i) => `--- 📷 [장면 ${i + 1}: ${p.title || p.role}] ---\n${p.promptText || p.prompt}\n`)
       ].join('\n');
 
       const ok = await copyToClipboardSafe(combined);
       if (ok) {
-        showToast(`🎉 ${count}장 전체 프롬프트 일괄 복사 완료! 제미나이 앱에 1번만 붙여넣으세요 🚀`);
+        showToast(`🎉 ${count}장 전체 프롬프트 일괄 복사 완료! 제미나이에 제품 사진 첨부 후 붙여넣으세요 🚀`);
       } else {
         showToast('⚠️ 복사 실패: 개별 프롬프트 복사를 이용해주세요.');
       }

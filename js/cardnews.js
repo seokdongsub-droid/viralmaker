@@ -448,51 +448,14 @@ class CardNewsStudioEngine {
         baseH = width / imgRatio;
       }
 
-      // 💡 [스마트 5단 앵글 연출]: 단일 사진일 때 각도·줌·초점을 다르게 자동 연출
-      const isSingleImage = !this.slideImages[slideIdx] && Boolean(this.userImage);
-      let scale = 1.0;
-      let focalShiftY = 0; // 중심 이동
-
-      if (isSingleImage) {
-        if (slideIdx === 0) {
-          // 1번 표지: 정구도 안정적인 풀스크린 샷 (100%)
-          scale = 1.0;
-          focalShiftY = 0;
-        } else if (slideIdx === 1) {
-          // 2번 고민: 시선 집중 은은한 줌인 (112%) + 감성 비네팅
-          scale = 1.12;
-          focalShiftY = -0.04;
-        } else if (slideIdx === 2) {
-          // 3번 사용: 중심부 다이내믹 액션 클로즈업 줌 (128%)
-          scale = 1.28;
-          focalShiftY = 0.04;
-        } else if (slideIdx === 3) {
-          // 4번 디테일: 소재·질감 초근접 매크로 접사 줌 (146%)
-          scale = 1.46;
-          focalShiftY = 0.08;
-        } else if (slideIdx === 4) {
-          // 5번 완성: 피니시 와이드 컷 (106%)
-          scale = 1.06;
-          focalShiftY = -0.02;
-        }
-      }
-
-      const drawW = baseW * scale;
-      const drawH = baseH * scale;
+      // 자연스러운 100% 원본 선명도 유지 (인위적 줌 배율/크롭 왜곡 완전 제거)
+      const drawW = baseW;
+      const drawH = baseH;
       const drawX = (width - drawW) / 2;
-      const drawY = (height - drawH) / 2 + (focalShiftY * height * 0.15);
+      const drawY = (height - drawH) / 2;
 
       ctx.save();
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
-
-      // 2번 슬라이드: 문제/고민 연출용 감성 비네팅 효과
-      if (isSingleImage && slideIdx === 1) {
-        const vignGrad = ctx.createRadialGradient(width / 2, height / 2, width * 0.25, width / 2, height / 2, width * 0.75);
-        vignGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        vignGrad.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
-        ctx.fillStyle = vignGrad;
-        ctx.fillRect(0, 0, width, height);
-      }
       ctx.restore();
     } else {
       // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
