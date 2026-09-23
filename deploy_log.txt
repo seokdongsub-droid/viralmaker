@@ -1,15 +1,81 @@
-=== ViralMaker Deploy Log (2026-09-22 17:18:27) ===
+=== ViralMaker Deploy Log (2026-09-23 17:29:51) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
-▶ [Git Add] 실행: git add -A
+▶ [Git Status Before Add] 실행: git status -s
+  [출력]
+M css/style.css
+ M deploy.py
+ M deploy_log.txt
+ M index.html
+ M js/app.js
+ M js/cardnews.js
+ M js/generator.js
+ M viralmaker_portable.html
+?? instagram-card-news/
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171827)
+▶ [Git Add] 실행: git add -A
+  [알림/오류]
+warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/cardnews.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/generator.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/SKILL.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/agents/openai.yaml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/benchmark-analysis.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/benchmark-library.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/carousel-patterns.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/content-safety.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/monetization-viral-playbook.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/performance-learning-log.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'instagram-card-news/references/used-topic-log.md', LF will be replaced by CRLF the next time Git touches it
+  [종료 코드]: 0
+
+▶ [Git Status After Add] 실행: git status -s
   [출력]
-[main ae5145b] ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171827)
- 1 file changed, 12 insertions(+), 6 deletions(-)
+M  css/style.css
+M  deploy.py
+M  deploy_log.txt
+M  index.html
+A  instagram-card-news/SKILL.md
+A  instagram-card-news/agents/openai.yaml
+A  instagram-card-news/references/benchmark-analysis.md
+A  instagram-card-news/references/benchmark-library.md
+A  instagram-card-news/references/carousel-patterns.md
+A  instagram-card-news/references/content-safety.md
+A  instagram-card-news/references/monetization-viral-playbook.md
+A  instagram-card-news/references/performance-learning-log.md
+A  instagram-card-news/references/used-topic-log.md
+M  js/app.js
+M  js/cardnews.js
+M  js/generator.js
+M  viralmaker_portable.html
+  [종료 코드]: 0
+
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.0: All-In-One Studio (Multi-Platform, Dayzhome Canvas, Card-by-Card Gemini Prompts, 4-Type Threads) (20260923_172951)
+  [출력]
+[main e971a87] ViralMaker v3.0: All-In-One Studio (Multi-Platform, Dayzhome Canvas, Card-by-Card Gemini Prompts, 4-Type Threads) (20260923_172951)
+ 17 files changed, 6532 insertions(+), 1079 deletions(-)
+ create mode 100644 instagram-card-news/SKILL.md
+ create mode 100644 instagram-card-news/agents/openai.yaml
+ create mode 100644 instagram-card-news/references/benchmark-analysis.md
+ create mode 100644 instagram-card-news/references/benchmark-library.md
+ create mode 100644 instagram-card-news/references/carousel-patterns.md
+ create mode 100644 instagram-card-news/references/content-safety.md
+ create mode 100644 instagram-card-news/references/monetization-viral-playbook.md
+ create mode 100644 instagram-card-news/references/performance-learning-log.md
+ create mode 100644 instagram-card-news/references/used-topic-log.md
+  [종료 코드]: 0
+
+▶ [Recent Git Commits] 실행: git log -n 3 --oneline
+  [출력]
+e971a87 ViralMaker v3.0: All-In-One Studio (Multi-Platform, Dayzhome Canvas, Card-by-Card Gemini Prompts, 4-Type Threads) (20260923_172951)
+ae5145b ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171827)
+b32af26 ViralMaker v2.8: Affiliate Mall Photo 1-Tap Sync (URL Paste, Clipboard, Auto-Extract) (20260922_171756)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -17,9 +83,9 @@
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   b32af26..ae5145b  main -> main
+   ae5145b..e971a87  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=2.8_20260922_171827
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.0_20260923_172951
 
 === End of Log ===
