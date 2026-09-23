@@ -169,6 +169,8 @@ function startViralMakerApp() {
   const panelSubtabPrompts = document.getElementById('panel-subtab-prompts');
   const promptCountBadge = document.getElementById('prompt-count-badge');
   const geminiPromptsList = document.getElementById('gemini-prompts-list');
+  const btnCopyAllGeminiPrompts = document.getElementById('btn-copy-all-gemini-prompts');
+  const quickMemoChips = document.querySelectorAll('.quick-memo-chip');
 
   const btnToggleTextPos = document.getElementById('btn-toggle-text-pos');
   const lblTextPos = document.getElementById('lbl-text-pos');
@@ -1349,6 +1351,114 @@ function startViralMakerApp() {
         if (typeof updateSimulator === 'function') updateSimulator();
       });
       bar.appendChild(btn);
+    });
+  }
+
+  // 🚀 직장인 1초 터치 키워드 자동 입력기
+  if (quickMemoChips) {
+    quickMemoChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const memoTxt = chip.getAttribute('data-memo') || '';
+        if (inputMemo) {
+          if (inputMemo.value.trim()) {
+            inputMemo.value += ', ' + memoTxt;
+          } else {
+            inputMemo.value = memoTxt;
+          }
+          state.product.memo = inputMemo.value;
+          showToast(`✨ '${chip.textContent.trim()}' 키워드가 자동 추가되었습니다!`);
+        }
+      });
+    });
+  }
+
+  // 🚀 제미나이 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료)
+  if (btnCopyAllGeminiPrompts) {
+    btnCopyAllGeminiPrompts.addEventListener('click', async () => {
+      const prompts = state.generatedData?.geminiPrompts || [];
+      if (!prompts || prompts.length === 0) {
+        showToast('생성된 프롬프트가 없습니다. 먼저 [✨ 1초 만에 완성하기]를 눌러주세요.');
+        return;
+      }
+      const count = prompts.length;
+      const combined = [
+        `아래 ${count}가지 장면을 순서대로 각각 4:5 세로 비율(1080x1350)의 고화질 포토리얼리스틱 실사 사진으로 ${count}장 연속 생성해줘:\n`,
+        ...prompts.map((p, i) => `[장면 ${i + 1}: ${p.title}]\n${p.promptText}\n`)
+      ].join('\n');
+
+      const ok = await copyToClipboardSafe(combined);
+      if (ok) {
+        showToast(`🎉 ${count}장 전체 프롬프트 일괄 복사 완료! 제미나이 앱에 1번만 붙여넣으세요 🚀`);
+      } else {
+        showToast('⚠️ 복사 실패: 개별 프롬프트 복사를 이용해주세요.');
+      }
+    });
+  }
+
+  // 📸 캔버스 상단 갤러리/사진 교체 (1장 단독 또는 2~5장 다중 일괄 배분)
+  if (btnQuickChangePhoto && slideSingleFileInput) {
+    btnQuickChangePhoto.addEventListener('click', () => {
+      slideSingleFileInput.click();
+    });
+
+    slideSingleFileInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      if (files.length === 1) {
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const dataUrl = ev.target.result;
+          const curIdx = CardNewsStudio.currentSlideIndex;
+          CardNewsStudio.setSlideImage(curIdx, dataUrl);
+          updateSlideSceneBar();
+          if (typeof updateSimulator === 'function') updateSimulator();
+          showToast(`📸 슬라이드 ${curIdx + 1}번 사진이 교체되었습니다!`);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // 다중 파일 선택 시 (최대 5장 순차 자동 배분)
+        showToast(`📸 ${files.length}장의 사진을 슬라이드 1~${files.length}번에 각각 배분하는 중...`);
+        const readPromises = files.slice(0, CardNewsStudio.slides.length).map(f => {
+          return new Promise(resolve => {
+            const r = new FileReader();
+            r.onload = ev => resolve(ev.target.result);
+            r.readAsDataURL(f);
+          });
+        });
+
+        const dataUrls = await Promise.all(readPromises);
+        CardNewsStudio.clearSlideImages();
+        dataUrls.forEach((url, i) => {
+          CardNewsStudio.setSlideImage(i, url);
+        });
+        state.product.mediaSrc = dataUrls[0];
+        CardNewsStudio.setUserMedia(dataUrls[0]);
+        if (uploadPreview && uploadPrompt) {
+          uploadPreview.src = dataUrls[0];
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+        }
+        CardNewsStudio.render();
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`🎉 ${dataUrls.length}장의 사진이 슬라이드 1~${dataUrls.length}번에 순서대로 배분되었습니다! ✨`);
+      }
+    });
+  }
+
+  // 🔗 캔버스 상단 URL로 사진 변경
+  if (btnQuickUrlPhoto) {
+    btnQuickUrlPhoto.addEventListener('click', () => {
+      const url = prompt('교체할 이미지의 웹 주소(URL)를 입력하세요:');
+      if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image/'))) {
+        const curIdx = CardNewsStudio.currentSlideIndex;
+        CardNewsStudio.setSlideImage(curIdx, url.trim());
+        updateSlideSceneBar();
+        if (typeof updateSimulator === 'function') updateSimulator();
+        showToast(`슬라이드 ${curIdx + 1}번 사진이 URL로 변경되었습니다! ✨`);
+      }
     });
   }
 

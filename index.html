@@ -171,6 +171,15 @@
               <span>✍️ (선택) 제품명 또는 핵심 장점 메모</span>
             </label>
             <textarea id="product-memo" class="textarea-control" style="min-height: 55px;" placeholder="예: 무선 온열 넥케어 마사지기, 하루 15분 승모근 케어 55% 한정특가"></textarea>
+            <div style="margin-top: 6px;">
+              <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">💡 직장인 1초 터치 키워드 (타자 없이 터치로 자동 입력):</span>
+              <div class="preset-chips" id="quick-memo-chips" style="flex-wrap: wrap; gap: 4px;">
+                <button type="button" class="preset-chip quick-memo-chip" data-memo="삶의 질 수직상승, 시간·설거지 절약, 컴팩트 수납">✨ 삶의질/절약</button>
+                <button type="button" class="preset-chip quick-memo-chip" data-memo="가성비 끝판왕, 원터치 1초 완성, 자취생 필수템">⚡ 1초 가성비</button>
+                <button type="button" class="preset-chip quick-memo-chip" data-memo="SNS 품절대란 화제템, 실물 퀄리티 대박, 후기 폭발">🔥 SNS 품절대란</button>
+                <button type="button" class="preset-chip quick-memo-chip" data-memo="초간단 요리 치트키, 논스틱 코팅, 세척 간편">🍳 요리/살림 치트키</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -385,6 +394,15 @@
               <span>📋 전체 일괄 복사</span>
             </button>
           </div>
+
+          <div style="display: flex; gap: 6px; margin-top: 10px;">
+            <a href="https://threads.net" target="_blank" class="btn-header" style="flex: 1; justify-content: center; font-size: 11px; padding: 8px; color: #fff; background: rgba(255,255,255,0.06); text-decoration: none; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <span>⚡ 스레드 앱 열기 ↗</span>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="btn-header" style="flex: 1; justify-content: center; font-size: 11px; padding: 8px; color: #fff; background: rgba(255,255,255,0.06); text-decoration: none; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <span>📸 인스타그램 열기 ↗</span>
+            </a>
+          </div>
         </div>
 
         <!-- 2. 블로그 / 인스타 일반 채널 단일 출력 패널 (naver-blog, ameba-jp, instagram) -->
@@ -512,13 +530,13 @@
               <strong id="slide-scene-label">1번 표지</strong>: <span id="slide-scene-status" style="color: var(--primary-light);">스마트 앵글 풀샷</span>
             </div>
           </div>
-          <input type="file" id="slide-single-file-input" accept="image/*" style="display: none;">
+          <input type="file" id="slide-single-file-input" accept="image/*" multiple style="display: none;">
           <div style="display: flex; gap: 4px;">
             <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
               🔗 URL로 사진 변경
             </button>
             <button type="button" class="btn-header" id="btn-quick-change-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
-              📷 갤러리 변경
+              📷 사진 교체 (1장/여러장)
             </button>
           </div>
         </div>
@@ -687,8 +705,15 @@
               <a href="https://gemini.google.com/" target="_blank" class="pill-badge" style="background: var(--primary); color: #fff; text-decoration: none; padding: 4px 8px; font-weight: 700;">🔗 제미나이 열기 ↗</a>
             </div>
             <span style="font-size: 11.5px; line-height: 1.5; color: var(--text-main);">
-              각 슬라이드별 최적화된 Imagen 3 프롬프트입니다. 아래 <strong>[📋 프롬프트 복사]</strong> 버튼을 눌러 무료 제미나이 앱에 붙여넣기만 하면 포토리얼리스틱 실사가 완성됩니다! 다운로드한 사진은 [📸 캔버스] 탭의 [📷 갤러리 변경]으로 넣어주세요.
+              각 슬라이드별 최적화된 Imagen 3 프롬프트입니다. 아래 <strong>[📋 프롬프트 복사]</strong> 버튼을 눌러 무료 제미나이 앱에 붙여넣기만 하면 포토리얼리스틱 실사가 완성됩니다! 다운로드한 사진은 [📸 캔버스] 탭의 [📷 사진 교체]로 넣어주세요.
             </span>
+          </div>
+
+          <!-- 🚀 직장인 1초 치트키: 전체 프롬프트 일괄 복사 버튼 -->
+          <div style="margin-bottom: 12px;">
+            <button type="button" class="btn-primary-large glowing-btn" id="btn-copy-all-gemini-prompts" style="padding: 12px 14px; font-size: 13.5px; font-weight: 800; width: 100%;">
+              <span>⚡ 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료 🚀)</span>
+            </button>
           </div>
 
           <div id="gemini-prompts-list">
