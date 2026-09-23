@@ -80,27 +80,38 @@
           </button>
         </div>
 
-        <!-- 🎯 v3.0 슬라이드 장수 & 수익화 방식 선택 툴바 -->
+        <!-- 🎯 v3.1 슬라이드 장수 & 규격 & 수익화 방식 선택 툴바 -->
         <div class="custom-selector-row">
           <div class="selector-group">
             <div class="selector-group-label">
-              <span>🎞️ 카드뉴스 장수 선택</span>
+              <span>🎞️ 카드뉴스 장수</span>
               <span id="label-slide-count-hint" style="color: var(--primary-light);">4장 추천</span>
             </div>
             <div class="chip-btn-group" id="slide-count-group">
-              <button type="button" class="chip-btn" data-count="3">⚡ 3장 (스피드)</button>
+              <button type="button" class="chip-btn" data-count="3">⚡ 3장</button>
               <button type="button" class="chip-btn active" data-count="4">🎯 4장 (데이즈홈)</button>
-              <button type="button" class="chip-btn" data-count="5">📚 5장 (스토리)</button>
+              <button type="button" class="chip-btn" data-count="5">📚 5장</button>
             </div>
           </div>
           <div class="selector-group">
             <div class="selector-group-label">
-              <span>💰 수익화 전환 방식</span>
+              <span>📐 화면 규격(비율)</span>
+              <span id="label-ratio-hint" style="color: #34d399;">4:5 인스타 (추천)</span>
+            </div>
+            <div class="chip-btn-group" id="tab1-ratio-group">
+              <button type="button" class="chip-btn active tab1-ratio-chip" data-ratio="4:5">🖼️ 4:5 인스타</button>
+              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="9:16">📱 9:16 숏폼</button>
+              <button type="button" class="chip-btn tab1-ratio-chip" data-ratio="1:1">📷 1:1 정사각</button>
+            </div>
+          </div>
+          <div class="selector-group">
+            <div class="selector-group-label">
+              <span>💰 수익화 방식</span>
               <span id="label-monetize-hint" style="color: var(--success);">기본 링크</span>
             </div>
             <div class="chip-btn-group" id="monetize-mode-group">
-              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필/댓글 링크 (기본)</button>
-              <button type="button" class="chip-btn" data-mode="dm">💬 쿠팡 자동 DM (선택)</button>
+              <button type="button" class="chip-btn active" data-mode="link">🔗 프로필/댓글 링크</button>
+              <button type="button" class="chip-btn" data-mode="dm">💬 자동 DM</button>
             </div>
           </div>
         </div>
@@ -557,9 +568,30 @@
           <button type="button" class="slide-quick-chip" data-slide="4">5. 완성(CTA)</button>
         </div>
 
+        <!-- 📐 화면 비율 원클릭 퀵 바 (캔버스 바로 위 정중앙 배치) -->
+        <div class="canvas-ratio-quick-bar">
+          <div class="ratio-header-left">
+            <span style="font-size: 14px;">📐</span>
+            <span style="font-size: 12px; font-weight: 800; color: var(--text-main);">화면 규격:</span>
+            <span id="current-ratio-label" class="current-ratio-label">4:5 인스타 피드</span>
+          </div>
+          <div class="ratio-btn-group">
+            <button type="button" class="ratio-btn active" data-ratio="4:5">
+              <span>🖼️ 4:5 인스타</span> <span class="pill-tag-rec">추천</span>
+            </button>
+            <button type="button" class="ratio-btn" data-ratio="9:16">
+              <span>📱 9:16 숏폼</span>
+            </button>
+            <button type="button" class="ratio-btn" data-ratio="1:1">
+              <span>📷 1:1 정사각</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 카드뉴스 캔버스 프리뷰 (메인 정중앙 시원하게 강조) -->
         <div class="canvas-wrapper" id="canvas-wrapper">
-          <canvas id="cardnews-canvas" width="1080" height="1080"></canvas>
+          <div id="canvas-ratio-badge" class="canvas-ratio-badge">🖼️ 4:5 인스타 (1080×1350)</div>
+          <canvas id="cardnews-canvas" width="1080" height="1350"></canvas>
         </div>
 
         <!-- 슬라이드 내비게이션 (이전 / 다음) -->
@@ -589,7 +621,7 @@
         <!-- 디자인 옵션 & 세부 수정 서랍 (아코디언으로 깔끔하게 접어둠) -->
         <details class="section-card cardnews-settings-accordion" style="margin-top: 14px; padding: 14px;">
           <summary style="font-size: 13px; font-weight: 800; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-            <span>⚙️ 화면 비율(9:16) • 테마 • 자막 수정</span>
+            <span id="accordion-ratio-summary">⚙️ 화면 비율 (4:5 인스타) • 테마 • 자막 수정</span>
             <span style="font-size: 11px; color: var(--primary-light);">옵션 열기 ▾</span>
           </summary>
 
@@ -597,17 +629,17 @@
             <!-- 1. 화면 비율 선택 -->
             <div style="margin-bottom: 12px;">
               <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
-                📱 1. 화면 비율 (틱톡/릴스는 9:16 추천)
+                📱 1. 화면 비율 (인스타 피드는 4:5 추천, 틱톡/릴스는 9:16)
               </div>
               <div class="ratio-toggle" style="display: flex; gap: 4px; width: 100%;">
-                <button type="button" class="ratio-btn active" data-ratio="9:16" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                <button type="button" class="ratio-btn active" data-ratio="4:5" style="flex: 1; padding: 8px 4px; font-size: 12px;">
+                  🖼️ 4:5 인스타 (추천)
+                </button>
+                <button type="button" class="ratio-btn" data-ratio="9:16" style="flex: 1; padding: 8px 4px; font-size: 12px;">
                   📱 9:16 숏폼
                 </button>
                 <button type="button" class="ratio-btn" data-ratio="1:1" style="flex: 1; padding: 8px 4px; font-size: 12px;">
                   📷 1:1 정사각
-                </button>
-                <button type="button" class="ratio-btn" data-ratio="4:5" style="flex: 1; padding: 8px 4px; font-size: 12px;">
-                  🖼️ 4:5 인스타
                 </button>
               </div>
             </div>

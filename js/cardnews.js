@@ -11,7 +11,7 @@ class CardNewsStudioEngine {
     this.slides_ja = [];
     this.currentSlideIndex = 0;
     this.themeKey = 'photo-overlay';
-    this.ratio = '9:16'; // '9:16' (1080x1920) 틱톡/네이버클립/릴스 기본, '1:1' 또는 '4:5'
+    this.ratio = '4:5'; // '4:5' (1080x1350) 인스타 세로 황금비율 기본, '9:16' (숏폼), '1:1' (정사각)
     this.userImage = null; // Image object (from image or video capture)
     this.slideImages = [null, null, null, null, null]; // 5개 슬라이드별 독립 AI 실사 씬 이미지
     this.fontFamilyMode = 'gothic'; // 'gothic' or 'serif' (감성 명조체)
@@ -114,15 +114,22 @@ class CardNewsStudioEngine {
   }
 
   updateCanvasDimensions() {
+    if (!this.canvas) return;
     if (this.ratio === '4:5') {
       this.canvas.width = 1080;
       this.canvas.height = 1350;
+      this.canvas.style.aspectRatio = '4 / 5';
+      this.canvas.style.maxWidth = '340px';
     } else if (this.ratio === '9:16') {
       this.canvas.width = 1080;
       this.canvas.height = 1920;
+      this.canvas.style.aspectRatio = '9 / 16';
+      this.canvas.style.maxWidth = '290px';
     } else {
       this.canvas.width = 1080;
       this.canvas.height = 1080;
+      this.canvas.style.aspectRatio = '1 / 1';
+      this.canvas.style.maxWidth = '340px';
     }
   }
 
@@ -192,6 +199,7 @@ class CardNewsStudioEngine {
       });
 
       this.clearSlideImages();
+      this.setRatio('4:5'); // 4컷 분할 시 인스타 4:5 최적 규격으로 자동 세팅
       this.setSlideCount(4); // 4장 모드로 자동 동기화
       splitDataUrls.forEach((url, idx) => {
         this.setSlideImage(idx, url);

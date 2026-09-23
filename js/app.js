@@ -38,6 +38,7 @@ function startViralMakerApp() {
     activeTab: 'input',
     activeChannel: 'threads-kr',
     slideCount: 4, // 3, 4 (기본: 데이즈홈), 5
+    ratio: '4:5', // 4:5 (기본: 인스타 세로), 9:16 (숏폼), 1:1 (정사각)
     monetizationMode: 'link', // 'link' (기본: 프로필/댓글 링크) | 'dm' (쿠팡 자동 DM)
     threadsType: 'type1', // type1: 공포/반전, type2: 1초컷, type3: 찡찡이, type4: 훈수/장비병
     threadsLang: 'ko', // 'ko' | 'ja'
@@ -1478,6 +1479,7 @@ function startViralMakerApp() {
           if (c.getAttribute('data-count') === '4') c.classList.add('active');
           else c.classList.remove('active');
         });
+        applyRatio('4:5', false);
         updateSlideQuickBar(4);
         updateSlideEditInputs();
         if (typeof updateSimulator === 'function') updateSimulator();
@@ -1665,12 +1667,71 @@ function startViralMakerApp() {
     if (typeof updateSimulator === 'function') updateSimulator();
   });
 
-  ratioBtns.forEach(btn => {
+  // 📐 화면 규격(비율) 통합 적용 함수 (Tab 1, Tab 3 상단 바, Tab 3 서랍 완벽 동기화)
+  function applyRatio(ratio, showToastMsg = false) {
+    if (!ratio) return;
+    state.ratio = ratio;
+    if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setRatio) {
+      CardNewsStudio.setRatio(ratio);
+    }
+
+    // 모든 비율 버튼 active 상태 동기화 (Tab 1 칩, Tab 3 퀵 바, Tab 3 서랍 토글)
+    document.querySelectorAll('.ratio-btn, .tab1-ratio-chip').forEach(btn => {
+      if (btn.getAttribute('data-ratio') === ratio) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    const ratioMeta = {
+      '4:5': { label: '4:5 인스타 피드', size: '1080×1350', color: '#34d399', desc: '인스타 세로 황금비율' },
+      '9:16': { label: '9:16 숏폼·릴스', size: '1080×1920', color: '#818cf8', desc: '틱톡/클립/릴스 전용' },
+      '1:1': { label: '1:1 정사각 피드', size: '1080×1080', color: '#f472b6', desc: '정사각형 피드 규격' }
+    };
+    const meta = ratioMeta[ratio] || ratioMeta['4:5'];
+
+    // 1. Tab 1 힌트 라벨 갱신
+    const labelRatioHint = document.getElementById('label-ratio-hint');
+    if (labelRatioHint) {
+      labelRatioHint.textContent = `${meta.label} (${meta.size})`;
+      labelRatioHint.style.color = meta.color;
+    }
+
+    // 2. Tab 3 캔버스 바로 위 라벨 갱신
+    const currentRatioLabel = document.getElementById('current-ratio-label');
+    if (currentRatioLabel) {
+      currentRatioLabel.textContent = `${meta.label} (${meta.size})`;
+      currentRatioLabel.style.color = meta.color;
+    }
+
+    // 3. Tab 3 캔버스 우측 상단 플로팅 뱃지 갱신
+    const canvasRatioBadge = document.getElementById('canvas-ratio-badge');
+    if (canvasRatioBadge) {
+      canvasRatioBadge.textContent = `🖼️ ${meta.label} (${meta.size})`;
+      canvasRatioBadge.style.color = meta.color;
+      canvasRatioBadge.style.borderColor = meta.color;
+    }
+
+    // 4. Tab 3 세팅 아코디언 헤더 갱신 (더 이상 9:16에 고정되지 않음!)
+    const accordionRatioSummary = document.getElementById('accordion-ratio-summary');
+    if (accordionRatioSummary) {
+      accordionRatioSummary.textContent = `⚙️ 화면 비율 (${meta.label}) • 테마 • 자막 수정`;
+    }
+
+    if (typeof updateSimulator === 'function') updateSimulator();
+
+    if (showToastMsg) {
+      showToast(`🎉 화면 규격이 [${meta.label} (${meta.size})]로 즉시 변경되었습니다! ✨`);
+    }
+  }
+  window.applyRatio = applyRatio;
+
+  // Tab 1 및 Tab 3의 모든 비율 버튼 클릭 이벤트 연결
+  document.querySelectorAll('.ratio-btn, .tab1-ratio-chip').forEach(btn => {
     btn.addEventListener('click', () => {
-      ratioBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      CardNewsStudio.setRatio(btn.getAttribute('data-ratio'));
-      if (typeof updateSimulator === 'function') updateSimulator();
+      const r = btn.getAttribute('data-ratio');
+      applyRatio(r, true);
     });
   });
 
@@ -1886,6 +1947,9 @@ function startViralMakerApp() {
     }
     modalApiKey.classList.remove('active');
   });
+
+  // 기본 화면 규격 4:5 (인스타 세로 황금비율) 초기화
+  applyRatio('4:5', false);
 
   // 첫 번째 샘플 로드
   presetChips[0]?.click();
