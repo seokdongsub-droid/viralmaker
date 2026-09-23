@@ -60,7 +60,7 @@ res_add = run_cmd(["git", "add", "-A"], "Git Add")
 run_cmd(["git", "status", "-s"], "Git Status After Add")
 
 # 3. Git Commit
-commit_msg = f"ViralMaker v3.1: Fix 4:5 Instagram Aspect Ratio & Add Canvas Quick Ratio Bar ({timestamp_str})"
+commit_msg = f"ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling ({timestamp_str})"
 res_commit = run_cmd(["git", "commit", "-m", commit_msg], "Git Commit")
 run_cmd(["git", "log", "-n", "3", "--oneline"], "Recent Git Commits")
 

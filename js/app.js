@@ -1177,16 +1177,10 @@ function startViralMakerApp() {
   // v3.0 슬라이드 장수 선택 (3장 / 4장 / 5장)
   slideCountChips.forEach(chip => {
     chip.addEventListener('click', () => {
-      slideCountChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
       const count = parseInt(chip.getAttribute('data-count'), 10) || 4;
-      state.slideCount = count;
-      if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setSlideCount) {
-        CardNewsStudio.setSlideCount(count);
+      if (typeof syncSlideCountUI === 'function') {
+        syncSlideCountUI(count);
       }
-      if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
-      updateSlideQuickBar(count);
-      updateSlideEditInputs();
       showToast(`🎯 ${count}장 슬라이드 구성으로 전환되었습니다!`);
     });
   });
@@ -1328,6 +1322,53 @@ function startViralMakerApp() {
         const fontMap = { gothic: '볼드 고딕체', serif: '감성 명조체 (Dayz)' };
         lblFontFamily.textContent = fontMap[newFont] || newFont;
         showToast(`폰트: ${fontMap[newFont] || newFont}로 전환! 🎨`);
+      }
+    });
+  }
+
+  const btnToggleSlideCount = document.getElementById('btn-toggle-slide-count');
+  const lblSlideCount = document.getElementById('lbl-slide-count');
+
+  function syncSlideCountUI(count) {
+    state.slideCount = count;
+    if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setSlideCount) {
+      CardNewsStudio.setSlideCount(count);
+    }
+    const countMap = {
+      3: '3장 (스피드)',
+      4: '4장 (데이즈홈)',
+      5: '5장 (스토리)'
+    };
+    if (lblSlideCount) {
+      lblSlideCount.textContent = countMap[count] || `${count}장`;
+      lblSlideCount.style.color = count === 4 ? '#34d399' : (count === 3 ? '#fbbf24' : '#818cf8');
+    }
+    const labelSlideCountHint = document.getElementById('label-slide-count-hint');
+    if (labelSlideCountHint) {
+      labelSlideCountHint.textContent = `${count}장`;
+    }
+    const slideCountChips = document.querySelectorAll('#slide-count-group .chip-btn');
+    slideCountChips.forEach(c => {
+      if (parseInt(c.getAttribute('data-count'), 10) === count) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
+    if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
+    updateSlideQuickBar(count);
+    updateSlideEditInputs();
+    updateSlideSceneBar();
+    if (typeof updateSimulator === 'function') updateSimulator();
+  }
+  window.syncSlideCountUI = syncSlideCountUI;
+
+  if (btnToggleSlideCount) {
+    btnToggleSlideCount.addEventListener('click', () => {
+      if (window.CardNewsStudio && window.CardNewsStudio.toggleSlideCount) {
+        const next = window.CardNewsStudio.toggleSlideCount();
+        syncSlideCountUI(next);
+        showToast(`🎞️ 카드뉴스 장수: ${next}장으로 즉시 전환되었습니다!`);
       }
     });
   }

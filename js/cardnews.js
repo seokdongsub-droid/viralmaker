@@ -9,6 +9,7 @@ class CardNewsStudioEngine {
     this.currentLanguage = 'ko'; // 'ko' or 'ja'
     this.slides_ko = [];
     this.slides_ja = [];
+    this.slideCount = 4; // 가변 슬라이드 장수 (3장, 4장 데이즈홈, 5장)
     this.currentSlideIndex = 0;
     this.themeKey = 'photo-overlay';
     this.ratio = '4:5'; // '4:5' (1080x1350) 인스타 세로 황금비율 기본, '9:16' (숏폼), '1:1' (정사각)
@@ -44,10 +45,17 @@ class CardNewsStudioEngine {
 
   setSlideCount(count) {
     if (count < 3 || count > 5) return;
+    this.slideCount = count;
     if (this.currentSlideIndex >= count) {
       this.currentSlideIndex = count - 1;
     }
     this.render();
+  }
+
+  toggleSlideCount() {
+    const nextCount = (this.slideCount === 3) ? 4 : (this.slideCount === 4) ? 5 : 3;
+    this.setSlideCount(nextCount);
+    return nextCount;
   }
 
   init(canvasElement, previewContainer) {
@@ -66,7 +74,7 @@ class CardNewsStudioEngine {
 
     this.slides_ja = [
       { slideNum: 1, type: 'cover', badge: '大バズり中 🔥', mainTitle: '【SNSで話題】\n神アイテム本音レビュー！', subTitle: 'QOL爆上がり確定！もっと早く買えばよかった🥹', extra: '大人気のため売り切れ注意⚠️' },
-      { slideNum: 2, type: 'problem', badge: 'こんなお悩みありませんか？🤔', mainTitle: '毎日のプチストレス\n我慢していませんか？', subTitle: '「もっと快適に過ごしたい…」\n日常の悩みをこれ1つでスッキリ解消！', extra: '見逃せないチェックポイント' },
+      { slideNum: 2, type: 'problem', badge: 'こんなお悩みありませんか？🤔', mainTitle: '毎日のプチストレス\n我慢していませんか？', subTitle: '「もっと快適に過ごしたい…」\n日常의悩みをこれ1つでスッキリ解消！', extra: '見逃せないチェックポイント' },
       { slideNum: 3, type: 'solution', badge: 'お悩み解決 💡', mainTitle: 'これ1つで\n暮らしが変わる！', subTitle: '✔ 圧倒的な使いやすさと満足度\n✔ 一度使ったらもう手放せない便利さ', extra: 'リアルな口コミでも大絶賛✨' },
       { slideNum: 4, type: 'detail', badge: '選ばれる3つの理由 🔍', mainTitle: '使って実感した\n決定的なポイント', subTitle: '1. デザイン性と機能性の両立\n2. 誰でも簡単＆快適に使える設計\n3. 圧倒的な高コスパで大満足', extra: 'リピート率が高い納得のクオリティ' },
       { slideNum: 5, type: 'cta', badge: 'お得情報 🎁', mainTitle: '今だけの特別チャンス！\n限定キャンペーン中', subTitle: '気になったら今すぐチェック！\n詳細はプロフィールのリンクから🔗✨', extra: '在庫限りのためお早めに！' }
@@ -77,7 +85,8 @@ class CardNewsStudioEngine {
   }
 
   get slides() {
-    return this.currentLanguage === 'ja' ? this.slides_ja : this.slides_ko;
+    const raw = this.currentLanguage === 'ja' ? this.slides_ja : this.slides_ko;
+    return raw.slice(0, this.slideCount || 4);
   }
 
   set slides(val) {
@@ -86,10 +95,16 @@ class CardNewsStudioEngine {
     } else {
       this.slides_ko = val;
     }
+    if (val && Array.isArray(val)) {
+      this.slideCount = val.length;
+    }
   }
 
   setGeneratedSlides(slidesKo, slidesJa) {
-    if (slidesKo) this.slides_ko = slidesKo;
+    if (slidesKo) {
+      this.slides_ko = slidesKo;
+      this.slideCount = slidesKo.length;
+    }
     if (slidesJa) this.slides_ja = slidesJa;
     this.currentSlideIndex = 0;
     this.render();
