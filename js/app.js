@@ -892,6 +892,7 @@ function startViralMakerApp() {
       btnTabMethodUrl.classList.add('active');
       btnTabMethodClipboard.classList.remove('active');
       btnTabMethodFile.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
       if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
       if (inputImageUrl) inputImageUrl.focus();
     });
@@ -900,6 +901,8 @@ function startViralMakerApp() {
       btnTabMethodClipboard.classList.add('active');
       btnTabMethodUrl.classList.remove('active');
       btnTabMethodFile.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       await pasteImageFromClipboard();
     });
 
@@ -907,6 +910,8 @@ function startViralMakerApp() {
       btnTabMethodFile.classList.add('active');
       btnTabMethodUrl.classList.remove('active');
       btnTabMethodClipboard.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (mediaFileInput) mediaFileInput.click();
     });
   }
@@ -1553,6 +1558,17 @@ function startViralMakerApp() {
     }
 
     if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
+    
+    // 모바일/다운로드 버튼 텍스트 동적 동기화
+    const lblSaveAll = document.getElementById('lbl-save-all-count');
+    if (lblSaveAll) {
+      lblSaveAll.textContent = `내 폰 사진첩에 ${count}장 한 번에 저장 (추천)`;
+    }
+    const lblDlAll = document.getElementById('lbl-download-all-count');
+    if (lblDlAll) {
+      lblDlAll.textContent = `📦 ${count}장 일괄 ZIP/다운`;
+    }
+
     updateSlideQuickBar(count);
     updateSlideEditInputs();
     updateSlideSceneBar();
@@ -1822,6 +1838,11 @@ function startViralMakerApp() {
 
   if (btnTabMethodCollage) {
     btnTabMethodCollage.addEventListener('click', () => {
+      btnTabMethodCollage.classList.add('active');
+      if (btnTabMethodUrl) btnTabMethodUrl.classList.remove('active');
+      if (btnTabMethodClipboard) btnTabMethodClipboard.classList.remove('active');
+      if (btnTabMethodFile) btnTabMethodFile.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (slideCollageFileInput) slideCollageFileInput.click();
     });
   }
@@ -2067,9 +2088,14 @@ function startViralMakerApp() {
 
   if (btnDownloadAll) {
     btnDownloadAll.addEventListener('click', async () => {
-      showToast('전체 슬라이드 일괄 다운로드를 시작합니다...');
-      await CardNewsStudio.downloadAllSlides();
-      showToast('전체 다운로드 완료! 🎉');
+      showToast('📦 전체 카드뉴스 ZIP 압축 다운로드를 시작합니다...');
+      const ok = await CardNewsStudio.downloadAllAsZip();
+      if (ok) {
+        showToast('전체 카드뉴스 ZIP 다운로드 완료! 🎉');
+      } else {
+        await CardNewsStudio.downloadAllSlides();
+        showToast('전체 다운로드 완료! 🎉');
+      }
     });
   }
 
@@ -2077,7 +2103,17 @@ function startViralMakerApp() {
     btnMobileSave.addEventListener('click', async () => {
       showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
       const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
-        if (modalSaveImage) modalSaveImage.src = dataUrl;
+        const modalSaveTitle = document.getElementById('modal-save-title');
+        const modalSaveTip = document.getElementById('modal-save-tip');
+        const modalGalleryContainer = document.getElementById('modal-gallery-container');
+
+        if (modalSaveTitle) modalSaveTitle.textContent = '📸 현재 슬라이드 사진첩 저장';
+        if (modalSaveTip) modalSaveTip.innerHTML = '💡 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!';
+        if (modalSaveImage) {
+          modalSaveImage.src = dataUrl;
+          modalSaveImage.style.display = 'block';
+        }
+        if (modalGalleryContainer) modalGalleryContainer.style.display = 'none';
         if (modalMobileSave) modalMobileSave.classList.add('active');
       });
       if (shared) {
@@ -2086,16 +2122,71 @@ function startViralMakerApp() {
     });
   }
 
-  // 📱 직장인 모바일 5장 일괄 사진첩 저장 버튼
+  // 📱 직장인 모바일 일괄 사진첩 저장 버튼 (Web Share 미지원/인앱 브라우저 시 세이프 갤러리 모달)
   if (btnMobileSaveAll) {
     btnMobileSaveAll.addEventListener('click', async () => {
-      showToast('📱 사진첩 5장 일괄 저장 / 공유 준비 중...');
-      const shared = await CardNewsStudio.shareOrSaveAllSlides((dataUrl) => {
-        modalSaveImage.src = dataUrl;
-        modalMobileSave.classList.add('active');
+      const totalCount = state.slideCount || 4;
+      showToast(`📱 사진첩 ${totalCount}장 일괄 저장 / 공유 준비 중...`);
+      const shared = await CardNewsStudio.shareOrSaveAllSlides((dataUrls) => {
+        const modalSaveTitle = document.getElementById('modal-save-title');
+        const modalSaveTip = document.getElementById('modal-save-tip');
+        const modalGalleryContainer = document.getElementById('modal-gallery-container');
+
+        if (modalSaveTitle) modalSaveTitle.textContent = `📱 카드뉴스 ${dataUrls.length}장 세이프 갤러리`;
+        if (modalSaveTip) modalSaveTip.innerHTML = `💡 아래 카드들을 <strong>1~2초 꾹 눌러 사진첩에 저장</strong>하시거나<br>하단 <strong>[📦 ZIP 일괄 다운]</strong> 버튼을 누르세요!`;
+
+        if (modalSaveImage) modalSaveImage.style.display = 'none';
+
+        if (modalGalleryContainer) {
+          modalGalleryContainer.style.display = 'flex';
+          modalGalleryContainer.innerHTML = '';
+
+          dataUrls.forEach((url, i) => {
+            const item = document.createElement('div');
+            item.className = 'modal-gallery-item';
+
+            const header = document.createElement('div');
+            header.className = 'modal-gallery-item-header';
+
+            const title = document.createElement('span');
+            title.className = 'modal-gallery-item-title';
+            title.textContent = `카드 #${i + 1}`;
+
+            const btnSave = document.createElement('button');
+            btnSave.type = 'button';
+            btnSave.className = 'modal-gallery-btn-save';
+            btnSave.textContent = '📥 저장';
+            btnSave.onclick = () => {
+              const link = document.createElement('a');
+              link.download = `card_news_${i + 1}.png`;
+              link.href = url;
+              link.click();
+              showToast(`카드 #${i + 1} 다운로드를 시작했습니다.`);
+            };
+
+            header.appendChild(title);
+            header.appendChild(btnSave);
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `카드 뉴스 슬라이드 ${i + 1}`;
+
+            const hint = document.createElement('div');
+            hint.className = 'modal-gallery-item-hint';
+            hint.textContent = '👆 꾹 눌러서 [사진 앱에 추가]';
+
+            item.appendChild(header);
+            item.appendChild(img);
+            item.appendChild(hint);
+
+            modalGalleryContainer.appendChild(item);
+          });
+        }
+
+        if (modalMobileSave) modalMobileSave.classList.add('active');
       });
       if (shared) {
-        showToast('🎉 사진첩 5장 저장 또는 공유가 완료되었습니다!');
+        showToast(`🎉 사진첩 ${totalCount}장 저장 또는 공유가 완료되었습니다!`);
       }
     });
   }
@@ -2130,13 +2221,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.8)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v3.4)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
-      showToast('🔄 최신 버전으로 강력 새로고침 중...');
+      showToast('🔄 v3.4 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.8_' + Date.now();
+      window.location.href = cleanUrl + '?v=3.4_' + Date.now();
     });
   }
 
@@ -2165,6 +2256,24 @@ function startViralMakerApp() {
   if (btnCloseModal && modalMobileSave) {
     btnCloseModal.addEventListener('click', () => {
       modalMobileSave.classList.remove('active');
+    });
+  }
+
+  const btnCloseModalX = document.getElementById('btn-close-modal-x');
+  if (btnCloseModalX && modalMobileSave) {
+    btnCloseModalX.addEventListener('click', () => {
+      modalMobileSave.classList.remove('active');
+    });
+  }
+
+  const btnModalZip = document.getElementById('btn-modal-zip-download');
+  if (btnModalZip) {
+    btnModalZip.addEventListener('click', async () => {
+      showToast('📦 전체 카드뉴스 ZIP 압축 생성 중...');
+      const ok = await CardNewsStudio.downloadAllAsZip();
+      if (ok) {
+        showToast('🎉 ZIP 다운로드가 완료되었습니다!');
+      }
     });
   }
 
@@ -2213,9 +2322,16 @@ function startViralMakerApp() {
     });
   }
 
-  // --- QR 코드 모달 제어 ---
+  // --- QR 코드 모달 제어 (현재 브라우저 접속 URL 실시간 동적 생성) ---
   if (btnOpenQrModal && modalQr) {
     btnOpenQrModal.addEventListener('click', () => {
+      const qrImg = document.getElementById('qr-code-img');
+      const qrText = document.getElementById('qr-url-text');
+      const currentUrl = window.location.href.split('#')[0];
+      if (qrText) qrText.textContent = currentUrl;
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+      }
       modalQr.classList.add('active');
     });
   }

@@ -240,6 +240,14 @@ const SampleQuickInputs = [
   }
 ];
 
+// 🖼️ 사진 미첨부 시 자동으로 감성 실사 배경을 제공하는 카테고리별 디폴트 이미지
+const CategoryDefaultImages = {
+  kitchen: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
+  living: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1080&auto=format&fit=crop&q=80',
+  lifestyle: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1080&auto=format&fit=crop&q=80',
+  general: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=1080&auto=format&fit=crop&q=80'
+};
+
 // 🔥 바이럴 검증 추천템 라이브러리 (요리/조리도구·식재료, 살림/수납/인테리어, 자취/삶의질/초특가)
 const ViralProductLibrary = {
   kitchen: [
@@ -280,6 +288,7 @@ const ViralProductLibrary = {
       search: '저당 굴소스',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-oyster-sauce',
+      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1080&auto=format&fit=crop&q=80',
       memo: '식단 관리/다이어터 필수템! 당류 0g대인데 감칠맛 폭발해서 볶음밥, 닭가슴살 요리가 1초 만에 고급 레스토랑 맛 됨'
     },
     {
@@ -289,6 +298,7 @@ const ViralProductLibrary = {
       search: '오아시스 국산 손두부',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-tofu',
+      imageUrl: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=1080&auto=format&fit=crop&q=80',
       memo: '일반 마트 두부랑 고소함의 차원이 다름! 오아시스 찐단골들이 장바구니에 무조건 쟁이는 유기농 새벽배송 1위'
     },
     {
@@ -298,6 +308,7 @@ const ViralProductLibrary = {
       search: '오아시스 무항생제 한우 다짐육',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-beef',
+      imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1080&auto=format&fit=crop&q=80',
       memo: '잡내 0% 산지직송 무항생제라 아이 유아식 볶음밥이나 파스타 라구소스 만들 때 무조건 이것만 씀! 새벽 문앞 도착'
     },
     {
@@ -307,6 +318,7 @@ const ViralProductLibrary = {
       search: '바질페스토 통밀 푸실리',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-basil-pesto',
+      imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281745?w=1080&auto=format&fit=crop&q=80',
       memo: '주말 아침 10분 만에 성수동 브런치 카페 비주얼 완성! 샛별배송으로 신선하게 와서 향긋함이 차원이 다름'
     },
     {
@@ -316,6 +328,7 @@ const ViralProductLibrary = {
       search: '기름튐 방지 덮개',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-splatter',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '삼겹살이나 볶음 요리할 때 가스레인지 벽면 기름바다 되는 거 100% 차단! 수증기는 빠져나가서 바삭함 유지'
     },
     {
@@ -325,6 +338,7 @@ const ViralProductLibrary = {
       search: '스텐 만능 채칼',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-slicer',
+      imageUrl: 'https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=1080&auto=format&fit=crop&q=80',
       memo: '당근라페, 양배추채 10초 만에 식당 퀄리티로 완성! 칼질 서툰 사람도 손 안 다치고 얇게 썰어줌'
     },
     {
@@ -334,6 +348,7 @@ const ViralProductLibrary = {
       search: '세라믹 멀티팬',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-multipan',
+      imageUrl: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=1080&auto=format&fit=crop&q=80',
       memo: '냄비랑 프라이팬 하나로 합쳐진 딥 디자인! 볶음, 국물, 파스타 다 되고 감성 화이트라 플레이팅 필요 없음'
     },
     {
@@ -343,6 +358,7 @@ const ViralProductLibrary = {
       search: '수제 그릭요거트 유기농 그래놀라',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-greek-yogurt',
+      imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=1080&auto=format&fit=crop&q=80',
       memo: '크림치즈처럼 쫀득꾸덕 단백질 폭탄! 꿀이랑 그래놀라 올려서 아침 1분 만에 먹으면 카페 요거트볼 저리 가라'
     },
     {
@@ -352,6 +368,7 @@ const ViralProductLibrary = {
       search: '오아시스 유기농 방울토마토',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-tomato',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1080&auto=format&fit=crop&q=80',
       memo: '설탕 뿌린 것처럼 달콤한데 당류 부담 제로! 아이들 간식, 다이어트 야식으로 새벽 문앞 배송 1위'
     }
   ],
@@ -383,6 +400,7 @@ const ViralProductLibrary = {
       search: '배수구 실리콘 덮개',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-drain',
+      imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1080&auto=format&fit=crop&q=80',
       memo: '싱크대 악취랑 날파리 완벽 차단! 자석으로 1초 탈부착되고 물때 안 끼는 위생 실리콘'
     },
     {
@@ -392,6 +410,7 @@ const ViralProductLibrary = {
       search: 'PVA 워터블럭',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-waterblock',
+      imageUrl: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=1080&auto=format&fit=crop&q=80',
       memo: '욕실 거울, 싱크대 물때 슥 닦으면 물방울 하나 없이 광남! 휴지 낭비 없이 1초 만에 물기 싹 흡수'
     },
     {
@@ -401,6 +420,7 @@ const ViralProductLibrary = {
       search: '회전 양념통 트레이',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-rotary',
+      imageUrl: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1080&auto=format&fit=crop&q=80',
       memo: '냉장고 안쪽 깊숙이 박힌 양념통 찾느라 다 꺼낼 필요 없음! 돌리면 1초 만에 나와서 삶의 질 수직상승'
     },
     {
@@ -410,6 +430,7 @@ const ViralProductLibrary = {
       search: '무타공 싱크대 양념통 선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-shelf',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '못 박을 필요 1도 없이 1초 초간편 설치! 지저분하던 주방 상판이 호텔 조리대처럼 깔끔해지는 마법'
     },
     {
@@ -419,6 +440,7 @@ const ViralProductLibrary = {
       search: '무형광 3겹 천연펄프 롤화장지',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-tissue',
+      imageUrl: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?w=1080&auto=format&fit=crop&q=80',
       memo: '먼지 날림 0% 피부 자극 없는 100% 천연펄프! 마켓컬리 샛별배송 장바구니 필수 쟁여템'
     }
   ],
@@ -430,6 +452,7 @@ const ViralProductLibrary = {
       search: '원터치 무선 진공포장기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/vacuum-sealer',
+      imageUrl: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1080&auto=format&fit=crop&q=80',
       memo: '남은 식재료, 과자봉지 1초 만에 공기 싹 빼서 완벽 밀봉! 토스쇼핑 쉐어링크 특가 떴을 때 쟁여야 할 가성비 끝판왕'
     },
     {
@@ -449,6 +472,7 @@ const ViralProductLibrary = {
       search: '스마트 센서 휴지통',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-trash',
+      imageUrl: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1080&auto=format&fit=crop&q=80',
       memo: '요리하다 손에 양념 묻었을 때 무릎만 갖다 대면 스르륵 열림! 냄새 완벽 밀폐 자취방 필수템'
     },
     {
@@ -458,6 +482,7 @@ const ViralProductLibrary = {
       search: '시카 수분 앰플',
       defaultPlatform: 'smartstore',
       link: 'https://brand.naver.com/sample/cica-ampoule',
+      imageUrl: 'https://images.unsplash.com/photo-1608248597359-561358055698?w=1080&auto=format&fit=crop&q=80',
       memo: '병풀 78% 붉은기 즉각 진정! 속건조 0% 저자극 K-뷰티 대란템 1+1 기획'
     },
     {
@@ -467,6 +492,7 @@ const ViralProductLibrary = {
       search: '접이식 무선 목걸이 선풍기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/portable-fan',
+      imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1080&auto=format&fit=crop&q=80',
       memo: '주머니에 쏙 들어가는 90g 초경량! 출퇴근 만원 지하철에서 나 혼자 시원함. 3단 풍속에 배터리 종일 감'
     },
     {
@@ -476,6 +502,7 @@ const ViralProductLibrary = {
       search: '토스쇼핑 초경량 미니 마사지건',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/massage-gun',
+      imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1080&auto=format&fit=crop&q=80',
       memo: '스마트폰 크기 360g인데 분당 3200RPM 파워 타격! 승모근, 종아리 알 5분 만에 싹 풀리는 쉐어링크 핫딜'
     },
     {
@@ -485,6 +512,7 @@ const ViralProductLibrary = {
       search: '6중날 충전식 보풀제거기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/lint-remover',
+      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1080&auto=format&fit=crop&q=80',
       memo: '보풀 가득하던 니트, 코트 1분 만에 새 옷 비주얼로 부활! 원단 손상 없이 슥 지나가면 끝'
     },
     {
@@ -494,6 +522,7 @@ const ViralProductLibrary = {
       search: '오아시스 무항생제 한돈 삼겹살',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-pork',
+      imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1080&auto=format&fit=crop&q=80',
       memo: '육즙 팡팡 터지는 당일 도축 새벽배송! 잡내 1도 없고 겉바속촉 에어프라이어 구이 최강자'
     }
   ]

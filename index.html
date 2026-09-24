@@ -15,7 +15,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <link rel="stylesheet" href="css/style.css?v=2.8">
+  <link rel="stylesheet" href="css/style.css?v=3.4">
+  <!-- JSZip for clean 1-click batch image zip download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -30,10 +32,16 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.3 5대 제휴몰 전용관</span>
+          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.4 모바일 초고속</span>
         </div>
       </div>
       <div class="header-actions">
+        <button type="button" class="btn-header" id="btn-force-refresh" title="최신 버전으로 강력 새로고침" style="padding: 6px 9px;">
+          <span>🔄</span>
+        </button>
+        <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: #10b981; color: #6ee7b7; font-weight: 700;" title="스마트폰 카메라로 스캔하여 모바일로 바로 열기">
+          <span>📱</span> <span>폰으로 열기</span>
+        </button>
         <button type="button" class="btn-header" id="btn-open-affiliate-modal" style="border-color: #f59e0b; color: #fbbf24; font-weight: 700;" title="5대 제휴쇼핑몰 바로가기 & 수익 링크 발급 센터">
           <span>🏬</span> <span>제휴센터</span>
         </button>
@@ -45,17 +53,6 @@
         </button>
       </div>
     </header>
-
-    <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
-    <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 16px; font-size: 11px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
-        <span><strong>v3.3 5대 제휴몰(오늘의집·컬리·오아시스·토스·쿠팡) 전용관 &amp; 1초 수익화 센터 탑재</strong></span>
-      </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.3_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(245, 158, 11, 0.5); color: #FCD34D; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
-        <span>🔄</span> <span>강력 새로고침</span>
-      </button>
-    </div>
 
     <!-- MAIN CONTENT VIEWS -->
     <main>
@@ -239,39 +236,39 @@
             </div>
           </div>
           <p class="section-desc" style="margin-bottom: 8px;">
-            💡 <strong>사진 딱 1장만 올려도 5개 슬라이드가 5가지 앵글로 자동 연출</strong>됩니다! (상세페이지 캡처 여러 장 동시 선택도 가능)
+            💡 <strong>쇼핑몰 상세페이지 스크린샷(캡처) 1장만 첨부</strong>해도 슬라이드별 맞춤 앵글로 카드뉴스가 자동 완성됩니다!
           </p>
 
           <!-- 🚀 제휴몰 제품 사진 초간단 첨부 4-Way 툴바 -->
           <div class="photo-method-tabs">
-            <button type="button" class="photo-method-btn active" id="btn-tab-method-url">
-              <span>🔗</span> <span>이미지 주소 복붙</span>
+            <button type="button" class="photo-method-btn active" id="btn-tab-method-file">
+              <span>📁</span> <span>내 사진첩/스크린샷</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
               <span>📋</span> <span>사진 클립보드</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-file">
-              <span>📁</span> <span>내 사진첩</span>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-url">
+              <span>🔗</span> <span>이미지 주소 복붙</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이 2x2 격자 사진을 1초 만에 슬라이드 4장으로 자동 쪼개주는 단축 기능">
               <span>✂️</span> <span>(옵션) 4분할 치트키</span>
             </button>
           </div>
 
-          <!-- 방법 1: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 -->
-          <div id="panel-photo-url" style="display: block; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
+          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (URL 탭 클릭 시 표시) -->
+          <div id="panel-photo-url" style="display: none; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-light); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-              <span>🔗 쇼핑몰 제품 이미지 주소(URL) 붙여넣기</span>
+              <span>🔗 쇼핑몰 제품 이미지 웹 주소(URL) 붙여넣기</span>
               <span style="font-size: 10px; color: #34d399; font-weight: 600;">⚡ 저장 없이 1초 완성!</span>
             </div>
             <div style="display: flex; gap: 6px;">
-              <input type="url" id="input-image-url" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="쿠팡/오늘의집에서 사진 꾹 누르고 '이미지 주소 복사' 후 붙여넣기">
+              <input type="url" id="input-image-url" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="웹 브라우저에서 '이미지 주소 복사' 후 붙여넣기">
               <button type="button" id="btn-apply-image-url" class="btn-header" style="background: var(--primary); color: #fff; border-color: var(--primary); font-size: 12px; padding: 8px 14px; font-weight: 700; white-space: nowrap; cursor: pointer;">
                 <span>적용</span>
               </button>
             </div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-              💡 <strong>스마트폰 초간단 팁:</strong> 쿠팡·오늘의집에서 마음에 드는 제품 사진을 1초간 꾹 누르면 <strong>[이미지 주소 복사]</strong>가 뜹니다. 복사 후 여기에 붙여넣고 [적용]을 누르면 갤러리 저장 없이 즉시 5단 카드뉴스가 완성됩니다!
+              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [내 사진첩/스크린샷]으로 캡처 1장을 올리시는 것이 가장 빠릅니다!
             </div>
           </div>
 
@@ -281,7 +278,7 @@
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
               <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
-              <div style="font-size: 11px; color: var(--text-muted);">인위적 줌 배율 왜곡 제거 ➔ 100% 원본 선명도 유지! (3장·4장·5장 개별 사진 첨부 또는 4분할 단축키 지원)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">쇼핑몰 화면 캡처 1장만 올려도 OK! (사진이 없어도 추천템 선택 시 감성 실사 배경 자동 탑재 ✨)</div>
             </div>
           </label>
 
@@ -647,15 +644,18 @@
         <div class="cardnews-action-stack">
           <button type="button" class="btn-primary-large glowing-btn-save" id="btn-mobile-save-all">
             <span style="font-size: 18px;">📱</span>
-            <span>내 폰 사진첩에 5장 한 번에 저장 (추천)</span>
+            <span id="lbl-save-all-count">내 폰 사진첩에 4장 한 번에 저장 (추천)</span>
           </button>
 
           <div class="sub-download-row">
-            <button type="button" class="btn-sub-action" id="btn-mobile-save">
-              <span>📱 현재 1장만 저장</span>
+            <button type="button" class="btn-sub-action" id="btn-mobile-save" title="스마트폰 사진첩에 현재 1장 저장">
+              <span>📱 현재 1장 폰 저장</span>
             </button>
-            <button type="button" class="btn-sub-action" id="btn-download-all">
-              <span>📦 5장 일괄 ZIP/다운</span>
+            <button type="button" class="btn-sub-action" id="btn-download-slide" title="현재 1장 PC 직접 다운로드">
+              <span>📥 1장 다운</span>
+            </button>
+            <button type="button" class="btn-sub-action" id="btn-download-all" title="전체 카드뉴스 ZIP 일괄 다운로드">
+              <span id="lbl-download-all-count">📦 4장 일괄 ZIP</span>
             </button>
           </div>
         </div>
@@ -861,13 +861,29 @@
       </div>
     </div>
 
-    <!-- MODAL 1: 스마트폰 사진첩 길게 누르기 저장 모달 -->
+    <!-- MODAL 1: 스마트폰 사진첩 길게 누르기 저장 모달 (단일/일괄 세이프 갤러리 지원) -->
     <div class="modal-overlay" id="modal-mobile-save">
-      <div class="modal-card">
-        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">📸 사진첩에 저장하기</h3>
-        <div class="modal-tip">💡 아래 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!</div>
-        <img id="modal-save-image" class="modal-image" alt="저장용 이미지">
-        <button type="button" class="btn-primary-large" id="btn-close-modal" style="padding: 12px;">닫기</button>
+      <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 id="modal-save-title" style="font-size: 16px; font-weight: 800; margin: 0;">📸 사진첩에 저장하기</h3>
+          <button type="button" id="btn-close-modal-x" style="background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+        <div class="modal-tip" id="modal-save-tip">💡 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!</div>
+        
+        <!-- 단일 이미지 뷰 (현재 1장 저장 시) -->
+        <img id="modal-save-image" class="modal-image" alt="저장용 이미지" style="display: block;">
+
+        <!-- 다중 일괄 갤러리 뷰 (모바일 안전 일괄 저장용) -->
+        <div id="modal-gallery-container" class="modal-gallery-container" style="display: none;">
+          <!-- JS 동적 생성 -->
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button type="button" class="btn-header" id="btn-modal-zip-download" style="flex: 1; padding: 11px; font-size: 12.5px; font-weight: 700; justify-content: center; background: rgba(99, 102, 241, 0.15); border-color: var(--primary); color: #c7d2fe;">
+            <span>📦 ZIP 일괄 다운</span>
+          </button>
+          <button type="button" class="btn-primary-large" id="btn-close-modal" style="flex: 1; padding: 11px; font-size: 13px;">닫기</button>
+        </div>
       </div>
     </div>
 
@@ -880,15 +896,14 @@
         </p>
         
         <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://cf186324187968.lhr.life/" alt="QR Code" style="width: 200px; height: 200px; display: block;">
+          <img id="qr-code-img" src="" alt="QR Code" style="width: 200px; height: 200px; display: block;">
         </div>
 
-        <div style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 13px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
-          https://cf186324187968.lhr.life/
+        <div id="qr-url-text" style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 12px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
         </div>
 
         <p style="font-size: 11px; color: var(--success); margin-bottom: 16px;">
-          ✓ 보안 HTTPS 실시간 연결됨 (LTE / 5G / 와이파이 어디서나 접속 가능)
+          ✓ 앱 설치 없이 모바일 브라우저에서 1초 만에 바로 실행
         </p>
 
         <button type="button" class="btn-primary-large" id="btn-close-qr-modal" style="padding: 12px;">확인 완료</button>
@@ -1046,10 +1061,10 @@
 
   </div>
 
-  <!-- Scripts (캐시 방지 v3.3 적용) -->
-  <script src="js/templates.js?v=3.3"></script>
-  <script src="js/generator.js?v=3.3"></script>
-  <script src="js/cardnews.js?v=3.3"></script>
-  <script src="js/app.js?v=3.3"></script>
+  <!-- Scripts (캐시 방지 v3.4 적용) -->
+  <script src="js/templates.js?v=3.4"></script>
+  <script src="js/generator.js?v=3.4"></script>
+  <script src="js/cardnews.js?v=3.4"></script>
+  <script src="js/app.js?v=3.4"></script>
 </body>
 </html>

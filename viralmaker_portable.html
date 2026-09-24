@@ -1461,6 +1461,74 @@ body {
   border-radius: var(--radius-sm);
 }
 
+/* Modal Multi-Gallery Safe Save Styles */
+.modal-gallery-container {
+  max-height: 58vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-gallery-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  text-align: center;
+}
+
+.modal-gallery-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.modal-gallery-item-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.modal-gallery-btn-save {
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+
+.modal-gallery-btn-save:hover {
+  background: var(--primary-hover);
+}
+
+.modal-gallery-item img {
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  display: block;
+  margin: 0 auto 6px auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.modal-gallery-item-hint {
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+
 /* Toast Feedback */
 .toast-msg {
   position: fixed;
@@ -2212,6 +2280,8 @@ body {
 
 
 </style>
+  <!-- JSZip for clean 1-click batch image zip download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
@@ -2226,10 +2296,16 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.3 5대 제휴몰 전용관</span>
+          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.4 모바일 초고속</span>
         </div>
       </div>
       <div class="header-actions">
+        <button type="button" class="btn-header" id="btn-force-refresh" title="최신 버전으로 강력 새로고침" style="padding: 6px 9px;">
+          <span>🔄</span>
+        </button>
+        <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: #10b981; color: #6ee7b7; font-weight: 700;" title="스마트폰 카메라로 스캔하여 모바일로 바로 열기">
+          <span>📱</span> <span>폰으로 열기</span>
+        </button>
         <button type="button" class="btn-header" id="btn-open-affiliate-modal" style="border-color: #f59e0b; color: #fbbf24; font-weight: 700;" title="5대 제휴쇼핑몰 바로가기 & 수익 링크 발급 센터">
           <span>🏬</span> <span>제휴센터</span>
         </button>
@@ -2241,17 +2317,6 @@ body {
         </button>
       </div>
     </header>
-
-    <!-- 최신 버전 적용 확인 배너 (새로고침 성공 여부 즉시 확인) -->
-    <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(99, 102, 241, 0.15)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 16px; font-size: 11px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; box-shadow: 0 0 8px #F59E0B;"></span>
-        <span><strong>v3.3 5대 제휴몰(오늘의집·컬리·오아시스·토스·쿠팡) 전용관 &amp; 1초 수익화 센터 탑재</strong></span>
-      </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.3_' + Date.now());" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(245, 158, 11, 0.5); color: #FCD34D; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px;">
-        <span>🔄</span> <span>강력 새로고침</span>
-      </button>
-    </div>
 
     <!-- MAIN CONTENT VIEWS -->
     <main>
@@ -2435,39 +2500,39 @@ body {
             </div>
           </div>
           <p class="section-desc" style="margin-bottom: 8px;">
-            💡 <strong>사진 딱 1장만 올려도 5개 슬라이드가 5가지 앵글로 자동 연출</strong>됩니다! (상세페이지 캡처 여러 장 동시 선택도 가능)
+            💡 <strong>쇼핑몰 상세페이지 스크린샷(캡처) 1장만 첨부</strong>해도 슬라이드별 맞춤 앵글로 카드뉴스가 자동 완성됩니다!
           </p>
 
           <!-- 🚀 제휴몰 제품 사진 초간단 첨부 4-Way 툴바 -->
           <div class="photo-method-tabs">
-            <button type="button" class="photo-method-btn active" id="btn-tab-method-url">
-              <span>🔗</span> <span>이미지 주소 복붙</span>
+            <button type="button" class="photo-method-btn active" id="btn-tab-method-file">
+              <span>📁</span> <span>내 사진첩/스크린샷</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
               <span>📋</span> <span>사진 클립보드</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-file">
-              <span>📁</span> <span>내 사진첩</span>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-url">
+              <span>🔗</span> <span>이미지 주소 복붙</span>
             </button>
             <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이 2x2 격자 사진을 1초 만에 슬라이드 4장으로 자동 쪼개주는 단축 기능">
               <span>✂️</span> <span>(옵션) 4분할 치트키</span>
             </button>
           </div>
 
-          <!-- 방법 1: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 -->
-          <div id="panel-photo-url" style="display: block; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
+          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (URL 탭 클릭 시 표시) -->
+          <div id="panel-photo-url" style="display: none; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-light); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-              <span>🔗 쇼핑몰 제품 이미지 주소(URL) 붙여넣기</span>
+              <span>🔗 쇼핑몰 제품 이미지 웹 주소(URL) 붙여넣기</span>
               <span style="font-size: 10px; color: #34d399; font-weight: 600;">⚡ 저장 없이 1초 완성!</span>
             </div>
             <div style="display: flex; gap: 6px;">
-              <input type="url" id="input-image-url" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="쿠팡/오늘의집에서 사진 꾹 누르고 '이미지 주소 복사' 후 붙여넣기">
+              <input type="url" id="input-image-url" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="웹 브라우저에서 '이미지 주소 복사' 후 붙여넣기">
               <button type="button" id="btn-apply-image-url" class="btn-header" style="background: var(--primary); color: #fff; border-color: var(--primary); font-size: 12px; padding: 8px 14px; font-weight: 700; white-space: nowrap; cursor: pointer;">
                 <span>적용</span>
               </button>
             </div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-              💡 <strong>스마트폰 초간단 팁:</strong> 쿠팡·오늘의집에서 마음에 드는 제품 사진을 1초간 꾹 누르면 <strong>[이미지 주소 복사]</strong>가 뜹니다. 복사 후 여기에 붙여넣고 [적용]을 누르면 갤러리 저장 없이 즉시 5단 카드뉴스가 완성됩니다!
+              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [내 사진첩/스크린샷]으로 캡처 1장을 올리시는 것이 가장 빠릅니다!
             </div>
           </div>
 
@@ -2477,7 +2542,7 @@ body {
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
               <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
-              <div style="font-size: 11px; color: var(--text-muted);">인위적 줌 배율 왜곡 제거 ➔ 100% 원본 선명도 유지! (3장·4장·5장 개별 사진 첨부 또는 4분할 단축키 지원)</div>
+              <div style="font-size: 11px; color: var(--text-muted);">쇼핑몰 화면 캡처 1장만 올려도 OK! (사진이 없어도 추천템 선택 시 감성 실사 배경 자동 탑재 ✨)</div>
             </div>
           </label>
 
@@ -2843,15 +2908,18 @@ body {
         <div class="cardnews-action-stack">
           <button type="button" class="btn-primary-large glowing-btn-save" id="btn-mobile-save-all">
             <span style="font-size: 18px;">📱</span>
-            <span>내 폰 사진첩에 5장 한 번에 저장 (추천)</span>
+            <span id="lbl-save-all-count">내 폰 사진첩에 4장 한 번에 저장 (추천)</span>
           </button>
 
           <div class="sub-download-row">
-            <button type="button" class="btn-sub-action" id="btn-mobile-save">
-              <span>📱 현재 1장만 저장</span>
+            <button type="button" class="btn-sub-action" id="btn-mobile-save" title="스마트폰 사진첩에 현재 1장 저장">
+              <span>📱 현재 1장 폰 저장</span>
             </button>
-            <button type="button" class="btn-sub-action" id="btn-download-all">
-              <span>📦 5장 일괄 ZIP/다운</span>
+            <button type="button" class="btn-sub-action" id="btn-download-slide" title="현재 1장 PC 직접 다운로드">
+              <span>📥 1장 다운</span>
+            </button>
+            <button type="button" class="btn-sub-action" id="btn-download-all" title="전체 카드뉴스 ZIP 일괄 다운로드">
+              <span id="lbl-download-all-count">📦 4장 일괄 ZIP</span>
             </button>
           </div>
         </div>
@@ -3057,13 +3125,29 @@ body {
       </div>
     </div>
 
-    <!-- MODAL 1: 스마트폰 사진첩 길게 누르기 저장 모달 -->
+    <!-- MODAL 1: 스마트폰 사진첩 길게 누르기 저장 모달 (단일/일괄 세이프 갤러리 지원) -->
     <div class="modal-overlay" id="modal-mobile-save">
-      <div class="modal-card">
-        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">📸 사진첩에 저장하기</h3>
-        <div class="modal-tip">💡 아래 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!</div>
-        <img id="modal-save-image" class="modal-image" alt="저장용 이미지">
-        <button type="button" class="btn-primary-large" id="btn-close-modal" style="padding: 12px;">닫기</button>
+      <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 id="modal-save-title" style="font-size: 16px; font-weight: 800; margin: 0;">📸 사진첩에 저장하기</h3>
+          <button type="button" id="btn-close-modal-x" style="background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+        <div class="modal-tip" id="modal-save-tip">💡 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!</div>
+        
+        <!-- 단일 이미지 뷰 (현재 1장 저장 시) -->
+        <img id="modal-save-image" class="modal-image" alt="저장용 이미지" style="display: block;">
+
+        <!-- 다중 일괄 갤러리 뷰 (모바일 안전 일괄 저장용) -->
+        <div id="modal-gallery-container" class="modal-gallery-container" style="display: none;">
+          <!-- JS 동적 생성 -->
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button type="button" class="btn-header" id="btn-modal-zip-download" style="flex: 1; padding: 11px; font-size: 12.5px; font-weight: 700; justify-content: center; background: rgba(99, 102, 241, 0.15); border-color: var(--primary); color: #c7d2fe;">
+            <span>📦 ZIP 일괄 다운</span>
+          </button>
+          <button type="button" class="btn-primary-large" id="btn-close-modal" style="flex: 1; padding: 11px; font-size: 13px;">닫기</button>
+        </div>
       </div>
     </div>
 
@@ -3076,15 +3160,14 @@ body {
         </p>
         
         <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://cf186324187968.lhr.life/" alt="QR Code" style="width: 200px; height: 200px; display: block;">
+          <img id="qr-code-img" src="" alt="QR Code" style="width: 200px; height: 200px; display: block;">
         </div>
 
-        <div style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 13px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
-          https://cf186324187968.lhr.life/
+        <div id="qr-url-text" style="background: var(--bg-surface); padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-family: monospace; font-size: 12px; color: var(--primary-light); margin-bottom: 14px; word-break: break-all;">
         </div>
 
         <p style="font-size: 11px; color: var(--success); margin-bottom: 16px;">
-          ✓ 보안 HTTPS 실시간 연결됨 (LTE / 5G / 와이파이 어디서나 접속 가능)
+          ✓ 앱 설치 없이 모바일 브라우저에서 1초 만에 바로 실행
         </p>
 
         <button type="button" class="btn-primary-large" id="btn-close-qr-modal" style="padding: 12px;">확인 완료</button>
@@ -3485,6 +3568,14 @@ const SampleQuickInputs = [
   }
 ];
 
+// 🖼️ 사진 미첨부 시 자동으로 감성 실사 배경을 제공하는 카테고리별 디폴트 이미지
+const CategoryDefaultImages = {
+  kitchen: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
+  living: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1080&auto=format&fit=crop&q=80',
+  lifestyle: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1080&auto=format&fit=crop&q=80',
+  general: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=1080&auto=format&fit=crop&q=80'
+};
+
 // 🔥 바이럴 검증 추천템 라이브러리 (요리/조리도구·식재료, 살림/수납/인테리어, 자취/삶의질/초특가)
 const ViralProductLibrary = {
   kitchen: [
@@ -3525,6 +3616,7 @@ const ViralProductLibrary = {
       search: '저당 굴소스',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-oyster-sauce',
+      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1080&auto=format&fit=crop&q=80',
       memo: '식단 관리/다이어터 필수템! 당류 0g대인데 감칠맛 폭발해서 볶음밥, 닭가슴살 요리가 1초 만에 고급 레스토랑 맛 됨'
     },
     {
@@ -3534,6 +3626,7 @@ const ViralProductLibrary = {
       search: '오아시스 국산 손두부',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-tofu',
+      imageUrl: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=1080&auto=format&fit=crop&q=80',
       memo: '일반 마트 두부랑 고소함의 차원이 다름! 오아시스 찐단골들이 장바구니에 무조건 쟁이는 유기농 새벽배송 1위'
     },
     {
@@ -3543,6 +3636,7 @@ const ViralProductLibrary = {
       search: '오아시스 무항생제 한우 다짐육',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-beef',
+      imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1080&auto=format&fit=crop&q=80',
       memo: '잡내 0% 산지직송 무항생제라 아이 유아식 볶음밥이나 파스타 라구소스 만들 때 무조건 이것만 씀! 새벽 문앞 도착'
     },
     {
@@ -3552,6 +3646,7 @@ const ViralProductLibrary = {
       search: '바질페스토 통밀 푸실리',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-basil-pesto',
+      imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281745?w=1080&auto=format&fit=crop&q=80',
       memo: '주말 아침 10분 만에 성수동 브런치 카페 비주얼 완성! 샛별배송으로 신선하게 와서 향긋함이 차원이 다름'
     },
     {
@@ -3561,6 +3656,7 @@ const ViralProductLibrary = {
       search: '기름튐 방지 덮개',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-splatter',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '삼겹살이나 볶음 요리할 때 가스레인지 벽면 기름바다 되는 거 100% 차단! 수증기는 빠져나가서 바삭함 유지'
     },
     {
@@ -3570,6 +3666,7 @@ const ViralProductLibrary = {
       search: '스텐 만능 채칼',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-slicer',
+      imageUrl: 'https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=1080&auto=format&fit=crop&q=80',
       memo: '당근라페, 양배추채 10초 만에 식당 퀄리티로 완성! 칼질 서툰 사람도 손 안 다치고 얇게 썰어줌'
     },
     {
@@ -3579,6 +3676,7 @@ const ViralProductLibrary = {
       search: '세라믹 멀티팬',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-multipan',
+      imageUrl: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=1080&auto=format&fit=crop&q=80',
       memo: '냄비랑 프라이팬 하나로 합쳐진 딥 디자인! 볶음, 국물, 파스타 다 되고 감성 화이트라 플레이팅 필요 없음'
     },
     {
@@ -3588,6 +3686,7 @@ const ViralProductLibrary = {
       search: '수제 그릭요거트 유기농 그래놀라',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-greek-yogurt',
+      imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=1080&auto=format&fit=crop&q=80',
       memo: '크림치즈처럼 쫀득꾸덕 단백질 폭탄! 꿀이랑 그래놀라 올려서 아침 1분 만에 먹으면 카페 요거트볼 저리 가라'
     },
     {
@@ -3597,6 +3696,7 @@ const ViralProductLibrary = {
       search: '오아시스 유기농 방울토마토',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-tomato',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=1080&auto=format&fit=crop&q=80',
       memo: '설탕 뿌린 것처럼 달콤한데 당류 부담 제로! 아이들 간식, 다이어트 야식으로 새벽 문앞 배송 1위'
     }
   ],
@@ -3628,6 +3728,7 @@ const ViralProductLibrary = {
       search: '배수구 실리콘 덮개',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-drain',
+      imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=1080&auto=format&fit=crop&q=80',
       memo: '싱크대 악취랑 날파리 완벽 차단! 자석으로 1초 탈부착되고 물때 안 끼는 위생 실리콘'
     },
     {
@@ -3637,6 +3738,7 @@ const ViralProductLibrary = {
       search: 'PVA 워터블럭',
       defaultPlatform: 'coupang',
       link: 'https://link.coupang.com/a/sample-waterblock',
+      imageUrl: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=1080&auto=format&fit=crop&q=80',
       memo: '욕실 거울, 싱크대 물때 슥 닦으면 물방울 하나 없이 광남! 휴지 낭비 없이 1초 만에 물기 싹 흡수'
     },
     {
@@ -3646,6 +3748,7 @@ const ViralProductLibrary = {
       search: '회전 양념통 트레이',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-rotary',
+      imageUrl: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1080&auto=format&fit=crop&q=80',
       memo: '냉장고 안쪽 깊숙이 박힌 양념통 찾느라 다 꺼낼 필요 없음! 돌리면 1초 만에 나와서 삶의 질 수직상승'
     },
     {
@@ -3655,6 +3758,7 @@ const ViralProductLibrary = {
       search: '무타공 싱크대 양념통 선반',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-shelf',
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1080&auto=format&fit=crop&q=80',
       memo: '못 박을 필요 1도 없이 1초 초간편 설치! 지저분하던 주방 상판이 호텔 조리대처럼 깔끔해지는 마법'
     },
     {
@@ -3664,6 +3768,7 @@ const ViralProductLibrary = {
       search: '무형광 3겹 천연펄프 롤화장지',
       defaultPlatform: 'kurly',
       link: 'https://www.kurly.com/goods/sample-tissue',
+      imageUrl: 'https://images.unsplash.com/photo-1584556812952-905ffd0c611a?w=1080&auto=format&fit=crop&q=80',
       memo: '먼지 날림 0% 피부 자극 없는 100% 천연펄프! 마켓컬리 샛별배송 장바구니 필수 쟁여템'
     }
   ],
@@ -3675,6 +3780,7 @@ const ViralProductLibrary = {
       search: '원터치 무선 진공포장기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/vacuum-sealer',
+      imageUrl: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=1080&auto=format&fit=crop&q=80',
       memo: '남은 식재료, 과자봉지 1초 만에 공기 싹 빼서 완벽 밀봉! 토스쇼핑 쉐어링크 특가 떴을 때 쟁여야 할 가성비 끝판왕'
     },
     {
@@ -3694,6 +3800,7 @@ const ViralProductLibrary = {
       search: '스마트 센서 휴지통',
       defaultPlatform: 'ohou',
       link: 'https://ohou.se/productions/sample-trash',
+      imageUrl: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1080&auto=format&fit=crop&q=80',
       memo: '요리하다 손에 양념 묻었을 때 무릎만 갖다 대면 스르륵 열림! 냄새 완벽 밀폐 자취방 필수템'
     },
     {
@@ -3703,6 +3810,7 @@ const ViralProductLibrary = {
       search: '시카 수분 앰플',
       defaultPlatform: 'smartstore',
       link: 'https://brand.naver.com/sample/cica-ampoule',
+      imageUrl: 'https://images.unsplash.com/photo-1608248597359-561358055698?w=1080&auto=format&fit=crop&q=80',
       memo: '병풀 78% 붉은기 즉각 진정! 속건조 0% 저자극 K-뷰티 대란템 1+1 기획'
     },
     {
@@ -3712,6 +3820,7 @@ const ViralProductLibrary = {
       search: '접이식 무선 목걸이 선풍기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/portable-fan',
+      imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1080&auto=format&fit=crop&q=80',
       memo: '주머니에 쏙 들어가는 90g 초경량! 출퇴근 만원 지하철에서 나 혼자 시원함. 3단 풍속에 배터리 종일 감'
     },
     {
@@ -3721,6 +3830,7 @@ const ViralProductLibrary = {
       search: '토스쇼핑 초경량 미니 마사지건',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/massage-gun',
+      imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1080&auto=format&fit=crop&q=80',
       memo: '스마트폰 크기 360g인데 분당 3200RPM 파워 타격! 승모근, 종아리 알 5분 만에 싹 풀리는 쉐어링크 핫딜'
     },
     {
@@ -3730,6 +3840,7 @@ const ViralProductLibrary = {
       search: '6중날 충전식 보풀제거기',
       defaultPlatform: 'toss',
       link: 'https://toss.im/sample/lint-remover',
+      imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1080&auto=format&fit=crop&q=80',
       memo: '보풀 가득하던 니트, 코트 1분 만에 새 옷 비주얼로 부활! 원단 손상 없이 슥 지나가면 끝'
     },
     {
@@ -3739,6 +3850,7 @@ const ViralProductLibrary = {
       search: '오아시스 무항생제 한돈 삼겹살',
       defaultPlatform: 'oasis',
       link: 'https://www.oasis.co.kr/product/detail/sample-pork',
+      imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=1080&auto=format&fit=crop&q=80',
       memo: '육즙 팡팡 터지는 당일 도축 새벽배송! 잡내 1도 없고 겉바속촉 에어프라이어 구이 최강자'
     }
   ]
@@ -4465,14 +4577,14 @@ ${cleanNegative}
       type1 = {
         title: '유형 1. 공포자극/의외성형 (뷰티)',
         desc: '피부 스트레스 후킹 및 즉각적인 개선 체감',
-        body_ko: `아직도 비싼 돈 주고 샵 가서 관리받는 사람 있어? 진심 ${name} 알고 내 피부 인생 바뀜;; ${memo}. 화장도 1도 안 뜨고 하루 종일 촉촉해서 주변에서 피부과 어디 다니냐고 물어봄... 하 왜 이제 샀지 내 텅장 눈감아.\n\n자세한 후기랑 구매처는 첫 댓글에 남겨둘게!`,
+        body_ko: `아직도 비싼 돈 주고 샵 가서 관리받는 사람 있어? 진심 ${name} 알고 내 피부 인생 바뀜;; ${memo}. 화장도 1도 안 뜨고 하루 종일 촉촉해서 주변에서 피부과 어디 다니냐고 물어봄... 진작 살 걸 그랬음 매일 아침마다 감탄 중.\n\n자세한 후기랑 구매처는 첫 댓글에 남겨둘게!`,
         body_ja: `まだ高いお金払ってサロン通ってる人いる？ガチで${name}知ってから肌の調子レベチになったわ… ${memo}。メイク崩れもゼロだし周りからも何使ってるか聞かれまくる。もっと早く出会いたかった…！\n\n詳しいレビューと購入先は最初の返信に載せておくね！`,
         body_ja_trans: `아직도 비싼 돈 내고 살롱 다니는 사람 있어? 진심 ${name} 알고 나서 피부 상태 레벨이 달라짐… ${memo}. 메이크업 무너짐도 제로고 주변에서도 뭐 쓰냐고 계속 물어봄. 더 일찍 알았어야 했는데…! 자세한 후기와 구매처는 첫 댓글에 남겨둘게!`
       };
       type2 = {
         title: '유형 2. 신기함/숫자 중심형 (뷰티)',
         desc: '10초 만에 끝나는 에스테틱 물광 피부 후킹',
-        body_ko: `10초 만에 에스테틱 다녀온 듯 물광 피부 만드는 법 방금 알아냄. 그냥 슥 바르면 1초 컷으로 피부에 쏙 흡수됨. ${name} 발색이랑 밀착력 미쳤음;; ${memo}. 똥손들도 이건 무조건 연예인 피부결 나옴.\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
+        body_ko: `10초 만에 에스테틱 다녀온 듯 물광 피부 만드는 법 방금 알아냄. 그냥 슥 바르면 1초 컷으로 피부에 쏙 흡수됨. ${name} 발색이랑 밀착력 미쳤음;; ${memo}. 초보자도 대충 발라도 실패 없이 은은한 윤광 도는 거 신기함.\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
         body_ja: `10秒でサロン帰りみたいなツヤ肌作る裏ワザ見つけた。サッと塗るだけで一瞬で肌に馴染むの神すぎ。${name}密着感がレベチ;; ${memo}。誰でもプロ級の仕上がり確定。\n\n気になった人向けにリンクは最初の返信に貼っておくね！`,
         body_ja_trans: `10초 만에 살롱 다녀온 것 같은 윤광 피부 만드는 꿀팁 찾아냄. 슥 바르기만 하면 순식간에 피부에 밀착되는 거 갓템임. ${name} 밀착감이 남다름;; ${memo}. 누구라도 프로급 마무리 확정.`
       };
@@ -4486,7 +4598,7 @@ ${cleanNegative}
       type4 = {
         title: '유형 4. 훈수/논쟁 유도형 (뷰티)',
         desc: '피부는 화장품 장비빨 vs 아니다 논쟁 유도',
-        body_ko: `솔직히 피부는 화장품 장비빨인 거 다들 인정? 아직도 정착 못 하고 비싼 거 이것저것 갈아타는 사람 보면 내가 다 답답함. ${name} 하나면 고민 싹 해결되는데 왜 안 써? ${memo}. 반박 시 내 말이 맞음.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
+        body_ko: `솔직히 피부는 화장품 장비빨인 거 다들 인정? 아직도 정착 못 하고 비싼 거 이것저것 갈아타는 사람 보면 내가 다 답답함. ${name} 하나면 고민 싹 해결되는데 왜 안 써? ${memo}. 직접 써보면 왜 다들 추천하는지 바로 체감됨.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
         body_ja: `ぶっちゃけ美肌もコスメのアイテム次第って皆も思うよね？未だに迷走して高いの買い漁ってる人見るともどかしくなる。${name}使えば一発で解決するのに何で試さないの？ ${memo}。異論は認めないww\n\n気になる人は最初の返信チェックしてみて！`,
         body_ja_trans: `솔직히 꿀피부도 화장품 아이템 빨이라는 거 다들 생각하지? 아직도 방황하면서 비싼 것만 사는 사람 보면 답답해짐. ${name} 쓰면 한 방에 해결되는데 왜 안 써? ${memo}. 반박은 인정 안 함ㅋㅋ`
       };
@@ -4494,14 +4606,14 @@ ${cleanNegative}
       type1 = {
         title: '유형 1. 공포자극/의외성형 (식품/식단)',
         desc: '맛없는 식단/요리 고통 해결 및 신세계 맛 경험',
-        body_ko: `아직도 식단 챙긴다고 맛없는 거 억지로 참고 고생하는 사람 있어? 진심 ${name} 알고 내 식단 인생이 바뀜;; ${memo}. 고급 레스토랑 맛인데 간편하기까지 해서 매일 이것만 먹는 중. 하... 왜 이제 알았지 내 입맛 눈감아.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
+        body_ko: `아직도 식단 챙긴다고 맛없는 거 억지로 참고 고생하는 사람 있어? 진심 ${name} 알고 내 식단 인생이 바뀜;; ${memo}. 고급 레스토랑 맛인데 간편하기까지 해서 매일 이것만 먹는 중. 진작 쟁여둘 걸 그랬음.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
         body_ja: `まだ我慢して不味いダイエット食食べてる人いる？ガチで${name}知ってから食生活レベチになったわ… ${memo}。お店レベルの美味しさなのにヘルシーで最高。もっと早く買えばよかった…！\n\n詳しいレビューと購入先は最初の返信に載せておくね！`,
         body_ja_trans: `아직도 참아가며 맛없는 다이어트식 먹는 사람 있어? 진심 ${name} 알고 나서 식생활 레벨이 달라짐… ${memo}. 식당 수준의 맛인데 건강하고 최고야.`
       };
       type2 = {
         title: '유형 2. 신기함/숫자 중심형 (식품/식단)',
         desc: '1분 만에 끝내는 브런치/집밥 꿀조합 후킹',
-        body_ko: `1분 만에 성수동 브런치 카페 비주얼 뚝딱 끝내는 치트키 방금 알아냄. ${name} 하나만 더해주면 1초 컷으로 비주얼 폭발함. ${memo}. 똥손들도 이건 무조건 성공함 보는 내내 침 고여 진짜;;\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
+        body_ko: `1분 만에 성수동 브런치 카페 비주얼 뚝딱 끝내는 치트키 방금 알아냄. ${name} 하나만 더해주면 1초 컷으로 비주얼 폭발함. ${memo}. 요리 서툰 사람도 이건 무조건 그럴싸하게 완성됨 보는 내내 침 고여 진짜;;\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
         body_ja: `1分でおしゃれカフェの味を再現する神ワザ見つけた。${name}使うだけで一瞬でプロの味覚に仕上がる。${memo}。料理苦手でも絶対失敗しないから試してみて！\n\n気になった人向けにリンクは最初の返信に貼っておくね！`,
         body_ja_trans: `1분 만에 감성 카페 맛 재현하는 신의 기술 찾아냄. ${name} 쓰는 것만으로 순식간에 프로의 맛으로 완성됨. ${memo}. 요리 서툴러도 절대 실패 안 하니까 먹어봐!`
       };
@@ -4515,7 +4627,7 @@ ${cleanNegative}
       type4 = {
         title: '유형 4. 훈수/논쟁 유도형 (식품/식단)',
         desc: '집밥/식단은 식재료빨 vs 정성 논쟁 유도',
-        body_ko: `솔직히 집밥이랑 식단 관리는 식재료빨인 거 다들 인정? ${name} 하나만 바꿔도 삶의 질이랑 맛이 차원이 다른데 왜 안 먹어? ${memo}. 자취생이든 직장인이든 이거 없으면 손해임. 반박 시 내 말이 맞음.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
+        body_ko: `솔직히 집밥이랑 식단 관리는 식재료빨인 거 다들 인정? ${name} 하나만 바꿔도 삶의 질이랑 맛이 차원이 다른데 왜 안 먹어? ${memo}. 자취생이든 직장인이든 써보면 왜 다들 쟁여두는지 바로 알게 됨.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
         body_ja: `ぶっちゃけ自炊もダイエットも素材とアイテム次第って皆も思うよね？${name}に変えるだけでクオリティが別次元なのに何で試さないの？ ${memo}。一人暮らしなら絶対必須。異論は認めないww\n\n気になる人は最初の返信チェックしてみて！`,
         body_ja_trans: `솔직히 집밥도 다이어트도 재료와 아이템 빨이라는 거 다들 생각하지? ${name}으로 바꾸기만 해도 퀄리티가 다른 차원인데 왜 안 써? ${memo}. 자취생이라면 무조건 필수야.`
       };
@@ -4523,14 +4635,14 @@ ${cleanNegative}
       type1 = {
         title: '유형 1. 공포자극/의외성형 (살림/수납/힐링)',
         desc: '일상 고충/공간 부족/피로 후킹 및 1초 해결',
-        body_ko: `아직도 집 좁다고 스트레스 받거나 몸 고생하면서 일일이 참는 사람 있어? 진심 ${name} 알고 내 일상이 바뀜;; ${memo}. 1초 만에 깔끔해지고 삶의 질 수직상승함. 심지어 정리도 너무 편함. 하... 왜 이제 샀지 진작 살 걸.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
+        body_ko: `아직도 집 좁다고 스트레스 받거나 몸 고생하면서 일일이 참는 사람 있어? 진심 ${name} 알고 내 일상이 바뀜;; ${memo}. 1초 만에 깔끔해지고 삶의 질 수직상승함. 심지어 정리도 너무 편함. 진작 살 걸 그랬음 퇴근하고 집 들어올 때마다 뿌듯함.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
         body_ja: `まだ家が狭いとか毎日のプチストレス我慢してる人いる？ガチで${name}知ってから暮らしが一変したわ… ${memo}。一瞬でスッキリ片付いてQOL爆上がり。もっと早く買えばよかった…！\n\n詳しいレビューと購入先は最初の返信に載せておくね！`,
         body_ja_trans: `아직도 집이 좁다거나 매일의 소소한 스트레스 참는 사람 있어? 진심 ${name} 알고 나서 생활이 완전히 달라짐… ${memo}. 순식간에 깔끔해지고 삶의 질 떡상. 더 일찍 살 걸…!`
       };
       type2 = {
         title: '유형 2. 신기함/숫자 중심형 (살림/수납/힐링)',
         desc: '1분 만에 공간/피로 싹 정리하는 시각적 쾌감 후킹',
-        body_ko: `1분 만에 고민거리 싹 해결하고 삶의 질 2배 올리는 치트키 방금 알아냄. 그냥 툭 두고 1초 컷으로 쓰기만 하면 끝남. ${name} 디자인도 깔끔하고 내구성 탄탄해서 보는 내내 쾌감 쩔어 진짜;; ${memo}.\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
+        body_ko: `1분 만에 고민거리 싹 해결하고 삶의 질 2배 올리는 치트키 방금 알아냄. 그냥 툭 두고 1초 컷으로 쓰기만 하면 끝남. ${name} 디자인도 깔끔하고 내구성 탄탄해서 만족도 200%임;; ${memo}.\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
         body_ja: `1分で部屋も気分もスッキリさせる神ワザ見つけた。置くだけ・使うだけで1秒で完璧に整うのヤバない？ ${name}見た目も機能も満点で見てて超快感ww ${memo}。\n\n気になった人向けにリンクは最初の返信に貼っておくね！`,
         body_ja_trans: `1분 만에 방도 기분도 깔끔하게 만드는 신의 기술 찾아냄. 두기만 해도 1초 만에 완벽하게 정돈되는 거 미치지 않음? ${name} 외형도 기능도 만점이라 보고 있으면 엄청 쾌감 쩔어ㅋㅋ`
       };
@@ -4544,7 +4656,7 @@ ${cleanNegative}
       type4 = {
         title: '유형 4. 훈수/논쟁 유도형 (살림/수납/힐링)',
         desc: '살림/자취는 장비빨 논쟁 유도',
-        body_ko: `솔직히 일상 살림이나 자취는 장비빨인 거 다들 인정? 아직도 몸 고생하면서 옛날 방식 고집하는 사람 보면 내가 다 답답함. ${name}처럼 편하게 만들어주는 꿀템들이 널렸는데 왜 안 써? ${memo}. 자취생이든 주부든 이거 없으면 삶의 질 손해 보는 거임. 반박 시 내 말이 맞음.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
+        body_ko: `솔직히 일상 살림이나 자취는 장비빨인 거 다들 인정? 아직도 몸 고생하면서 옛날 방식 고집하는 사람 보면 내가 다 답답함. ${name}처럼 편하게 만들어주는 꿀템들이 널렸는데 왜 안 써? ${memo}. 자취생이든 주부든 직접 써보면 삶의 질이 달라짐.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
         body_ja: `ぶっちゃけ暮らしも一人暮らしもアイテム次第って皆も思うよね？未だに手作業で面倒なことやってる人見るともどかしくなる。${name}使えば一瞬で快適になるのに何で使わないの？ ${memo}。異論は認めないww\n\n気になる人は最初の返信チェックしてみて！`,
         body_ja_trans: `솔직히 일상도 자취도 아이템 빨이라는 거 다들 생각하지? 아직도 수작업으로 번거로운 일 하는 사람 보면 답답해짐. ${name} 쓰면 순식간에 쾌적해지는데 왜 안 써? ${memo}. 이견은 인정 안 함ㅋㅋ`
       };
@@ -4553,14 +4665,14 @@ ${cleanNegative}
       type1 = {
         title: '유형 1. 공포자극/의외성형 (조리도구/살림)',
         desc: '첫 문장에서 도구의 반전 효과 및 의외성 후킹',
-        body_ko: `아직도 손목 아프고 고생하면서 일일이 다 하는 사람 있어? 진심 ${name} 알고 내 인생이 바뀜;; ${memo}. 도마 꺼내고 썰고 사방에 튀는 거 스트레스였는데 이건 그냥 쓱 쓰면 1초 만에 끝남. 심지어 정리도 너무 편해서 설거지도 확 줄어듦. 하... 왜 이제 샀지 내 손목 눈감아.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
+        body_ko: `아직도 손목 아프고 고생하면서 일일이 다 하는 사람 있어? 진심 ${name} 알고 내 인생이 바뀜;; ${memo}. 도마 꺼내고 썰고 사방에 튀는 거 스트레스였는데 이건 그냥 쓱 쓰면 1초 만에 끝남. 심지어 정리도 너무 편해서 설거지도 확 줄어듦. 진작 쓸 걸 그랬음 손목 편하고 시간 확 줄어듦.\n\n자세한 후기랑 정보는 첫 댓글에 남겨둘게!`,
         body_ja: `まだこれ知らずに毎日プチストレス溜めてる人いる？ガチで${name}知ってから人生変わったわ… ${memo}。準備も片付けも超面倒だったけど、これ使うだけで一瞬で終わる。しかも洗い物も劇的に減るし最高。マジで神グッズすぎる。\n\n詳しいレビューと購入先は最初の返信に載せておくね！`,
         body_ja_trans: `아직도 이거 모르고 매일 소소한 스트레스 쌓아두는 사람 있어? 진심 ${name} 알고 나서 인생이 바뀌었어… ${memo}. 준비도 뒷정리도 엄청 귀찮았는데, 이거 쓰는 것만으로 순식간에 끝남. 게다가 설거지도 획기적으로 줄어들고 최고야. 진심 신박템임.`
       };
       type2 = {
         title: '유형 2. 신기함/숫자 중심형 (조리도구/살림)',
         desc: '1분 만에 / 1초 컷 등 시간 단축과 시각적 쾌감 후킹',
-        body_ko: `1분 만에 준비랑 요리 한 방에 뚝딱 끝내는 법 방금 알아냄. 그냥 툭 얹고 꾹 누르면 1초 컷으로 완벽하게 끝남. ${name} 써보니까 손재주 없는 똥손들도 이건 무조건 전문가 퀄리티 나옴. ${memo}. 내구성도 탄탄하고 깔끔해서 보는 내내 쾌감 쩔어 진짜;;\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
+        body_ko: `1분 만에 준비랑 요리 한 방에 뚝딱 끝내는 법 방금 알아냄. 그냥 툭 얹고 꾹 누르면 1초 컷으로 완벽하게 끝남. ${name} 써보니까 요리 서툰 사람도 이건 무조건 전문가 퀄리티 나옴. ${memo}. 내구성도 탄탄하고 깔끔해서 보고 있으면 속 시원함;;\n\n궁금한 사람들을 위해 링크 첫 댓글에 달아둠!`,
         body_ja: `1分で準備から後片付けまで終わらせる時短ワザ見つけた。${name}乗せてギュッと押すだけで1秒で完璧に仕上がるのヤバない？ 料理苦手でもこれなら絶対プロ並み。${memo}。見てて超スッキリするんだけどww\n\n気になった人向けにリンクは最初の返信に貼っておくね！`,
         body_ja_trans: `1분 만에 준비부터 뒷정리까지 끝내는 시간 단축 꿀팁 찾아냄. ${name} 얹어서 꾹 누르기만 하면 1초 만에 완벽하게 마무리되는 거 미치지 않음? 요리 서툴러도 이거라면 무조건 프로 수준임. ${memo}. 보고 있으면 엄청 속 시원해ㅋㅋ`
       };
@@ -4574,7 +4686,7 @@ ${cleanNegative}
       type4 = {
         title: '유형 4. 훈수/논쟁 유도형 (조리도구/살림)',
         desc: '요리는 장비빨 vs 아니다 댓글 싸움 유도 후킹',
-        body_ko: `솔직히 일상 살림이나 요리는 장비빨인 거 다들 인정? 아직도 손목 아프게 구식 방법 고집하는 사람 보면 내가 다 답답함. ${name}처럼 안전하고 편하게 만들어주는 꿀템들이 널렸는데 왜 안 써? ${memo}. 자취생이든 주부든 이거 없으면 주방에서 시간 낭비하는 거임. 반박 시 내 말이 맞음.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
+        body_ko: `솔직히 일상 살림이나 요리는 장비빨인 거 다들 인정? 아직도 손목 아프게 구식 방법 고집하는 사람 보면 내가 다 답답함. ${name}처럼 안전하고 편하게 만들어주는 꿀템들이 널렸는데 왜 안 써? ${memo}. 자취생이든 주부든 직접 써보면 주방에 있는 시간이 확 줄어듦.\n\n정보 궁금한 사람 첫 댓글 확인해봐!`,
         body_ja: `ぶっちゃけ家事も料理もアイテム次第って皆も思うよね？未だに手首痛くしながら古いやり方にこだわってる人見るともどかしくなる。${name}使えば便利で安全な神グッズがたくさんあるのになんで使わないの？ ${memo}。異論は認めないww\n\n気になる人は最初の返信チェックしてみて！`,
         body_ja_trans: `솔직히 살림도 요리도 아이템 빨이라는 거 다들 생각하지? 아직도 손목 아파가면서 옛날 방식 고집하는 사람 보면 답답해짐. ${name} 쓰면 편리하고 안전한 신박템들이 널렸는데 왜 안 써? ${memo}. 이견은 인정 안 함ㅋㅋ`
       };
@@ -5555,30 +5667,21 @@ class CardNewsStudioEngine {
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
       ctx.restore();
     } else {
-      // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
+      // 사진 미첨부 시: 세련된 웜 앰비언트 스튜디오 배경 (인스타 감성 톤앤매너)
       const studioGrad = ctx.createLinearGradient(0, 0, width, height);
-      studioGrad.addColorStop(0, '#1e1b4b');   // Deep indigo
-      studioGrad.addColorStop(0.5, '#0f172a'); // Slate dark
+      studioGrad.addColorStop(0, '#1c1917');   // Warm stone/charcoal
+      studioGrad.addColorStop(0.5, '#0c0a09'); // Warm dark
       studioGrad.addColorStop(1, '#18181b');   // Zinc dark
       ctx.fillStyle = studioGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 중앙 앰비언트 글로우 원
-      const radialGlow = ctx.createRadialGradient(width / 2, height / 2, 40, width / 2, height / 2, width * 0.45);
-      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
+      // 중앙 따뜻한 앰비언트 글로우 원
+      const radialGlow = ctx.createRadialGradient(width / 2, height * 0.42, 60, width / 2, height * 0.42, width * 0.65);
+      radialGlow.addColorStop(0, 'rgba(245, 158, 11, 0.16)'); // Warm amber
+      radialGlow.addColorStop(0.6, 'rgba(99, 102, 241, 0.08)');
       radialGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
-
-      // 은은한 스튜디오 그리드 텍스처
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-      ctx.lineWidth = 1;
-      for (let gy = 0; gy < height; gy += 120) {
-        ctx.beginPath();
-        ctx.moveTo(0, gy);
-        ctx.lineTo(width, gy);
-        ctx.stroke();
-      }
     }
 
     // 2. Gradients for text contrast (숏폼 세이프존 고려)
@@ -6100,7 +6203,7 @@ class CardNewsStudioEngine {
     }
   }
 
-  // 최신 모바일 브라우저 5장 일괄 사진첩 저장 / 공유
+  // 최신 모바일 브라우저 일괄 사진첩 저장 / 공유 (Web Share -> fallback modal -> zip)
   async shareOrSaveAllSlides(onFallbackModal) {
     const dataUrls = await this.getAllSlideDataUrls();
     if (navigator.share && navigator.canShare) {
@@ -6114,17 +6217,49 @@ class CardNewsStudioEngine {
         if (navigator.canShare({ files })) {
           await navigator.share({
             files,
-            title: 'ViralMaker 5단 카드뉴스',
-            text: '바이럴메이커에서 제작한 감성 카드뉴스 5장'
+            title: `ViralMaker ${dataUrls.length}단 카드뉴스`,
+            text: `바이럴메이커에서 제작한 감성 카드뉴스 ${dataUrls.length}장`
           });
           return true;
         }
       } catch (err) {
         if (err.name === 'AbortError') return false;
-        console.warn('Batch Web Share failed, falling back to sequential download:', err);
+        console.warn('Batch Web Share failed, falling back to modal:', err);
       }
     }
-    // Web Share 미지원 브라우저는 일괄 다운로드 실행
+
+    // Web Share 미지원 또는 실패 시, 모바일 세이프 갤러리 모달 호출!
+    if (typeof onFallbackModal === 'function') {
+      onFallbackModal(dataUrls);
+      return false;
+    }
+
+    // fallback이 없으면 ZIP 다운로드 실행
+    await this.downloadAllAsZip();
+    return true;
+  }
+
+  // 📦 JSZip 기반 고화질 ZIP 압축 다운로드 (브라우저 차단 완벽 방지)
+  async downloadAllAsZip() {
+    const dataUrls = await this.getAllSlideDataUrls();
+    if (typeof JSZip !== 'undefined') {
+      try {
+        const zip = new JSZip();
+        for (let i = 0; i < dataUrls.length; i++) {
+          const base64Data = dataUrls[i].split(',')[1];
+          zip.file(`CardNews_Slide_${i + 1}.png`, base64Data, { base64: true });
+        }
+        const content = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = `ViralMaker_${this.slideCount}cut_${Date.now()}.zip`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+        return true;
+      } catch (e) {
+        console.warn('JSZip download error:', e);
+      }
+    }
     await this.downloadAllSlides();
     return true;
   }
@@ -7034,6 +7169,7 @@ function startViralMakerApp() {
       btnTabMethodUrl.classList.add('active');
       btnTabMethodClipboard.classList.remove('active');
       btnTabMethodFile.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
       if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
       if (inputImageUrl) inputImageUrl.focus();
     });
@@ -7042,6 +7178,8 @@ function startViralMakerApp() {
       btnTabMethodClipboard.classList.add('active');
       btnTabMethodUrl.classList.remove('active');
       btnTabMethodFile.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       await pasteImageFromClipboard();
     });
 
@@ -7049,6 +7187,8 @@ function startViralMakerApp() {
       btnTabMethodFile.classList.add('active');
       btnTabMethodUrl.classList.remove('active');
       btnTabMethodClipboard.classList.remove('active');
+      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (mediaFileInput) mediaFileInput.click();
     });
   }
@@ -7695,6 +7835,17 @@ function startViralMakerApp() {
     }
 
     if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
+    
+    // 모바일/다운로드 버튼 텍스트 동적 동기화
+    const lblSaveAll = document.getElementById('lbl-save-all-count');
+    if (lblSaveAll) {
+      lblSaveAll.textContent = `내 폰 사진첩에 ${count}장 한 번에 저장 (추천)`;
+    }
+    const lblDlAll = document.getElementById('lbl-download-all-count');
+    if (lblDlAll) {
+      lblDlAll.textContent = `📦 ${count}장 일괄 ZIP/다운`;
+    }
+
     updateSlideQuickBar(count);
     updateSlideEditInputs();
     updateSlideSceneBar();
@@ -7964,6 +8115,11 @@ function startViralMakerApp() {
 
   if (btnTabMethodCollage) {
     btnTabMethodCollage.addEventListener('click', () => {
+      btnTabMethodCollage.classList.add('active');
+      if (btnTabMethodUrl) btnTabMethodUrl.classList.remove('active');
+      if (btnTabMethodClipboard) btnTabMethodClipboard.classList.remove('active');
+      if (btnTabMethodFile) btnTabMethodFile.classList.remove('active');
+      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (slideCollageFileInput) slideCollageFileInput.click();
     });
   }
@@ -8209,9 +8365,14 @@ function startViralMakerApp() {
 
   if (btnDownloadAll) {
     btnDownloadAll.addEventListener('click', async () => {
-      showToast('전체 슬라이드 일괄 다운로드를 시작합니다...');
-      await CardNewsStudio.downloadAllSlides();
-      showToast('전체 다운로드 완료! 🎉');
+      showToast('📦 전체 카드뉴스 ZIP 압축 다운로드를 시작합니다...');
+      const ok = await CardNewsStudio.downloadAllAsZip();
+      if (ok) {
+        showToast('전체 카드뉴스 ZIP 다운로드 완료! 🎉');
+      } else {
+        await CardNewsStudio.downloadAllSlides();
+        showToast('전체 다운로드 완료! 🎉');
+      }
     });
   }
 
@@ -8219,7 +8380,17 @@ function startViralMakerApp() {
     btnMobileSave.addEventListener('click', async () => {
       showToast('📱 현재 1장 사진첩 저장 / 공유 준비 중...');
       const shared = await CardNewsStudio.shareOrSaveCurrentSlide((dataUrl) => {
-        if (modalSaveImage) modalSaveImage.src = dataUrl;
+        const modalSaveTitle = document.getElementById('modal-save-title');
+        const modalSaveTip = document.getElementById('modal-save-tip');
+        const modalGalleryContainer = document.getElementById('modal-gallery-container');
+
+        if (modalSaveTitle) modalSaveTitle.textContent = '📸 현재 슬라이드 사진첩 저장';
+        if (modalSaveTip) modalSaveTip.innerHTML = '💡 이미지를 1~2초간 꾹 누른 뒤<br>[사진 앱에 추가] 또는 [이미지 저장]을 선택하세요!';
+        if (modalSaveImage) {
+          modalSaveImage.src = dataUrl;
+          modalSaveImage.style.display = 'block';
+        }
+        if (modalGalleryContainer) modalGalleryContainer.style.display = 'none';
         if (modalMobileSave) modalMobileSave.classList.add('active');
       });
       if (shared) {
@@ -8228,16 +8399,71 @@ function startViralMakerApp() {
     });
   }
 
-  // 📱 직장인 모바일 5장 일괄 사진첩 저장 버튼
+  // 📱 직장인 모바일 일괄 사진첩 저장 버튼 (Web Share 미지원/인앱 브라우저 시 세이프 갤러리 모달)
   if (btnMobileSaveAll) {
     btnMobileSaveAll.addEventListener('click', async () => {
-      showToast('📱 사진첩 5장 일괄 저장 / 공유 준비 중...');
-      const shared = await CardNewsStudio.shareOrSaveAllSlides((dataUrl) => {
-        modalSaveImage.src = dataUrl;
-        modalMobileSave.classList.add('active');
+      const totalCount = state.slideCount || 4;
+      showToast(`📱 사진첩 ${totalCount}장 일괄 저장 / 공유 준비 중...`);
+      const shared = await CardNewsStudio.shareOrSaveAllSlides((dataUrls) => {
+        const modalSaveTitle = document.getElementById('modal-save-title');
+        const modalSaveTip = document.getElementById('modal-save-tip');
+        const modalGalleryContainer = document.getElementById('modal-gallery-container');
+
+        if (modalSaveTitle) modalSaveTitle.textContent = `📱 카드뉴스 ${dataUrls.length}장 세이프 갤러리`;
+        if (modalSaveTip) modalSaveTip.innerHTML = `💡 아래 카드들을 <strong>1~2초 꾹 눌러 사진첩에 저장</strong>하시거나<br>하단 <strong>[📦 ZIP 일괄 다운]</strong> 버튼을 누르세요!`;
+
+        if (modalSaveImage) modalSaveImage.style.display = 'none';
+
+        if (modalGalleryContainer) {
+          modalGalleryContainer.style.display = 'flex';
+          modalGalleryContainer.innerHTML = '';
+
+          dataUrls.forEach((url, i) => {
+            const item = document.createElement('div');
+            item.className = 'modal-gallery-item';
+
+            const header = document.createElement('div');
+            header.className = 'modal-gallery-item-header';
+
+            const title = document.createElement('span');
+            title.className = 'modal-gallery-item-title';
+            title.textContent = `카드 #${i + 1}`;
+
+            const btnSave = document.createElement('button');
+            btnSave.type = 'button';
+            btnSave.className = 'modal-gallery-btn-save';
+            btnSave.textContent = '📥 저장';
+            btnSave.onclick = () => {
+              const link = document.createElement('a');
+              link.download = `card_news_${i + 1}.png`;
+              link.href = url;
+              link.click();
+              showToast(`카드 #${i + 1} 다운로드를 시작했습니다.`);
+            };
+
+            header.appendChild(title);
+            header.appendChild(btnSave);
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `카드 뉴스 슬라이드 ${i + 1}`;
+
+            const hint = document.createElement('div');
+            hint.className = 'modal-gallery-item-hint';
+            hint.textContent = '👆 꾹 눌러서 [사진 앱에 추가]';
+
+            item.appendChild(header);
+            item.appendChild(img);
+            item.appendChild(hint);
+
+            modalGalleryContainer.appendChild(item);
+          });
+        }
+
+        if (modalMobileSave) modalMobileSave.classList.add('active');
       });
       if (shared) {
-        showToast('🎉 사진첩 5장 저장 또는 공유가 완료되었습니다!');
+        showToast(`🎉 사진첩 ${totalCount}장 저장 또는 공유가 완료되었습니다!`);
       }
     });
   }
@@ -8272,13 +8498,13 @@ function startViralMakerApp() {
     });
   }
 
-  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v2.8)
+  // 상단 최신 버전 강제 새로고침 버튼 (캐시 100% 날리기 v3.4)
   const btnForceRefresh = document.getElementById('btn-force-refresh');
   if (btnForceRefresh) {
     btnForceRefresh.addEventListener('click', () => {
-      showToast('🔄 최신 버전으로 강력 새로고침 중...');
+      showToast('🔄 v3.4 최신 버전으로 강력 새로고침 중...');
       const cleanUrl = window.location.origin + window.location.pathname;
-      window.location.href = cleanUrl + '?v=2.8_' + Date.now();
+      window.location.href = cleanUrl + '?v=3.4_' + Date.now();
     });
   }
 
@@ -8307,6 +8533,24 @@ function startViralMakerApp() {
   if (btnCloseModal && modalMobileSave) {
     btnCloseModal.addEventListener('click', () => {
       modalMobileSave.classList.remove('active');
+    });
+  }
+
+  const btnCloseModalX = document.getElementById('btn-close-modal-x');
+  if (btnCloseModalX && modalMobileSave) {
+    btnCloseModalX.addEventListener('click', () => {
+      modalMobileSave.classList.remove('active');
+    });
+  }
+
+  const btnModalZip = document.getElementById('btn-modal-zip-download');
+  if (btnModalZip) {
+    btnModalZip.addEventListener('click', async () => {
+      showToast('📦 전체 카드뉴스 ZIP 압축 생성 중...');
+      const ok = await CardNewsStudio.downloadAllAsZip();
+      if (ok) {
+        showToast('🎉 ZIP 다운로드가 완료되었습니다!');
+      }
     });
   }
 
@@ -8355,9 +8599,16 @@ function startViralMakerApp() {
     });
   }
 
-  // --- QR 코드 모달 제어 ---
+  // --- QR 코드 모달 제어 (현재 브라우저 접속 URL 실시간 동적 생성) ---
   if (btnOpenQrModal && modalQr) {
     btnOpenQrModal.addEventListener('click', () => {
+      const qrImg = document.getElementById('qr-code-img');
+      const qrText = document.getElementById('qr-url-text');
+      const currentUrl = window.location.href.split('#')[0];
+      if (qrText) qrText.textContent = currentUrl;
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+      }
       modalQr.classList.add('active');
     });
   }

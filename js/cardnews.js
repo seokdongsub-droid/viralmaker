@@ -472,30 +472,21 @@ class CardNewsStudioEngine {
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
       ctx.restore();
     } else {
-      // 사진 미첨부 시: 심플하고 세련된 프리미엄 다크 스튜디오 배경 (중앙 중복 텍스트 완전 제거)
+      // 사진 미첨부 시: 세련된 웜 앰비언트 스튜디오 배경 (인스타 감성 톤앤매너)
       const studioGrad = ctx.createLinearGradient(0, 0, width, height);
-      studioGrad.addColorStop(0, '#1e1b4b');   // Deep indigo
-      studioGrad.addColorStop(0.5, '#0f172a'); // Slate dark
+      studioGrad.addColorStop(0, '#1c1917');   // Warm stone/charcoal
+      studioGrad.addColorStop(0.5, '#0c0a09'); // Warm dark
       studioGrad.addColorStop(1, '#18181b');   // Zinc dark
       ctx.fillStyle = studioGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 중앙 앰비언트 글로우 원
-      const radialGlow = ctx.createRadialGradient(width / 2, height / 2, 40, width / 2, height / 2, width * 0.45);
-      radialGlow.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
+      // 중앙 따뜻한 앰비언트 글로우 원
+      const radialGlow = ctx.createRadialGradient(width / 2, height * 0.42, 60, width / 2, height * 0.42, width * 0.65);
+      radialGlow.addColorStop(0, 'rgba(245, 158, 11, 0.16)'); // Warm amber
+      radialGlow.addColorStop(0.6, 'rgba(99, 102, 241, 0.08)');
       radialGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
-
-      // 은은한 스튜디오 그리드 텍스처
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-      ctx.lineWidth = 1;
-      for (let gy = 0; gy < height; gy += 120) {
-        ctx.beginPath();
-        ctx.moveTo(0, gy);
-        ctx.lineTo(width, gy);
-        ctx.stroke();
-      }
     }
 
     // 2. Gradients for text contrast (숏폼 세이프존 고려)
@@ -1017,7 +1008,7 @@ class CardNewsStudioEngine {
     }
   }
 
-  // 최신 모바일 브라우저 5장 일괄 사진첩 저장 / 공유
+  // 최신 모바일 브라우저 일괄 사진첩 저장 / 공유 (Web Share -> fallback modal -> zip)
   async shareOrSaveAllSlides(onFallbackModal) {
     const dataUrls = await this.getAllSlideDataUrls();
     if (navigator.share && navigator.canShare) {
@@ -1031,17 +1022,49 @@ class CardNewsStudioEngine {
         if (navigator.canShare({ files })) {
           await navigator.share({
             files,
-            title: 'ViralMaker 5단 카드뉴스',
-            text: '바이럴메이커에서 제작한 감성 카드뉴스 5장'
+            title: `ViralMaker ${dataUrls.length}단 카드뉴스`,
+            text: `바이럴메이커에서 제작한 감성 카드뉴스 ${dataUrls.length}장`
           });
           return true;
         }
       } catch (err) {
         if (err.name === 'AbortError') return false;
-        console.warn('Batch Web Share failed, falling back to sequential download:', err);
+        console.warn('Batch Web Share failed, falling back to modal:', err);
       }
     }
-    // Web Share 미지원 브라우저는 일괄 다운로드 실행
+
+    // Web Share 미지원 또는 실패 시, 모바일 세이프 갤러리 모달 호출!
+    if (typeof onFallbackModal === 'function') {
+      onFallbackModal(dataUrls);
+      return false;
+    }
+
+    // fallback이 없으면 ZIP 다운로드 실행
+    await this.downloadAllAsZip();
+    return true;
+  }
+
+  // 📦 JSZip 기반 고화질 ZIP 압축 다운로드 (브라우저 차단 완벽 방지)
+  async downloadAllAsZip() {
+    const dataUrls = await this.getAllSlideDataUrls();
+    if (typeof JSZip !== 'undefined') {
+      try {
+        const zip = new JSZip();
+        for (let i = 0; i < dataUrls.length; i++) {
+          const base64Data = dataUrls[i].split(',')[1];
+          zip.file(`CardNews_Slide_${i + 1}.png`, base64Data, { base64: true });
+        }
+        const content = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = `ViralMaker_${this.slideCount}cut_${Date.now()}.zip`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+        return true;
+      } catch (e) {
+        console.warn('JSZip download error:', e);
+      }
+    }
     await this.downloadAllSlides();
     return true;
   }
