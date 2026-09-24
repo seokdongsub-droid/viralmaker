@@ -252,6 +252,16 @@ const CategoryDefaultImages = {
 const ViralProductLibrary = {
   kitchen: [
     {
+      icon: '🎃',
+      name: '미니 밤단호박 에프 구이 (다이어트 치트키)',
+      title: '미니 밤단호박 에프 구이',
+      search: '미니 밤단호박 2kg 로켓프레시',
+      defaultPlatform: 'coupang',
+      link: 'https://link.coupang.com/a/sample-pumpkin',
+      imageUrl: 'https://images.unsplash.com/photo-1570586435880-803152eab4a8?w=1080&auto=format&fit=crop&q=80',
+      memo: '만드는데 5분컷! 재료 넣고 에프 돌리면 끝. 쫀득하고 달달해서 디저트 같은데 2주 만에 -5KG 감량 간식'
+    },
+    {
       icon: '🍳',
       name: '사각 딥 계란말이팬',
       title: '사각 계란말이팬',
@@ -445,6 +455,16 @@ const ViralProductLibrary = {
     }
   ],
   lifestyle: [
+    {
+      icon: '💄',
+      name: 'MAC 러스터글래스 립스틱 부동의 1위',
+      title: 'MAC 립스틱 (여배우 립)',
+      search: '맥 러스터글래스 립스틱',
+      defaultPlatform: 'coupang',
+      link: 'https://link.coupang.com/a/sample-mac-lip',
+      imageUrl: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=1080&auto=format&fit=crop&q=80',
+      memo: '여배우 립 예쁘다 싶으면 은근 다 이거였음.. 슥 바르면 청순 우아 분위기 폭발하는 부동의 1위 인생립'
+    },
     {
       icon: '⚡',
       name: '토스쇼핑 1초 원터치 무선 진공 밀폐 포장기',

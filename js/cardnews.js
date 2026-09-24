@@ -579,18 +579,81 @@ class CardNewsStudioEngine {
     };
 
     const isSerif = this.fontFamilyMode === 'serif';
-    const strokeWidth = isSerif ? 7 : 9;
+    const strokeWidth = isSerif ? 8 : 10;
     const pos = slide.textPosition || (slide.type === 'cover' ? 'bottom' : 'center');
 
     if (slide.type === 'cover' && pos === 'bottom') {
-      // 1번 표지 (하단 배치): 실사진 전체 배경 + 하단 왼쪽 굵은 화이트 볼드 타이틀 (Dayzhome 시그니처)
+      // 1번 표지 (하단 배치): 실사진 전체 배경 + 블랙 스티커 서브훅 + 하단 왼쪽 대형 볼드 타이틀 (Dayzhome 8,000댓글 시그니처)
       const pad = is916 ? 70 : 65;
-      let startY = is916 ? (height - 400) : (height - 190);
-      const titleLines = slide.mainTitle.split('\n');
-      const baseTitleSize = is916 ? 66 : 62;
+      const titleLines = slide.mainTitle.split('\n').filter(Boolean);
+      const baseTitleSize = is916 ? 74 : 70;
 
       // 긴 제목 자동 스케일링 (화면 밖 잘림 방지)
       const maxTextW = width - (pad * 2);
+      ctx.save();
+      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
+      let titleSize = baseTitleSize;
+      for (const line of titleLines) {
+        const textW = ctx.measureText(line).width;
+        if (textW > maxTextW) {
+          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
+          if (scaled < titleSize) titleSize = Math.max(40, scaled);
+        }
+      }
+      ctx.restore();
+
+      const titleStep = Math.round(titleSize * 1.15); // 밀착된 임팩트 행간
+      const lastLineY = is916 ? (height - 400) : (height - 110);
+      const firstLineY = lastLineY - ((titleLines.length - 1) * titleStep);
+
+      // 1) 블랙 반투명 스티커 서브훅 뱃지 (Dayzhome 시그니처)
+      const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
+      const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
+      if (sub) {
+        ctx.save();
+        const subSize = is916 ? 30 : 26;
+        ctx.font = `700 ${subSize}px ${fontFam}`;
+        const subW = ctx.measureText(sub).width;
+        const padX = 14;
+        const padY = 7;
+        const badgeW = subW + (padX * 2);
+        const badgeH = subSize + (padY * 2);
+        const badgeY = firstLineY - (titleSize * 0.5) - badgeH - 12;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+        this.roundRect(ctx, pad, badgeY, badgeW, badgeH, 6);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'transparent';
+        ctx.fillText(sub, pad + padX, badgeY + (badgeH / 2));
+        ctx.restore();
+      }
+
+      // 2) 2줄 대형 화이트 볼드 타이틀 (블랙 아웃라인 + 깊은 섀도우)
+      let curY = firstLineY;
+      for (let i = 0; i < titleLines.length; i++) {
+        drawOutlinedText(
+          titleLines[i],
+          pad,
+          curY,
+          `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`,
+          '#FFFFFF',
+          'rgba(0,0,0,0.96)',
+          strokeWidth + 2,
+          'left'
+        );
+        curY += titleStep;
+      }
+    } else if (slide.type === 'cover' && pos === 'top') {
+      // 1번 표지 (상단 배치): 감성 푸드/라이프스타일 매거진 타이틀 (과일롤 스타일)
+      let curY = is916 ? 280 : 160;
+      const titleLines = slide.mainTitle.split('\n').filter(Boolean);
+      const baseTitleSize = is916 ? 66 : 60;
+
+      const maxTextW = width - 120;
       ctx.save();
       ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
       let titleSize = baseTitleSize;
@@ -602,36 +665,7 @@ class CardNewsStudioEngine {
         }
       }
       ctx.restore();
-      const titleStep = Math.round(titleSize * 1.32);
-
-      for (let i = titleLines.length - 1; i >= 0; i--) {
-        drawOutlinedText(titleLines[i], pad, startY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'left');
-        startY -= titleStep;
-      }
-
-      const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
-      const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
-      const subSize = is916 ? 34 : 32;
-      drawOutlinedText(sub, pad, startY - 14, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', strokeWidth - 2, 'left');
-    } else if (slide.type === 'cover' && pos === 'top') {
-      // 1번 표지 (상단 배치): 감성 푸드/라이프스타일 매거진 타이틀 (과일롤 스타일)
-      let curY = is916 ? 300 : 170;
-      const titleLines = slide.mainTitle.split('\n');
-      const baseTitleSize = is916 ? 62 : 58;
-
-      const maxTextW = width - 120;
-      ctx.save();
-      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
-      let titleSize = baseTitleSize;
-      for (const line of titleLines) {
-        const textW = ctx.measureText(line).width;
-        if (textW > maxTextW) {
-          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
-          if (scaled < titleSize) titleSize = Math.max(36, scaled);
-        }
-      }
-      ctx.restore();
-      const titleStep = Math.round(titleSize * 1.32);
+      const titleStep = Math.round(titleSize * 1.18);
 
       titleLines.forEach(line => {
         drawOutlinedText(line, width / 2, curY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'center');
@@ -640,10 +674,10 @@ class CardNewsStudioEngine {
 
       const defaultSub = isJP ? 'SNS話題のリアル口コミ' : 'SNS 화제의 찐후기';
       const sub = (slide.subTitle || '').split('\n')[0] || defaultSub;
-      const subSize = is916 ? 32 : 30;
-      drawOutlinedText(sub, width / 2, curY + 6, `600 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', strokeWidth - 2, 'center');
+      const subSize = is916 ? 32 : 28;
+      drawOutlinedText(sub, width / 2, curY + 8, `700 ${subSize}px ${fontFam}`, '#F8FAFC', 'rgba(0,0,0,0.85)', strokeWidth - 2, 'center');
     } else {
-      // 2~5번 슬라이드 (또는 중앙 표지): 상단(top) / 중앙(center) / 하단(bottom) 유연한 배치
+      // 2~5번 본문 슬라이드 및 CTA: 상단(top) / 중앙(center) / 하단(bottom) 유연한 배치
       const rawLines = [
         ...(slide.mainTitle || '').split('\n').filter(Boolean),
         ...(slide.subTitle || '').split('\n').filter(Boolean)
@@ -671,8 +705,8 @@ class CardNewsStudioEngine {
       });
 
       const displayLines = formattedLines.slice(0, 5);
-      const fontSize = is916 ? 46 : 42;
-      const lineStep = is916 ? 78 : 70;
+      const fontSize = is916 ? 48 : 44;
+      const lineStep = is916 ? 78 : 72;
       const totalH = displayLines.length * (lineStep - 4);
       
       let y;
@@ -686,22 +720,27 @@ class CardNewsStudioEngine {
       }
 
       displayLines.forEach((line) => {
-        drawOutlinedText(line, width / 2, y, `${isSerif ? '700' : '800'} ${fontSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth, 'center');
+        const isCtaLine = line.includes('나도') || line.includes('정보') || line.includes('링크');
+        const fill = isCtaLine ? '#FFFFFF' : '#FFFFFF';
+        drawOutlinedText(line, width / 2, y, `${isSerif ? '700' : '800'} ${fontSize}px ${fontFam}`, fill, 'rgba(0,0,0,0.96)', strokeWidth + 1, 'center');
         y += lineStep;
       });
     }
 
-    // 하단 인디케이터 점 5개 (숏폼 세이프존 반영)
+    // 하단 인디케이터 점 4~5개 (숏폼 세이프존 & 인스타그램 네이티브 UI 감성 완벽 일치)
     ctx.save();
     const dotCount = this.slides.length;
-    const dotGap = 22;
+    const dotGap = 20;
     const totalDotW = (dotCount - 1) * dotGap;
     const startX = (width - totalDotW) / 2;
     const dotY = is916 ? (height - 230) : (height - 45);
     for (let i = 0; i < dotCount; i++) {
       ctx.beginPath();
-      ctx.arc(startX + (i * dotGap), dotY, i === slide.slideNum - 1 ? 7 : 4, 0, Math.PI * 2);
-      ctx.fillStyle = i === slide.slideNum - 1 ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
+      const isActive = (i === slide.slideNum - 1);
+      ctx.arc(startX + (i * dotGap), dotY, isActive ? 6.5 : 4, 0, Math.PI * 2);
+      ctx.fillStyle = isActive ? '#FFFFFF' : 'rgba(255,255,255,0.42)';
+      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur = 4;
       ctx.fill();
     }
     ctx.restore();
