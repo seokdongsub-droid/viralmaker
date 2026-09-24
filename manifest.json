@@ -1,0 +1,38 @@
+{
+  "name": "ViralMaker - 모바일 바이럴 카드뉴스 생성기",
+  "short_name": "ViralMaker",
+  "description": "스마트폰으로 15초 만에 완성하는 숏폼 바이럴 카피 & 카드뉴스 자동 생성 웹앱",
+  "start_url": "./index.html?pwa=1",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "categories": ["productivity", "shopping", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

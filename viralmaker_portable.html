@@ -2274,12 +2274,63 @@ body {
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 }
 
+/* 📲 PWA (홈 화면 바로가기 & 설치 안내 모달) 스타일링 */
+@keyframes pwaGlow {
+  0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
+
+.pwa-pulse {
+  animation: pwaGlow 2s infinite;
+}
+
+.pwa-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.pwa-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.pwa-step-text {
+  font-size: 12.5px;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+
 
 
 
 
 
 </style>
+  <!-- PWA Manifest & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ViralMaker">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#0f172a">
+
   <!-- JSZip for clean 1-click batch image zip download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -2296,10 +2347,13 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.4 모바일 초고속</span>
+          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.5 PWA &amp; N컷 분할</span>
         </div>
       </div>
       <div class="header-actions">
+        <button type="button" class="btn-header pwa-pulse" id="btn-header-pwa-install" style="border-color: #ec4899; color: #f472b6; font-weight: 700;" title="스마트폰 홈 화면에 바로가기 앱 설치">
+          <span>📲</span> <span>앱 설치</span>
+        </button>
         <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: #10b981; color: #6ee7b7; font-weight: 700;" title="스마트폰 카메라로 스캔하여 모바일로 바로 열기">
           <span>📱</span> <span>폰으로 열기</span>
         </button>
@@ -2319,9 +2373,9 @@ body {
     <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(99, 102, 241, 0.18)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 14px; font-size: 11.5px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.4 모바일 초고속 &amp; 세이프 갤러리 탑재</strong></span>
+        <span><strong>v3.5 모바일 PWA 홈화면 앱 설치 &amp; 가변 N컷 제미나이 올인원 분할</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.4_' + Date.now());" style="background: rgba(245, 158, 11, 0.18); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.5_' + Date.now());" style="background: rgba(245, 158, 11, 0.18); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -2522,8 +2576,8 @@ body {
             <button type="button" class="photo-method-btn" id="btn-tab-method-url">
               <span>🔗</span> <span>이미지 주소 복붙</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이 2x2 격자 사진을 1초 만에 슬라이드 4장으로 자동 쪼개주는 단축 기능">
-              <span>✂️</span> <span>(옵션) 4분할 치트키</span>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이가 생성한 N분할 사진을 1초 만에 개별 슬라이드로 자동 쪼개주는 단축 기능">
+              <span>✂️</span> <span id="lbl-tab-method-collage">제미나이 4컷 자동 분할</span>
             </button>
           </div>
 
@@ -2891,8 +2945,8 @@ body {
           <input type="file" id="slide-single-file-input" accept="image/*" multiple style="display: none;">
           <input type="file" id="slide-collage-file-input" accept="image/*" style="display: none;">
           <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;" title="4컷 카드뉴스 제작 시, 제미나이 2x2 콜라주 1장을 4장으로 분할해주는 편의 기능입니다.">
-              ✂️ (옵션) 4컷 콜라주 분할
+            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;" title="제미나이가 생성해준 N분할 사진 1장을 현재 장수(N장)로 즉시 쪼개어 자동 장착합니다.">
+              ✂️ <span id="lbl-quick-split-grid">제미나이 4컷 자동 분할</span>
             </button>
             <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
               🔗 URL 변경
@@ -3361,6 +3415,51 @@ body {
         <button type="button" class="btn-primary-large" id="btn-confirm-affiliate-modal" style="padding: 13px; font-weight: 800; font-size: 14.5px; margin-top: 10px;">
           🚀 이해했어요! 상품 선택하러 가기
         </button>
+      </div>
+    </div>
+
+    <!-- 📲 PWA 홈 화면 바로가기 / 웹앱 설치 안내 모달 -->
+    <div id="modal-pwa-install" class="modal-overlay" style="display: none;">
+      <div class="modal-card" style="max-width: 420px; border-color: #ec4899; box-shadow: 0 0 24px rgba(236, 72, 153, 0.3);">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span>📲</span> <strong>스마트폰 홈 화면에 바로가기 앱 설치</strong>
+          </div>
+          <button type="button" class="btn-close-modal" id="btn-close-pwa-modal">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 16px 14px;">
+          <div style="text-align: center; margin-bottom: 14px;">
+            <img src="icons/icon-192.png" alt="ViralMaker" style="width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 16px rgba(236,72,153,0.4); margin-bottom: 8px;">
+            <div style="font-size: 16px; font-weight: 800; color: #fff;">ViralMaker (바이럴메이커)</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">스마트폰 15초 완성 제휴마케팅 &amp; 카드뉴스 자동화</div>
+          </div>
+
+          <!-- 안드로이드 / PC 크롬 원클릭 설치 버튼 -->
+          <div style="margin-bottom: 14px;">
+            <button type="button" class="btn-primary-large glowing-btn" id="btn-trigger-pwa-install" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; font-size: 14px; font-weight: 800; padding: 12px; width: 100%;">
+              <span>📲 지금 즉시 홈 화면에 앱 설치하기</span>
+            </button>
+          </div>
+
+          <!-- iOS 아이폰 사파리 사용자 가이드 -->
+          <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px;">
+            <div style="font-size: 12px; font-weight: 800; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+              <span>🍎</span> <span>아이폰(iOS Safari) 3초 설치 방법:</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 6px; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">1</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">사파리 하단 중앙의 <strong>[공유 ⎋]</strong> 아이콘 터치</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 6px; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">2</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">메뉴를 아래로 올려 <strong>[홈 화면에 추가 ➕]</strong> 터치</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 0; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">3</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">우측 상단 <strong>[추가]</strong> 터치 시 홈 화면에 앱 생성 완료!</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -4393,6 +4492,23 @@ Composition: Pristine, tidy, bright, harmonious lifestyle environment highlighti
 ${cleanNegative}
 이미지 생성해줘.`;
 
+      const collagePrompt2 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into 2 equal side-by-side vertical panels (1x2 grid: Left panel and Right panel) with a clean thin dividing line.
+Panel 1 (Left, 50% width): Relatable before/problem scene showing daily trouble, clutter, or inconvenience before having ${name}.
+Panel 2 (Right, 50% width): Satisfying after/solution scene showing ${name} actively resolving the problem in a clean, bright, harmonious modern home environment.
+Style: Professional authentic editorial lifestyle photography, photorealistic, clean thin vertical divider border between panels.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 2컷 좌우 분할 올인원 프롬프트 (1x2 그리드)',
+        role: '2컷 좌우 분할 올인원 (1x2 그리드)',
+        previewHint: '1초 2분할 연동 ✂️',
+        exactText: '2컷 일괄 생성 ➔ 1초 좌우 분할',
+        promptText: collagePrompt2,
+        prompt: collagePrompt2
+      });
+
       prompts.push({
         slideNum: 1,
         title: '1번 비포/고민 컷 (Before Hook)',
@@ -4435,6 +4551,24 @@ Scene: Extreme macro close-up showing stunning details, texture, and satisfying 
 Composition: High clarity detail shot eliciting strong desire and engagement.
 ${cleanNegative}
 이미지 생성해줘.`;
+
+      const collagePrompt3 = `${multimodalHeader}Canvas: A single high-resolution image cleanly divided into 3 equal vertical panels side-by-side (1x3 grid: Left, Center, Right) with clean thin divider borders.
+Panel 1 (Left, 33.3% width): Hero hook shot showcasing ${name} beautifully presented in a warm, aesthetic home setting.
+Panel 2 (Center, 33.3% width): Hands-on demonstration or step-by-step preparation shot showing ${name} effortlessly in action.
+Panel 3 (Right, 33.3% width): Extreme macro close-up highlighting satisfying final details, textures, and perfection of ${name}.
+Style: Professional commercial editorial photography, photorealistic, thin vertical dividing lines.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 3컷 3분할 올인원 프롬프트 (1x3 그리드)',
+        role: '3컷 3분할 올인원 (1x3 그리드)',
+        previewHint: '1초 3분할 연동 ✂️',
+        exactText: '3컷 일괄 생성 ➔ 1초 3분할',
+        promptText: collagePrompt3,
+        prompt: collagePrompt3
+      });
 
       prompts.push({
         slideNum: 1,
@@ -4495,6 +4629,26 @@ Composition: Confident, aesthetic, highly desirable visual.
 ${cleanNegative}
 이미지 생성해줘.`;
 
+      // 🌟 [추가 보너스] 1장에 4컷 콜라주를 한 번에 만드는 올인원 프롬프트 (최상단 배치)
+      const collagePrompt4 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right).
+Panel 1 (Top-Left): Aesthetic hero lifestyle shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
+Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage and action of ${name}.
+Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
+Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
+Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 4컷 콜라주 올인원 프롬프트 (2x2 그리드)',
+        role: '4컷 콜라주 올인원 (2x2 그리드)',
+        previewHint: '1초 4분할 연동 ✂️',
+        exactText: '4컷 일괄 생성 ➔ 1초 분할',
+        promptText: collagePrompt4,
+        prompt: collagePrompt4
+      });
+
       // 4컷 개별 씬 등록
       prompts.push({
         slideNum: 1,
@@ -4536,26 +4690,6 @@ ${cleanNegative}
         prompt: p4
       });
 
-      // 🌟 [추가 보너스] 1장에 4컷 콜라주를 한 번에 만드는 올인원 프롬프트
-      const collagePrompt = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right).
-Panel 1 (Top-Left): Aesthetic hero lifestyle shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
-Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage and action of ${name}.
-Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
-Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
-Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
-${cleanNegative}
-이미지 생성해줘.`;
-
-      prompts.push({
-        slideNum: 'ALL',
-        title: '⚡ [1초 완성용] 4컷 콜라주 올인원 프롬프트 (2x2 그리드)',
-        role: '4컷 콜라주 올인원 (2x2 그리드)',
-        previewHint: '1초 분할 연동 ✂️',
-        exactText: '4컷 일괄 생성 ➔ 1초 분할',
-        promptText: collagePrompt,
-        prompt: collagePrompt
-      });
-
       return prompts;
     }
 
@@ -4574,9 +4708,34 @@ ${cleanNegative}
     }
     const finalPrompts = basePrompts.slice(0, count);
 
-    return finalPrompts.map((pPrompt, idx) => {
+    // 🌟 [추가] 5컷 이상 시 올인원 프롬프트 (상단 2컷 + 하단 3컷 그리드)
+    const collagePrompt5 = `${multimodalHeader}Canvas: A single high-resolution image cleanly divided into 5 panels (Top row: 2 equal panels, Bottom row: 3 equal panels) with clean thin divider borders.
+Top Row (50% height):
+- Panel 1 (Top-Left, 50% width): Hero lifestyle hook shot showcasing ${name} in a minimalist aesthetic setting.
+- Panel 2 (Top-Right, 50% width): Problem or before-state shot emphasizing daily inconvenience or need.
+Bottom Row (50% height):
+- Panel 3 (Bottom-Left, 33.3% width): Hands-on action shot demonstrating effortless use of ${name}.
+- Panel 4 (Bottom-Center, 33.3% width): High-detail macro close-up highlighting craftsmanship, texture, and quality.
+- Panel 5 (Bottom-Right, 33.3% width): Satisfying final outcome showcasing the product in a clean modern room.
+Style: Professional authentic editorial lifestyle photography, clean thin border dividers, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+    const promptItems = [
+      {
+        slideNum: 'ALL',
+        title: `⚡ [1초 완성용] ${count}컷 올인원 프롬프트 (상단 2컷 + 하단 3컷 그리드)`,
+        role: `${count}컷 올인원 (상단 2컷 + 하단 3컷 그리드)`,
+        previewHint: `1초 ${count}분할 연동 ✂️`,
+        exactText: `${count}컷 일괄 생성 ➔ 1초 분할`,
+        promptText: collagePrompt5,
+        prompt: collagePrompt5
+      }
+    ];
+
+    finalPrompts.forEach((pPrompt, idx) => {
       const fullP = `${multimodalHeader}${pPrompt}\n${cleanNegative}\n이미지 생성해줘.`;
-      return {
+      promptItems.push({
         slideNum: idx + 1,
         title: `${idx + 1}번 슬라이드 씬`,
         role: `${idx + 1}번 슬라이드 씬`,
@@ -4584,8 +4743,9 @@ ${cleanNegative}
         exactText: `${name} (${idx + 1}/${count})`,
         promptText: fullP,
         prompt: fullP
-      };
+      });
     });
+    return promptItems;
   }
 
   // ==========================================
@@ -5480,34 +5640,74 @@ class CardNewsStudioEngine {
     this.render();
   }
 
-  // ✂️ 2x2 4분할 격자 콜라주 사진 1장을 4장의 개별 슬라이드로 자동 분할 & 배분
-  splitAndSet4GridCollage(dataOrImg, callback) {
+  // ✂️ 가변 N컷(2, 3, 4, 5컷) 분할 격자 콜라주 사진 1장을 N장의 개별 슬라이드로 자동 분할 & 배분
+  splitAndSetMultiGridCollage(dataOrImg, count = 4, callback) {
     const handleImage = (img) => {
       const w = img.naturalWidth || img.width;
       const h = img.naturalHeight || img.height;
-      const halfW = Math.floor(w / 2);
-      const halfH = Math.floor(h / 2);
+      const targetCount = parseInt(count, 10) || 4;
 
-      // 미세한 테두리 공백/구분선을 정밀하게 고려한 4분할 좌표
-      const quadrants = [
-        { sx: 0, sy: 0 },         // 1번: 좌상단 (표지 풀샷)
-        { sx: halfW, sy: 0 },     // 2번: 우상단 (사용 액션)
-        { sx: 0, sy: halfH },     // 3번: 좌하단 (디테일/특징)
-        { sx: halfW, sy: halfH }  // 4번: 우하단 (완성/결과)
-      ];
+      let panels = [];
 
-      const splitDataUrls = quadrants.map(q => {
+      if (targetCount === 2) {
+        // 2컷: 1x2 좌우 분할
+        const halfW = Math.floor(w / 2);
+        panels = [
+          { sx: 0, sy: 0, sw: halfW, sh: h },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: h }
+        ];
+      } else if (targetCount === 3) {
+        // 3컷: 1x3 좌/중/우 3열 분할
+        const thirdW = Math.floor(w / 3);
+        panels = [
+          { sx: 0, sy: 0, sw: thirdW, sh: h },
+          { sx: thirdW, sy: 0, sw: thirdW, sh: h },
+          { sx: thirdW * 2, sy: 0, sw: w - thirdW * 2, sh: h }
+        ];
+      } else if (targetCount === 5) {
+        // 5컷: 상단 2열(각 50%) + 하단 3열(각 33.3%) 분할
+        const halfH = Math.floor(h / 2);
+        const bottomH = h - halfH;
+        const halfW = Math.floor(w / 2);
+        const thirdW = Math.floor(w / 3);
+        panels = [
+          // 상단 2컷 (표지, 비포/고민)
+          { sx: 0, sy: 0, sw: halfW, sh: halfH },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: halfH },
+          // 하단 3컷 (사용/액션, 디테일, 결과/CTA)
+          { sx: 0, sy: halfH, sw: thirdW, sh: bottomH },
+          { sx: thirdW, sy: halfH, sw: thirdW, sh: bottomH },
+          { sx: thirdW * 2, sy: halfH, sw: w - thirdW * 2, sh: bottomH }
+        ];
+      } else if (targetCount === 1) {
+        // 1컷: 단독
+        panels = [
+          { sx: 0, sy: 0, sw: w, sh: h }
+        ];
+      } else {
+        // 4컷 기본: 2x2 4분할 격자 (Dayzhome 스타일)
+        const halfW = Math.floor(w / 2);
+        const halfH = Math.floor(h / 2);
+        panels = [
+          { sx: 0, sy: 0, sw: halfW, sh: halfH },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: halfH },
+          { sx: 0, sy: halfH, sw: halfW, sh: h - halfH },
+          { sx: halfW, sy: halfH, sw: w - halfW, sh: h - halfH }
+        ];
+      }
+
+      const splitDataUrls = panels.map(p => {
         const offCanvas = document.createElement('canvas');
-        offCanvas.width = halfW;
-        offCanvas.height = halfH;
+        offCanvas.width = p.sw;
+        offCanvas.height = p.sh;
         const ctx = offCanvas.getContext('2d');
-        ctx.drawImage(img, q.sx, q.sy, halfW, halfH, 0, 0, halfW, halfH);
+        ctx.drawImage(img, p.sx, p.sy, p.sw, p.sh, 0, 0, p.sw, p.sh);
         return offCanvas.toDataURL('image/jpeg', 0.95);
       });
 
       this.clearSlideImages();
-      this.setRatio('4:5'); // 4컷 분할 시 인스타 4:5 최적 규격으로 자동 세팅
-      this.setSlideCount(4); // 4장 모드로 자동 동기화
+      this.setRatio('4:5'); // 4:5 최적 규격으로 자동 세팅
+      this.setSlideCount(targetCount); // N장 모드로 자동 동기화
       splitDataUrls.forEach((url, idx) => {
         this.setSlideImage(idx, url);
       });
@@ -5515,7 +5715,7 @@ class CardNewsStudioEngine {
       this.render();
 
       if (typeof callback === 'function') {
-        callback(splitDataUrls);
+        callback(splitDataUrls, targetCount);
       }
     };
 
@@ -5527,6 +5727,11 @@ class CardNewsStudioEngine {
     } else if (dataOrImg instanceof HTMLImageElement) {
       handleImage(dataOrImg);
     }
+  }
+
+  // ✂️ 기존 4분할 하위 호환 래퍼
+  splitAndSet4GridCollage(dataOrImg, callback) {
+    this.splitAndSetMultiGridCollage(dataOrImg, 4, callback);
   }
 
   // 현재 슬라이드의 활성 이미지 반환
@@ -7961,6 +8166,16 @@ function startViralMakerApp() {
       lblDlAll.textContent = `📦 ${count}장 일괄 ZIP/다운`;
     }
 
+    // 제미나이 N컷 분할 버튼 라벨 동기화
+    const lblTabMethodCollage = document.getElementById('lbl-tab-method-collage');
+    if (lblTabMethodCollage) {
+      lblTabMethodCollage.textContent = `제미나이 ${count}컷 자동 분할`;
+    }
+    const lblQuickSplitGrid = document.getElementById('lbl-quick-split-grid');
+    if (lblQuickSplitGrid) {
+      lblQuickSplitGrid.textContent = `제미나이 ${count}컷 자동 분할`;
+    }
+
     updateSlideQuickBar(count);
     updateSlideEditInputs();
     updateSlideSceneBar();
@@ -8188,21 +8403,19 @@ function startViralMakerApp() {
     });
   }
 
-  // ✂️ 제미나이 2x2 4분할 격자 콜라주 사진 1초 분할 핸들러
-  function handleCollageFile(file) {
+  // ✂️ 제미나이 가변 N컷(2, 3, 4, 5컷) 분할 격자 콜라주 사진 1초 분할 핸들러
+  function handleCollageFile(file, overrideCount = null) {
     if (!file || !file.type.startsWith('image/')) return;
-    showToast('✂️ 제미나이 4컷 콜라주 사진을 4장의 개별 슬라이드로 1초 분할 중...');
+    const targetCount = overrideCount || state.slideCount || (window.CardNewsStudio ? window.CardNewsStudio.slideCount : 4) || 4;
+    showToast(`✂️ 제미나이 ${targetCount}컷 콜라주 사진을 ${targetCount}장의 개별 슬라이드로 1초 분할 중...`);
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target.result;
-      CardNewsStudio.splitAndSet4GridCollage(dataUrl, (splitUrls) => {
-        state.slideCount = 4;
-        slideCountChips.forEach(c => {
-          if (c.getAttribute('data-count') === '4') c.classList.add('active');
-          else c.classList.remove('active');
-        });
+      CardNewsStudio.splitAndSetMultiGridCollage(dataUrl, targetCount, (splitUrls, count) => {
+        state.slideCount = count;
+        syncSlideCountUI(count);
         applyRatio('4:5', false);
-        updateSlideQuickBar(4);
+        updateSlideQuickBar(count);
         updateSlideEditInputs();
         if (typeof updateSimulator === 'function') updateSimulator();
 
@@ -8212,7 +8425,7 @@ function startViralMakerApp() {
           uploadPrompt.style.display = 'none';
         }
 
-        showToast('🎉 제미나이 4컷 사진이 슬라이드 1~4번에 1초 만에 자동 분할되었습니다! 🚀');
+        showToast(`🎉 제미나이 ${count}컷 사진이 슬라이드 1~${count}번에 1초 만에 자동 분할되었습니다! 🚀`);
         switchTab('cardnews');
       });
     };
@@ -8868,6 +9081,102 @@ function startViralMakerApp() {
           if (panelPreset) panelPreset.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+    });
+  }
+
+  // ==========================================
+  // 📲 PWA (홈 화면 바로가기 / 웹앱 설치) 시스템
+  // ==========================================
+  let deferredPrompt = null;
+  const btnHeaderPwaInstall = document.getElementById('btn-header-pwa-install');
+  const modalPwaInstall = document.getElementById('modal-pwa-install');
+  const btnClosePwaModal = document.getElementById('btn-close-pwa-modal');
+  const btnTriggerPwaInstall = document.getElementById('btn-trigger-pwa-install');
+
+  // Service Worker 등록
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then((reg) => {
+        console.log('ViralMaker PWA Service Worker Registered:', reg.scope);
+      }).catch((err) => {
+        console.warn('PWA Service Worker registration failed:', err);
+      });
+    });
+  }
+
+  // 독립 실행형 모드인지 감지 (이미 홈 화면에 추가되어 앱으로 실행 중인 경우)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone && btnHeaderPwaInstall) {
+    btnHeaderPwaInstall.innerHTML = '<span>📱</span> <span>앱 구동 중</span>';
+    btnHeaderPwaInstall.style.borderColor = '#10b981';
+    btnHeaderPwaInstall.style.color = '#34d399';
+  }
+
+  // Chrome / Edge / Android beforeinstallprompt 이벤트 캡처
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (btnHeaderPwaInstall && !isStandalone) {
+      btnHeaderPwaInstall.style.display = 'flex';
+      btnHeaderPwaInstall.classList.add('pwa-pulse');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    if (btnHeaderPwaInstall) {
+      btnHeaderPwaInstall.innerHTML = '<span>📱</span> <span>앱 설치 완료</span>';
+      btnHeaderPwaInstall.style.borderColor = '#10b981';
+      btnHeaderPwaInstall.style.color = '#34d399';
+      btnHeaderPwaInstall.classList.remove('pwa-pulse');
+    }
+    showToast('🎉 ViralMaker가 스마트폰 홈 화면에 설치되었습니다! 언제든 1초 만에 켜보세요 ✨');
+  });
+
+  if (btnHeaderPwaInstall) {
+    btnHeaderPwaInstall.addEventListener('click', () => {
+      if (isStandalone) {
+        showToast('💡 이미 홈 화면 독립형 앱 모드로 쾌적하게 사용 중이십니다! ✨');
+        return;
+      }
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA install prompt');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // iOS 사파리 또는 브라우저 수동 안내 모달 팝업
+        if (modalPwaInstall) {
+          modalPwaInstall.style.display = 'flex';
+        } else {
+          showToast('📲 브라우저 메뉴 [공유 ⎋] ➔ [홈 화면에 추가 ➕]를 누르시면 앱으로 설치됩니다!');
+        }
+      }
+    });
+  }
+
+  if (btnTriggerPwaInstall) {
+    btnTriggerPwaInstall.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        if (modalPwaInstall) modalPwaInstall.style.display = 'none';
+      } else {
+        showToast('📲 브라우저 메뉴 [공유 ⎋] ➔ [홈 화면에 추가 ➕]를 누르시면 앱으로 설치됩니다!');
+      }
+    });
+  }
+
+  if (btnClosePwaModal && modalPwaInstall) {
+    btnClosePwaModal.addEventListener('click', () => {
+      modalPwaInstall.style.display = 'none';
+    });
+    modalPwaInstall.addEventListener('click', (e) => {
+      if (e.target === modalPwaInstall) modalPwaInstall.style.display = 'none';
     });
   }
 

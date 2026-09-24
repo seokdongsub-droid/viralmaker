@@ -202,34 +202,74 @@ class CardNewsStudioEngine {
     this.render();
   }
 
-  // ✂️ 2x2 4분할 격자 콜라주 사진 1장을 4장의 개별 슬라이드로 자동 분할 & 배분
-  splitAndSet4GridCollage(dataOrImg, callback) {
+  // ✂️ 가변 N컷(2, 3, 4, 5컷) 분할 격자 콜라주 사진 1장을 N장의 개별 슬라이드로 자동 분할 & 배분
+  splitAndSetMultiGridCollage(dataOrImg, count = 4, callback) {
     const handleImage = (img) => {
       const w = img.naturalWidth || img.width;
       const h = img.naturalHeight || img.height;
-      const halfW = Math.floor(w / 2);
-      const halfH = Math.floor(h / 2);
+      const targetCount = parseInt(count, 10) || 4;
 
-      // 미세한 테두리 공백/구분선을 정밀하게 고려한 4분할 좌표
-      const quadrants = [
-        { sx: 0, sy: 0 },         // 1번: 좌상단 (표지 풀샷)
-        { sx: halfW, sy: 0 },     // 2번: 우상단 (사용 액션)
-        { sx: 0, sy: halfH },     // 3번: 좌하단 (디테일/특징)
-        { sx: halfW, sy: halfH }  // 4번: 우하단 (완성/결과)
-      ];
+      let panels = [];
 
-      const splitDataUrls = quadrants.map(q => {
+      if (targetCount === 2) {
+        // 2컷: 1x2 좌우 분할
+        const halfW = Math.floor(w / 2);
+        panels = [
+          { sx: 0, sy: 0, sw: halfW, sh: h },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: h }
+        ];
+      } else if (targetCount === 3) {
+        // 3컷: 1x3 좌/중/우 3열 분할
+        const thirdW = Math.floor(w / 3);
+        panels = [
+          { sx: 0, sy: 0, sw: thirdW, sh: h },
+          { sx: thirdW, sy: 0, sw: thirdW, sh: h },
+          { sx: thirdW * 2, sy: 0, sw: w - thirdW * 2, sh: h }
+        ];
+      } else if (targetCount === 5) {
+        // 5컷: 상단 2열(각 50%) + 하단 3열(각 33.3%) 분할
+        const halfH = Math.floor(h / 2);
+        const bottomH = h - halfH;
+        const halfW = Math.floor(w / 2);
+        const thirdW = Math.floor(w / 3);
+        panels = [
+          // 상단 2컷 (표지, 비포/고민)
+          { sx: 0, sy: 0, sw: halfW, sh: halfH },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: halfH },
+          // 하단 3컷 (사용/액션, 디테일, 결과/CTA)
+          { sx: 0, sy: halfH, sw: thirdW, sh: bottomH },
+          { sx: thirdW, sy: halfH, sw: thirdW, sh: bottomH },
+          { sx: thirdW * 2, sy: halfH, sw: w - thirdW * 2, sh: bottomH }
+        ];
+      } else if (targetCount === 1) {
+        // 1컷: 단독
+        panels = [
+          { sx: 0, sy: 0, sw: w, sh: h }
+        ];
+      } else {
+        // 4컷 기본: 2x2 4분할 격자 (Dayzhome 스타일)
+        const halfW = Math.floor(w / 2);
+        const halfH = Math.floor(h / 2);
+        panels = [
+          { sx: 0, sy: 0, sw: halfW, sh: halfH },
+          { sx: halfW, sy: 0, sw: w - halfW, sh: halfH },
+          { sx: 0, sy: halfH, sw: halfW, sh: h - halfH },
+          { sx: halfW, sy: halfH, sw: w - halfW, sh: h - halfH }
+        ];
+      }
+
+      const splitDataUrls = panels.map(p => {
         const offCanvas = document.createElement('canvas');
-        offCanvas.width = halfW;
-        offCanvas.height = halfH;
+        offCanvas.width = p.sw;
+        offCanvas.height = p.sh;
         const ctx = offCanvas.getContext('2d');
-        ctx.drawImage(img, q.sx, q.sy, halfW, halfH, 0, 0, halfW, halfH);
+        ctx.drawImage(img, p.sx, p.sy, p.sw, p.sh, 0, 0, p.sw, p.sh);
         return offCanvas.toDataURL('image/jpeg', 0.95);
       });
 
       this.clearSlideImages();
-      this.setRatio('4:5'); // 4컷 분할 시 인스타 4:5 최적 규격으로 자동 세팅
-      this.setSlideCount(4); // 4장 모드로 자동 동기화
+      this.setRatio('4:5'); // 4:5 최적 규격으로 자동 세팅
+      this.setSlideCount(targetCount); // N장 모드로 자동 동기화
       splitDataUrls.forEach((url, idx) => {
         this.setSlideImage(idx, url);
       });
@@ -237,7 +277,7 @@ class CardNewsStudioEngine {
       this.render();
 
       if (typeof callback === 'function') {
-        callback(splitDataUrls);
+        callback(splitDataUrls, targetCount);
       }
     };
 
@@ -249,6 +289,11 @@ class CardNewsStudioEngine {
     } else if (dataOrImg instanceof HTMLImageElement) {
       handleImage(dataOrImg);
     }
+  }
+
+  // ✂️ 기존 4분할 하위 호환 래퍼
+  splitAndSet4GridCollage(dataOrImg, callback) {
+    this.splitAndSetMultiGridCollage(dataOrImg, 4, callback);
   }
 
   // 현재 슬라이드의 활성 이미지 반환

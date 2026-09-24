@@ -15,7 +15,15 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <link rel="stylesheet" href="css/style.css?v=3.4">
+  <link rel="stylesheet" href="css/style.css?v=3.5">
+  <!-- PWA Manifest & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ViralMaker">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#0f172a">
+
   <!-- JSZip for clean 1-click batch image zip download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -32,10 +40,13 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.4 모바일 초고속</span>
+          <span class="logo-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); font-weight: 800;">v3.5 PWA &amp; N컷 분할</span>
         </div>
       </div>
       <div class="header-actions">
+        <button type="button" class="btn-header pwa-pulse" id="btn-header-pwa-install" style="border-color: #ec4899; color: #f472b6; font-weight: 700;" title="스마트폰 홈 화면에 바로가기 앱 설치">
+          <span>📲</span> <span>앱 설치</span>
+        </button>
         <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: #10b981; color: #6ee7b7; font-weight: 700;" title="스마트폰 카메라로 스캔하여 모바일로 바로 열기">
           <span>📱</span> <span>폰으로 열기</span>
         </button>
@@ -55,9 +66,9 @@
     <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(99, 102, 241, 0.18)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 14px; font-size: 11.5px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.4 모바일 초고속 &amp; 세이프 갤러리 탑재</strong></span>
+        <span><strong>v3.5 모바일 PWA 홈화면 앱 설치 &amp; 가변 N컷 제미나이 올인원 분할</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.4_' + Date.now());" style="background: rgba(245, 158, 11, 0.18); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.5_' + Date.now());" style="background: rgba(245, 158, 11, 0.18); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -258,8 +269,8 @@
             <button type="button" class="photo-method-btn" id="btn-tab-method-url">
               <span>🔗</span> <span>이미지 주소 복붙</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이 2x2 격자 사진을 1초 만에 슬라이드 4장으로 자동 쪼개주는 단축 기능">
-              <span>✂️</span> <span>(옵션) 4분할 치트키</span>
+            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이가 생성한 N분할 사진을 1초 만에 개별 슬라이드로 자동 쪼개주는 단축 기능">
+              <span>✂️</span> <span id="lbl-tab-method-collage">제미나이 4컷 자동 분할</span>
             </button>
           </div>
 
@@ -627,8 +638,8 @@
           <input type="file" id="slide-single-file-input" accept="image/*" multiple style="display: none;">
           <input type="file" id="slide-collage-file-input" accept="image/*" style="display: none;">
           <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;" title="4컷 카드뉴스 제작 시, 제미나이 2x2 콜라주 1장을 4장으로 분할해주는 편의 기능입니다.">
-              ✂️ (옵션) 4컷 콜라주 분할
+            <button type="button" class="btn-header" id="btn-quick-split-4grid" style="font-size: 11px; padding: 5px 9px; color: var(--accent-pink); border-color: rgba(236,72,153,0.4); background: rgba(236,72,153,0.08); font-weight: 700;" title="제미나이가 생성해준 N분할 사진 1장을 현재 장수(N장)로 즉시 쪼개어 자동 장착합니다.">
+              ✂️ <span id="lbl-quick-split-grid">제미나이 4컷 자동 분할</span>
             </button>
             <button type="button" class="btn-header" id="btn-quick-url-photo" style="font-size: 11px; padding: 5px 9px; color: var(--primary-light);">
               🔗 URL 변경
@@ -1100,12 +1111,57 @@
       </div>
     </div>
 
+    <!-- 📲 PWA 홈 화면 바로가기 / 웹앱 설치 안내 모달 -->
+    <div id="modal-pwa-install" class="modal-overlay" style="display: none;">
+      <div class="modal-card" style="max-width: 420px; border-color: #ec4899; box-shadow: 0 0 24px rgba(236, 72, 153, 0.3);">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span>📲</span> <strong>스마트폰 홈 화면에 바로가기 앱 설치</strong>
+          </div>
+          <button type="button" class="btn-close-modal" id="btn-close-pwa-modal">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 16px 14px;">
+          <div style="text-align: center; margin-bottom: 14px;">
+            <img src="icons/icon-192.png" alt="ViralMaker" style="width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 16px rgba(236,72,153,0.4); margin-bottom: 8px;">
+            <div style="font-size: 16px; font-weight: 800; color: #fff;">ViralMaker (바이럴메이커)</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">스마트폰 15초 완성 제휴마케팅 &amp; 카드뉴스 자동화</div>
+          </div>
+
+          <!-- 안드로이드 / PC 크롬 원클릭 설치 버튼 -->
+          <div style="margin-bottom: 14px;">
+            <button type="button" class="btn-primary-large glowing-btn" id="btn-trigger-pwa-install" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; font-size: 14px; font-weight: 800; padding: 12px; width: 100%;">
+              <span>📲 지금 즉시 홈 화면에 앱 설치하기</span>
+            </button>
+          </div>
+
+          <!-- iOS 아이폰 사파리 사용자 가이드 -->
+          <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px;">
+            <div style="font-size: 12px; font-weight: 800; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+              <span>🍎</span> <span>아이폰(iOS Safari) 3초 설치 방법:</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 6px; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">1</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">사파리 하단 중앙의 <strong>[공유 ⎋]</strong> 아이콘 터치</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 6px; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">2</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">메뉴를 아래로 올려 <strong>[홈 화면에 추가 ➕]</strong> 터치</span>
+            </div>
+            <div class="pwa-step-card" style="margin-bottom: 0; padding: 8px 10px;">
+              <span class="pwa-step-num" style="width: 20px; height: 20px; font-size: 11px;">3</span>
+              <span class="pwa-step-text" style="font-size: 11.5px;">우측 상단 <strong>[추가]</strong> 터치 시 홈 화면에 앱 생성 완료!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Scripts (캐시 방지 v3.4 적용) -->
-  <script src="js/templates.js?v=3.4"></script>
-  <script src="js/generator.js?v=3.4"></script>
-  <script src="js/cardnews.js?v=3.4"></script>
-  <script src="js/app.js?v=3.4"></script>
+  <!-- Scripts (캐시 방지 v3.5 적용) -->
+  <script src="js/templates.js?v=3.5"></script>
+  <script src="js/generator.js?v=3.5"></script>
+  <script src="js/cardnews.js?v=3.5"></script>
+  <script src="js/app.js?v=3.5"></script>
 </body>
 </html>

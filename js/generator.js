@@ -485,6 +485,23 @@ Composition: Pristine, tidy, bright, harmonious lifestyle environment highlighti
 ${cleanNegative}
 이미지 생성해줘.`;
 
+      const collagePrompt2 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into 2 equal side-by-side vertical panels (1x2 grid: Left panel and Right panel) with a clean thin dividing line.
+Panel 1 (Left, 50% width): Relatable before/problem scene showing daily trouble, clutter, or inconvenience before having ${name}.
+Panel 2 (Right, 50% width): Satisfying after/solution scene showing ${name} actively resolving the problem in a clean, bright, harmonious modern home environment.
+Style: Professional authentic editorial lifestyle photography, photorealistic, clean thin vertical divider border between panels.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 2컷 좌우 분할 올인원 프롬프트 (1x2 그리드)',
+        role: '2컷 좌우 분할 올인원 (1x2 그리드)',
+        previewHint: '1초 2분할 연동 ✂️',
+        exactText: '2컷 일괄 생성 ➔ 1초 좌우 분할',
+        promptText: collagePrompt2,
+        prompt: collagePrompt2
+      });
+
       prompts.push({
         slideNum: 1,
         title: '1번 비포/고민 컷 (Before Hook)',
@@ -527,6 +544,24 @@ Scene: Extreme macro close-up showing stunning details, texture, and satisfying 
 Composition: High clarity detail shot eliciting strong desire and engagement.
 ${cleanNegative}
 이미지 생성해줘.`;
+
+      const collagePrompt3 = `${multimodalHeader}Canvas: A single high-resolution image cleanly divided into 3 equal vertical panels side-by-side (1x3 grid: Left, Center, Right) with clean thin divider borders.
+Panel 1 (Left, 33.3% width): Hero hook shot showcasing ${name} beautifully presented in a warm, aesthetic home setting.
+Panel 2 (Center, 33.3% width): Hands-on demonstration or step-by-step preparation shot showing ${name} effortlessly in action.
+Panel 3 (Right, 33.3% width): Extreme macro close-up highlighting satisfying final details, textures, and perfection of ${name}.
+Style: Professional commercial editorial photography, photorealistic, thin vertical dividing lines.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 3컷 3분할 올인원 프롬프트 (1x3 그리드)',
+        role: '3컷 3분할 올인원 (1x3 그리드)',
+        previewHint: '1초 3분할 연동 ✂️',
+        exactText: '3컷 일괄 생성 ➔ 1초 3분할',
+        promptText: collagePrompt3,
+        prompt: collagePrompt3
+      });
 
       prompts.push({
         slideNum: 1,
@@ -587,6 +622,26 @@ Composition: Confident, aesthetic, highly desirable visual.
 ${cleanNegative}
 이미지 생성해줘.`;
 
+      // 🌟 [추가 보너스] 1장에 4컷 콜라주를 한 번에 만드는 올인원 프롬프트 (최상단 배치)
+      const collagePrompt4 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right).
+Panel 1 (Top-Left): Aesthetic hero lifestyle shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
+Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage and action of ${name}.
+Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
+Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
+Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
+${cleanNegative}
+이미지 생성해줘.`;
+
+      prompts.push({
+        slideNum: 'ALL',
+        title: '⚡ [1초 완성용] 4컷 콜라주 올인원 프롬프트 (2x2 그리드)',
+        role: '4컷 콜라주 올인원 (2x2 그리드)',
+        previewHint: '1초 4분할 연동 ✂️',
+        exactText: '4컷 일괄 생성 ➔ 1초 분할',
+        promptText: collagePrompt4,
+        prompt: collagePrompt4
+      });
+
       // 4컷 개별 씬 등록
       prompts.push({
         slideNum: 1,
@@ -628,26 +683,6 @@ ${cleanNegative}
         prompt: p4
       });
 
-      // 🌟 [추가 보너스] 1장에 4컷 콜라주를 한 번에 만드는 올인원 프롬프트
-      const collagePrompt = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right).
-Panel 1 (Top-Left): Aesthetic hero lifestyle shot of ${name} held in hand or sitting gracefully on a warm minimalist table.
-Panel 2 (Top-Right): Hands-on real demonstration shot showing practical usage and action of ${name}.
-Panel 3 (Bottom-Left): Extreme macro close-up highlighting the superior finish, fine material texture, and craftsmanship of ${name}.
-Panel 4 (Bottom-Right): Satisfying climax scene showing the product proudly placed in a clean, modern aesthetic living space.
-Style: Professional commercial photography, clean thin borders between panels, photorealistic, warm home ambient lighting.
-${cleanNegative}
-이미지 생성해줘.`;
-
-      prompts.push({
-        slideNum: 'ALL',
-        title: '⚡ [1초 완성용] 4컷 콜라주 올인원 프롬프트 (2x2 그리드)',
-        role: '4컷 콜라주 올인원 (2x2 그리드)',
-        previewHint: '1초 분할 연동 ✂️',
-        exactText: '4컷 일괄 생성 ➔ 1초 분할',
-        promptText: collagePrompt,
-        prompt: collagePrompt
-      });
-
       return prompts;
     }
 
@@ -666,9 +701,34 @@ ${cleanNegative}
     }
     const finalPrompts = basePrompts.slice(0, count);
 
-    return finalPrompts.map((pPrompt, idx) => {
+    // 🌟 [추가] 5컷 이상 시 올인원 프롬프트 (상단 2컷 + 하단 3컷 그리드)
+    const collagePrompt5 = `${multimodalHeader}Canvas: A single high-resolution image cleanly divided into 5 panels (Top row: 2 equal panels, Bottom row: 3 equal panels) with clean thin divider borders.
+Top Row (50% height):
+- Panel 1 (Top-Left, 50% width): Hero lifestyle hook shot showcasing ${name} in a minimalist aesthetic setting.
+- Panel 2 (Top-Right, 50% width): Problem or before-state shot emphasizing daily inconvenience or need.
+Bottom Row (50% height):
+- Panel 3 (Bottom-Left, 33.3% width): Hands-on action shot demonstrating effortless use of ${name}.
+- Panel 4 (Bottom-Center, 33.3% width): High-detail macro close-up highlighting craftsmanship, texture, and quality.
+- Panel 5 (Bottom-Right, 33.3% width): Satisfying final outcome showcasing the product in a clean modern room.
+Style: Professional authentic editorial lifestyle photography, clean thin border dividers, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+    const promptItems = [
+      {
+        slideNum: 'ALL',
+        title: `⚡ [1초 완성용] ${count}컷 올인원 프롬프트 (상단 2컷 + 하단 3컷 그리드)`,
+        role: `${count}컷 올인원 (상단 2컷 + 하단 3컷 그리드)`,
+        previewHint: `1초 ${count}분할 연동 ✂️`,
+        exactText: `${count}컷 일괄 생성 ➔ 1초 분할`,
+        promptText: collagePrompt5,
+        prompt: collagePrompt5
+      }
+    ];
+
+    finalPrompts.forEach((pPrompt, idx) => {
       const fullP = `${multimodalHeader}${pPrompt}\n${cleanNegative}\n이미지 생성해줘.`;
-      return {
+      promptItems.push({
         slideNum: idx + 1,
         title: `${idx + 1}번 슬라이드 씬`,
         role: `${idx + 1}번 슬라이드 씬`,
@@ -676,8 +736,9 @@ ${cleanNegative}
         exactText: `${name} (${idx + 1}/${count})`,
         promptText: fullP,
         prompt: fullP
-      };
+      });
     });
+    return promptItems;
   }
 
   // ==========================================

@@ -23,8 +23,8 @@ try:
     print("\n[2/4] 변경된 모든 파일 수집 중...")
     subprocess.run(["git", "add", "-A"], check=True)
 
-    print("\n[3/4] v3.4 모바일 초고속 & 세이프 갤러리 커밋 생성 중...")
-    commit_res = subprocess.run(["git", "commit", "-m", "ViralMaker v3.4: Mobile fast & safe gallery edition"], capture_output=True, text=True)
+    print("\n[3/4] v3.5 모바일 PWA & N컷 분할 커밋 생성 중...")
+    commit_res = subprocess.run(["git", "commit", "-m", "ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition"], capture_output=True, text=True)
     if commit_res.returncode == 0:
         print("  ✓ 최신 변경사항 커밋 완료!")
     else:
@@ -43,8 +43,8 @@ try:
         print("✅ [성공] 깃허브 업로드가 완벽하게 성공했습니다!")
         print("=" * 55)
         print("\n📱 약 15초 뒤 스마트폰에서 아래 주소로 접속하세요:")
-        print("   👉 https://seokdongsub-droid.github.io/viralmaker/?v=3.4")
-        print("\n🏷️ 화면 맨 위에 [v3.4 모바일 초고속]이")
+        print("   👉 https://seokdongsub-droid.github.io/viralmaker/?v=3.5")
+        print("\n🏷️ 화면 맨 위에 [v3.5 PWA & N컷 분할]이")
         print("   보이면 최신 버전으로 정상 반영된 것입니다!")
         print("=" * 55)
     else:

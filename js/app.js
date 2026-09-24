@@ -1574,6 +1574,16 @@ function startViralMakerApp() {
       lblDlAll.textContent = `📦 ${count}장 일괄 ZIP/다운`;
     }
 
+    // 제미나이 N컷 분할 버튼 라벨 동기화
+    const lblTabMethodCollage = document.getElementById('lbl-tab-method-collage');
+    if (lblTabMethodCollage) {
+      lblTabMethodCollage.textContent = `제미나이 ${count}컷 자동 분할`;
+    }
+    const lblQuickSplitGrid = document.getElementById('lbl-quick-split-grid');
+    if (lblQuickSplitGrid) {
+      lblQuickSplitGrid.textContent = `제미나이 ${count}컷 자동 분할`;
+    }
+
     updateSlideQuickBar(count);
     updateSlideEditInputs();
     updateSlideSceneBar();
@@ -1801,21 +1811,19 @@ function startViralMakerApp() {
     });
   }
 
-  // ✂️ 제미나이 2x2 4분할 격자 콜라주 사진 1초 분할 핸들러
-  function handleCollageFile(file) {
+  // ✂️ 제미나이 가변 N컷(2, 3, 4, 5컷) 분할 격자 콜라주 사진 1초 분할 핸들러
+  function handleCollageFile(file, overrideCount = null) {
     if (!file || !file.type.startsWith('image/')) return;
-    showToast('✂️ 제미나이 4컷 콜라주 사진을 4장의 개별 슬라이드로 1초 분할 중...');
+    const targetCount = overrideCount || state.slideCount || (window.CardNewsStudio ? window.CardNewsStudio.slideCount : 4) || 4;
+    showToast(`✂️ 제미나이 ${targetCount}컷 콜라주 사진을 ${targetCount}장의 개별 슬라이드로 1초 분할 중...`);
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target.result;
-      CardNewsStudio.splitAndSet4GridCollage(dataUrl, (splitUrls) => {
-        state.slideCount = 4;
-        slideCountChips.forEach(c => {
-          if (c.getAttribute('data-count') === '4') c.classList.add('active');
-          else c.classList.remove('active');
-        });
+      CardNewsStudio.splitAndSetMultiGridCollage(dataUrl, targetCount, (splitUrls, count) => {
+        state.slideCount = count;
+        syncSlideCountUI(count);
         applyRatio('4:5', false);
-        updateSlideQuickBar(4);
+        updateSlideQuickBar(count);
         updateSlideEditInputs();
         if (typeof updateSimulator === 'function') updateSimulator();
 
@@ -1825,7 +1833,7 @@ function startViralMakerApp() {
           uploadPrompt.style.display = 'none';
         }
 
-        showToast('🎉 제미나이 4컷 사진이 슬라이드 1~4번에 1초 만에 자동 분할되었습니다! 🚀');
+        showToast(`🎉 제미나이 ${count}컷 사진이 슬라이드 1~${count}번에 1초 만에 자동 분할되었습니다! 🚀`);
         switchTab('cardnews');
       });
     };
@@ -2481,6 +2489,102 @@ function startViralMakerApp() {
           if (panelPreset) panelPreset.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+    });
+  }
+
+  // ==========================================
+  // 📲 PWA (홈 화면 바로가기 / 웹앱 설치) 시스템
+  // ==========================================
+  let deferredPrompt = null;
+  const btnHeaderPwaInstall = document.getElementById('btn-header-pwa-install');
+  const modalPwaInstall = document.getElementById('modal-pwa-install');
+  const btnClosePwaModal = document.getElementById('btn-close-pwa-modal');
+  const btnTriggerPwaInstall = document.getElementById('btn-trigger-pwa-install');
+
+  // Service Worker 등록
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then((reg) => {
+        console.log('ViralMaker PWA Service Worker Registered:', reg.scope);
+      }).catch((err) => {
+        console.warn('PWA Service Worker registration failed:', err);
+      });
+    });
+  }
+
+  // 독립 실행형 모드인지 감지 (이미 홈 화면에 추가되어 앱으로 실행 중인 경우)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone && btnHeaderPwaInstall) {
+    btnHeaderPwaInstall.innerHTML = '<span>📱</span> <span>앱 구동 중</span>';
+    btnHeaderPwaInstall.style.borderColor = '#10b981';
+    btnHeaderPwaInstall.style.color = '#34d399';
+  }
+
+  // Chrome / Edge / Android beforeinstallprompt 이벤트 캡처
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (btnHeaderPwaInstall && !isStandalone) {
+      btnHeaderPwaInstall.style.display = 'flex';
+      btnHeaderPwaInstall.classList.add('pwa-pulse');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    if (btnHeaderPwaInstall) {
+      btnHeaderPwaInstall.innerHTML = '<span>📱</span> <span>앱 설치 완료</span>';
+      btnHeaderPwaInstall.style.borderColor = '#10b981';
+      btnHeaderPwaInstall.style.color = '#34d399';
+      btnHeaderPwaInstall.classList.remove('pwa-pulse');
+    }
+    showToast('🎉 ViralMaker가 스마트폰 홈 화면에 설치되었습니다! 언제든 1초 만에 켜보세요 ✨');
+  });
+
+  if (btnHeaderPwaInstall) {
+    btnHeaderPwaInstall.addEventListener('click', () => {
+      if (isStandalone) {
+        showToast('💡 이미 홈 화면 독립형 앱 모드로 쾌적하게 사용 중이십니다! ✨');
+        return;
+      }
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA install prompt');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // iOS 사파리 또는 브라우저 수동 안내 모달 팝업
+        if (modalPwaInstall) {
+          modalPwaInstall.style.display = 'flex';
+        } else {
+          showToast('📲 브라우저 메뉴 [공유 ⎋] ➔ [홈 화면에 추가 ➕]를 누르시면 앱으로 설치됩니다!');
+        }
+      }
+    });
+  }
+
+  if (btnTriggerPwaInstall) {
+    btnTriggerPwaInstall.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        if (modalPwaInstall) modalPwaInstall.style.display = 'none';
+      } else {
+        showToast('📲 브라우저 메뉴 [공유 ⎋] ➔ [홈 화면에 추가 ➕]를 누르시면 앱으로 설치됩니다!');
+      }
+    });
+  }
+
+  if (btnClosePwaModal && modalPwaInstall) {
+    btnClosePwaModal.addEventListener('click', () => {
+      modalPwaInstall.style.display = 'none';
+    });
+    modalPwaInstall.addEventListener('click', (e) => {
+      if (e.target === modalPwaInstall) modalPwaInstall.style.display = 'none';
     });
   }
 
