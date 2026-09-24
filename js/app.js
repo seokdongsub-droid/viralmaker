@@ -1157,6 +1157,10 @@ function startViralMakerApp() {
 
     const individualCount = prompts.filter(p => p.slideNum !== 'ALL').length;
     if (promptCountBadge) promptCountBadge.textContent = `${individualCount}장`;
+    const lblBtnAllInOne = document.getElementById('lbl-btn-allinone-count');
+    if (lblBtnAllInOne) lblBtnAllInOne.textContent = `${individualCount}분할`;
+    const lblBtnIndividual = document.getElementById('lbl-btn-individual-count');
+    if (lblBtnIndividual) lblBtnIndividual.textContent = `${individualCount}장`;
 
     prompts.forEach((p, idx) => {
       const isAll = p.slideNum === 'ALL';
@@ -1722,7 +1726,27 @@ function startViralMakerApp() {
     });
   }
 
-  // 🚀 제미나이 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료)
+  // ⚡ [직장인 1초 컷] 제미나이 N분할 올인원 프롬프트 복사
+  const btnCopyAllInOnePrompt = document.getElementById('btn-copy-allinone-prompt');
+  if (btnCopyAllInOnePrompt) {
+    btnCopyAllInOnePrompt.addEventListener('click', async () => {
+      const allPrompts = state.generatedData?.geminiPrompts || [];
+      if (!allPrompts || allPrompts.length === 0) {
+        showToast('생성된 프롬프트가 없습니다. 먼저 [✨ 1초 만에 완성하기]를 눌러주세요.');
+        return;
+      }
+      const allInOne = allPrompts.find(p => p.slideNum === 'ALL') || allPrompts[0];
+      const txt = allInOne.promptText || allInOne.prompt || '';
+      const ok = await copyToClipboardSafe(txt);
+      if (ok) {
+        showToast('🎉 N분할 올인원 프롬프트 복사 완료! 제미나이에 제품 사진 첨부 후 1장 생성 ➔ [✂️ 자동 분할] 하세요 🚀');
+      } else {
+        showToast('⚠️ 복사 실패: 아래 카드에서 직접 복사해주세요.');
+      }
+    });
+  }
+
+  // 🚀 제미나이 개별 씬 프롬프트 일괄 복사 (고화질 개별 생성용)
   if (btnCopyAllGeminiPrompts) {
     btnCopyAllGeminiPrompts.addEventListener('click', async () => {
       const allPrompts = state.generatedData?.geminiPrompts || [];

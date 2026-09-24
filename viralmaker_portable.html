@@ -3149,10 +3149,13 @@ body {
             </span>
           </div>
 
-          <!-- 🚀 직장인 1초 치트키: 전체 프롬프트 일괄 복사 버튼 -->
-          <div style="margin-bottom: 12px;">
-            <button type="button" class="btn-primary-large glowing-btn" id="btn-copy-all-gemini-prompts" style="padding: 12px 14px; font-size: 13.5px; font-weight: 800; width: 100%;">
-              <span>⚡ 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료 🚀)</span>
+          <!-- 🚀 직장인 1초 치트키: 2-트랙 프롬프트 복사 버튼 -->
+          <div style="margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" class="btn-primary-large glowing-btn" id="btn-copy-allinone-prompt" style="padding: 13px 14px; font-size: 13.5px; font-weight: 800; width: 100%; background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">
+              <span>⚡ [1초 컷] <span id="lbl-btn-allinone-count">4분할</span> 올인원 프롬프트 복사 (제미나이 1장 생성 ➔ 1초 분할 연동 ✂️)</span>
+            </button>
+            <button type="button" class="btn-header" id="btn-copy-all-gemini-prompts" style="padding: 9px 12px; font-size: 12px; font-weight: 700; width: 100%; justify-content: center; background: rgba(99, 102, 241, 0.12); color: #c7d2fe; border-color: rgba(99, 102, 241, 0.4);">
+              <span>📋 <span id="lbl-btn-individual-count">4장</span> 개별 씬 프롬프트 일괄 복사 (초고화질 개별 생성용)</span>
             </button>
           </div>
 
@@ -8759,6 +8762,10 @@ function startViralMakerApp() {
 
     const individualCount = prompts.filter(p => p.slideNum !== 'ALL').length;
     if (promptCountBadge) promptCountBadge.textContent = `${individualCount}장`;
+    const lblBtnAllInOne = document.getElementById('lbl-btn-allinone-count');
+    if (lblBtnAllInOne) lblBtnAllInOne.textContent = `${individualCount}분할`;
+    const lblBtnIndividual = document.getElementById('lbl-btn-individual-count');
+    if (lblBtnIndividual) lblBtnIndividual.textContent = `${individualCount}장`;
 
     prompts.forEach((p, idx) => {
       const isAll = p.slideNum === 'ALL';
@@ -9324,7 +9331,27 @@ function startViralMakerApp() {
     });
   }
 
-  // 🚀 제미나이 전체 프롬프트 한방에 일괄 복사 (초고속 1회 완료)
+  // ⚡ [직장인 1초 컷] 제미나이 N분할 올인원 프롬프트 복사
+  const btnCopyAllInOnePrompt = document.getElementById('btn-copy-allinone-prompt');
+  if (btnCopyAllInOnePrompt) {
+    btnCopyAllInOnePrompt.addEventListener('click', async () => {
+      const allPrompts = state.generatedData?.geminiPrompts || [];
+      if (!allPrompts || allPrompts.length === 0) {
+        showToast('생성된 프롬프트가 없습니다. 먼저 [✨ 1초 만에 완성하기]를 눌러주세요.');
+        return;
+      }
+      const allInOne = allPrompts.find(p => p.slideNum === 'ALL') || allPrompts[0];
+      const txt = allInOne.promptText || allInOne.prompt || '';
+      const ok = await copyToClipboardSafe(txt);
+      if (ok) {
+        showToast('🎉 N분할 올인원 프롬프트 복사 완료! 제미나이에 제품 사진 첨부 후 1장 생성 ➔ [✂️ 자동 분할] 하세요 🚀');
+      } else {
+        showToast('⚠️ 복사 실패: 아래 카드에서 직접 복사해주세요.');
+      }
+    });
+  }
+
+  // 🚀 제미나이 개별 씬 프롬프트 일괄 복사 (고화질 개별 생성용)
   if (btnCopyAllGeminiPrompts) {
     btnCopyAllGeminiPrompts.addEventListener('click', async () => {
       const allPrompts = state.generatedData?.geminiPrompts || [];
