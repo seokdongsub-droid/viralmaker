@@ -2686,6 +2686,12 @@ body {
             <button type="button" class="threads-type-chip" data-type="type4">🧐 4. 훈수/장비병</button>
           </div>
 
+          <!-- 스레드 도달률 극대화 팁 배너 -->
+          <div style="background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; padding: 9px 12px; margin-bottom: 12px; font-size: 11.5px; color: #c7d2fe; display: flex; align-items: flex-start; gap: 8px; line-height: 1.45;">
+            <span style="font-size: 15px;">💡</span>
+            <div><strong>직장인 도달 치트키:</strong> [3. 카드뉴스] 탭에서 방금 저장한 사진(1~4번)을 스레드 본문에 같이 올리면 피드 노출률이 300% 이상 급상승합니다! 🚀</div>
+          </div>
+
           <!-- 1단계 본문 -->
           <div class="threads-step-box">
             <div class="threads-step-header">
@@ -2734,12 +2740,30 @@ body {
             <span class="char-counter" id="char-counter">0자</span>
           </div>
 
+          <!-- 📝 네이버 블로그 스마트에디터 ONE 분리 복사 툴바 -->
+          <div id="naver-blog-actions" style="display: none; background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.4); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+            <div style="font-size: 11.5px; color: #6ee7b7; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+              <span>⚡ 스마트에디터 ONE 전용 초고속 복사:</span>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-sub-action" id="btn-copy-blog-title" style="flex: 1; min-width: 120px; font-size: 12px; padding: 8px; background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #6ee7b7; font-weight: 700;">
+                <span>📌 제목만 복사</span>
+              </button>
+              <button type="button" class="btn-sub-action" id="btn-copy-blog-clean-body" style="flex: 1.5; min-width: 170px; font-size: 12px; padding: 8px; background: #10b981; border-color: #10b981; color: #fff; font-weight: 800;">
+                <span>📝 본문만 복사 (사진 가이드 제외)</span>
+              </button>
+            </div>
+            <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;">
+              💡 <strong>직장인 30초 팁:</strong> [제목만 복사] ➔ 제목란 붙여넣기, [본문만 복사] ➔ 본문란 붙여넣기 후 사진 4장 넣으면 끝!
+            </div>
+          </div>
+
           <textarea id="copy-textarea" class="copy-textarea" style="min-height: 220px;" placeholder="생성된 홍보글이 여기에 표시됩니다."></textarea>
           
           <div class="copy-footer-actions">
             <button type="button" class="btn-regen" id="btn-regen-channel">🔄 이 글만 다시 작성</button>
-            <button type="button" class="btn-copy" id="btn-copy-text" style="font-size: 15px; padding: 12px 24px;">
-              <span>📋 원클릭 복사 (복붙 완료)</span>
+            <button type="button" class="btn-copy" id="btn-copy-text" style="font-size: 14px; padding: 11px 20px;">
+              <span>📋 전체 복사 (원클릭 완료)</span>
             </button>
           </div>
         </div>
@@ -4707,7 +4731,16 @@ ${cleanNegative}
     };
 
     // 3단계: 첫 댓글 고정용 수익화 문구 (스팸 필터 안전 단일 링크 + 공정위 문구 완비)
-    const pinned_comment_ko = `다들 이거 어디서 샀냐고 물어보셔서 링크 남겨둘게! 🤍
+    let commentLeadKo = '다들 이거 어디서 샀냐고 물어보셔서 링크 남겨둘게! 🤍';
+    if (isBeauty) {
+      commentLeadKo = '피부과/화장품 어디 거냐고 디엠 많이 주셔서 좌표 남겨둘게! 🤍';
+    } else if (isFood) {
+      commentLeadKo = '식단/재료 어디서 쟁여두냐고 문의 많아서 제가 사는 최저가처 남겨둘게! 🤍';
+    } else if (isLiving) {
+      commentLeadKo = '공간/인테리어 문의 주신 분들 보시라고 구매 좌표 남겨둘게! 🤍';
+    }
+
+    const pinned_comment_ko = `${commentLeadKo}
 
 👉 최저가 바로가기: ${link}
 
@@ -4814,9 +4847,16 @@ ${ftcText}
 
 #${name.replace(/\s+/g, '')} #살림템추천 #내돈내산추천 #삶의질향상 #인생템 #자취꿀템 #주부스타그램 #꿀템리뷰 #살림노하우 #생활꿀팁 #쿠팡추천템 #가성비갑 #살림스타그램 #신박템 #홈스타그램`;
 
+    const title = `[${name}] 솔직 후기! 내돈내산 삶의 질 수직상승템 추천`;
+    const cleanBody = fullText
+      .replace(title, '')
+      .replace(/\[이미지 \d+ 삽입:[^\]]+\]\n*/g, '')
+      .trim();
+
     return {
-      title: `[${name}] 솔직 후기! 내돈내산 삶의 질 수직상승템 추천`,
+      title,
       fullText,
+      cleanBody,
       photoCount: imageCount,
       dimensions: '1200 x 900px (4:3 가로형)',
       hashtags: `#${name.replace(/\s+/g, '')} #살림템추천 #내돈내산추천 #삶의질향상 #인생템 #자취꿀템 #주부스타그램 #꿀템리뷰 #살림노하우 #생활꿀팁 #쿠팡추천템 #가성비갑 #살림스타그램 #신박템 #홈스타그램`
@@ -5745,8 +5785,22 @@ class CardNewsStudioEngine {
       const pad = is916 ? 70 : 65;
       let startY = is916 ? (height - 400) : (height - 190);
       const titleLines = slide.mainTitle.split('\n');
-      const titleSize = is916 ? 66 : 62;
-      const titleStep = is916 ? 88 : 82;
+      const baseTitleSize = is916 ? 66 : 62;
+
+      // 긴 제목 자동 스케일링 (화면 밖 잘림 방지)
+      const maxTextW = width - (pad * 2);
+      ctx.save();
+      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
+      let titleSize = baseTitleSize;
+      for (const line of titleLines) {
+        const textW = ctx.measureText(line).width;
+        if (textW > maxTextW) {
+          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
+          if (scaled < titleSize) titleSize = Math.max(38, scaled);
+        }
+      }
+      ctx.restore();
+      const titleStep = Math.round(titleSize * 1.32);
 
       for (let i = titleLines.length - 1; i >= 0; i--) {
         drawOutlinedText(titleLines[i], pad, startY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'left');
@@ -5761,8 +5815,21 @@ class CardNewsStudioEngine {
       // 1번 표지 (상단 배치): 감성 푸드/라이프스타일 매거진 타이틀 (과일롤 스타일)
       let curY = is916 ? 300 : 170;
       const titleLines = slide.mainTitle.split('\n');
-      const titleSize = is916 ? 62 : 58;
-      const titleStep = is916 ? 84 : 78;
+      const baseTitleSize = is916 ? 62 : 58;
+
+      const maxTextW = width - 120;
+      ctx.save();
+      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
+      let titleSize = baseTitleSize;
+      for (const line of titleLines) {
+        const textW = ctx.measureText(line).width;
+        if (textW > maxTextW) {
+          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
+          if (scaled < titleSize) titleSize = Math.max(36, scaled);
+        }
+      }
+      ctx.restore();
+      const titleStep = Math.round(titleSize * 1.32);
 
       titleLines.forEach(line => {
         drawOutlinedText(line, width / 2, curY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'center');
@@ -7564,13 +7631,18 @@ function startViralMakerApp() {
     } else {
       // standard: instagram, naver-blog, ameba-jp
       if (standardContainer) standardContainer.style.display = 'block';
+      const naverBlogActions = document.getElementById('naver-blog-actions');
+      if (naverBlogActions) {
+        naverBlogActions.style.display = (ch === 'naver-blog') ? 'block' : 'none';
+      }
+
       let text = '';
       if (ch === 'instagram') {
         if (standardPanelTitle) standardPanelTitle.textContent = '📸 인스타그램 캡션 & 인기 해시태그 20선';
         text = state.generatedData?.instagram?.raw || (state.generatedData?.texts?.['instagram'] || ContentGenerator.generateLocalTemplate('instagram', state.product));
       } else if (ch === 'naver-blog') {
-        if (standardPanelTitle) standardPanelTitle.textContent = '📝 네이버 블로그 상세리뷰 (1200x900 사진 삽입 가이드)';
-        text = state.generatedData?.naverBlog?.raw || (state.generatedData?.texts?.['naver-blog'] || ContentGenerator.generateLocalTemplate('naver-blog', state.product));
+        if (standardPanelTitle) standardPanelTitle.textContent = '📝 네이버 블로그 상세리뷰 (스마트에디터 ONE 서식)';
+        text = state.generatedData?.naverBlog?.fullText || state.generatedData?.naverBlog?.raw || (state.generatedData?.texts?.['naver-blog'] || ContentGenerator.generateLocalTemplate('naver-blog', state.product));
       } else {
         if (standardPanelTitle) standardPanelTitle.textContent = '📄 원클릭 복붙 텍스트 (수정 가능)';
         text = state.generatedData?.texts?.[ch] || ContentGenerator.generateLocalTemplate(ch, state.product);
@@ -8164,11 +8236,39 @@ function startViralMakerApp() {
 
     const ok = await copyToClipboardSafe(textToCopy, copyTextarea);
     if (ok) {
-      showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
+      showToast('📋 클립보드에 전체 복사 완료! 바로 붙여넣으세요 ✨');
     } else {
       showToast('⚠️ 복사 실패. 텍스트를 직접 복사해주세요.');
     }
   });
+
+  // 📝 네이버 블로그 스마트에디터 분리 복사 버튼들
+  const btnCopyBlogTitle = document.getElementById('btn-copy-blog-title');
+  if (btnCopyBlogTitle) {
+    btnCopyBlogTitle.addEventListener('click', async () => {
+      const blogData = state.generatedData?.naverBlog || (typeof ContentGenerator !== 'undefined' ? ContentGenerator.generateNaverBlogPost(state.product) : null);
+      const titleToCopy = (blogData && blogData.title) ? blogData.title : (state.product.name ? `[${state.product.name}] 솔직 후기! 내돈내산 추천` : '솔직 후기! 내돈내산 삶의 질 수직상승템 추천');
+      const ok = await copyToClipboardSafe(titleToCopy);
+      if (ok) {
+        showToast('📌 블로그 [제목] 복사 완료! 에디터 제목란에 붙여넣으세요 ✨');
+      }
+    });
+  }
+
+  const btnCopyBlogCleanBody = document.getElementById('btn-copy-blog-clean-body');
+  if (btnCopyBlogCleanBody) {
+    btnCopyBlogCleanBody.addEventListener('click', async () => {
+      const blogData = state.generatedData?.naverBlog || (typeof ContentGenerator !== 'undefined' ? ContentGenerator.generateNaverBlogPost(state.product) : null);
+      let bodyToCopy = (blogData && blogData.cleanBody) ? blogData.cleanBody : '';
+      if (!bodyToCopy && copyTextarea.value) {
+        bodyToCopy = copyTextarea.value.replace(/\[[^\]]+\] 솔직 후기[^\n]+\n*/, '').replace(/\[이미지 \d+ 삽입:[^\]]+\]\n*/g, '').trim();
+      }
+      const ok = await copyToClipboardSafe(bodyToCopy, copyTextarea);
+      if (ok) {
+        showToast('📝 사진 가이드가 쏙 빠진 [순수 본문] 복사 완료! 본문란에 붙여넣으세요 🎉');
+      }
+    });
+  }
 
   // 이 글만 다시 작성
   btnRegenChannel.addEventListener('click', async () => {
@@ -8433,9 +8533,16 @@ function startViralMakerApp() {
             const header = document.createElement('div');
             header.className = 'modal-gallery-item-header';
 
+            const sceneBadges = [
+              '1번 표지 (시선 강탈 히어로)',
+              '2번 고민 (사용 전 비포)',
+              '3번 해결 (리얼 인액션)',
+              '4번 결과 (완성/구매 좌표)',
+              '5번 만족 (애프터/CTA)'
+            ];
             const title = document.createElement('span');
             title.className = 'modal-gallery-item-title';
-            title.textContent = `카드 #${i + 1}`;
+            title.textContent = sceneBadges[i] || `카드 #${i + 1}`;
 
             const btnSave = document.createElement('button');
             btnSave.type = 'button';
@@ -8443,10 +8550,10 @@ function startViralMakerApp() {
             btnSave.textContent = '📥 저장';
             btnSave.onclick = () => {
               const link = document.createElement('a');
-              link.download = `card_news_${i + 1}.png`;
+              link.download = `card_news_${i + 1}_step${i + 1}.png`;
               link.href = url;
               link.click();
-              showToast(`카드 #${i + 1} 다운로드를 시작했습니다.`);
+              showToast(`${sceneBadges[i] || `카드 #${i + 1}`} 다운로드를 시작했습니다.`);
             };
 
             header.appendChild(title);

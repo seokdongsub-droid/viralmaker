@@ -1279,13 +1279,18 @@ function startViralMakerApp() {
     } else {
       // standard: instagram, naver-blog, ameba-jp
       if (standardContainer) standardContainer.style.display = 'block';
+      const naverBlogActions = document.getElementById('naver-blog-actions');
+      if (naverBlogActions) {
+        naverBlogActions.style.display = (ch === 'naver-blog') ? 'block' : 'none';
+      }
+
       let text = '';
       if (ch === 'instagram') {
         if (standardPanelTitle) standardPanelTitle.textContent = '📸 인스타그램 캡션 & 인기 해시태그 20선';
         text = state.generatedData?.instagram?.raw || (state.generatedData?.texts?.['instagram'] || ContentGenerator.generateLocalTemplate('instagram', state.product));
       } else if (ch === 'naver-blog') {
-        if (standardPanelTitle) standardPanelTitle.textContent = '📝 네이버 블로그 상세리뷰 (1200x900 사진 삽입 가이드)';
-        text = state.generatedData?.naverBlog?.raw || (state.generatedData?.texts?.['naver-blog'] || ContentGenerator.generateLocalTemplate('naver-blog', state.product));
+        if (standardPanelTitle) standardPanelTitle.textContent = '📝 네이버 블로그 상세리뷰 (스마트에디터 ONE 서식)';
+        text = state.generatedData?.naverBlog?.fullText || state.generatedData?.naverBlog?.raw || (state.generatedData?.texts?.['naver-blog'] || ContentGenerator.generateLocalTemplate('naver-blog', state.product));
       } else {
         if (standardPanelTitle) standardPanelTitle.textContent = '📄 원클릭 복붙 텍스트 (수정 가능)';
         text = state.generatedData?.texts?.[ch] || ContentGenerator.generateLocalTemplate(ch, state.product);
@@ -1879,11 +1884,39 @@ function startViralMakerApp() {
 
     const ok = await copyToClipboardSafe(textToCopy, copyTextarea);
     if (ok) {
-      showToast('📋 클립보드에 복사 완료! 바로 붙여넣으세요 ✨');
+      showToast('📋 클립보드에 전체 복사 완료! 바로 붙여넣으세요 ✨');
     } else {
       showToast('⚠️ 복사 실패. 텍스트를 직접 복사해주세요.');
     }
   });
+
+  // 📝 네이버 블로그 스마트에디터 분리 복사 버튼들
+  const btnCopyBlogTitle = document.getElementById('btn-copy-blog-title');
+  if (btnCopyBlogTitle) {
+    btnCopyBlogTitle.addEventListener('click', async () => {
+      const blogData = state.generatedData?.naverBlog || (typeof ContentGenerator !== 'undefined' ? ContentGenerator.generateNaverBlogPost(state.product) : null);
+      const titleToCopy = (blogData && blogData.title) ? blogData.title : (state.product.name ? `[${state.product.name}] 솔직 후기! 내돈내산 추천` : '솔직 후기! 내돈내산 삶의 질 수직상승템 추천');
+      const ok = await copyToClipboardSafe(titleToCopy);
+      if (ok) {
+        showToast('📌 블로그 [제목] 복사 완료! 에디터 제목란에 붙여넣으세요 ✨');
+      }
+    });
+  }
+
+  const btnCopyBlogCleanBody = document.getElementById('btn-copy-blog-clean-body');
+  if (btnCopyBlogCleanBody) {
+    btnCopyBlogCleanBody.addEventListener('click', async () => {
+      const blogData = state.generatedData?.naverBlog || (typeof ContentGenerator !== 'undefined' ? ContentGenerator.generateNaverBlogPost(state.product) : null);
+      let bodyToCopy = (blogData && blogData.cleanBody) ? blogData.cleanBody : '';
+      if (!bodyToCopy && copyTextarea.value) {
+        bodyToCopy = copyTextarea.value.replace(/\[[^\]]+\] 솔직 후기[^\n]+\n*/, '').replace(/\[이미지 \d+ 삽입:[^\]]+\]\n*/g, '').trim();
+      }
+      const ok = await copyToClipboardSafe(bodyToCopy, copyTextarea);
+      if (ok) {
+        showToast('📝 사진 가이드가 쏙 빠진 [순수 본문] 복사 완료! 본문란에 붙여넣으세요 🎉');
+      }
+    });
+  }
 
   // 이 글만 다시 작성
   btnRegenChannel.addEventListener('click', async () => {
@@ -2148,9 +2181,16 @@ function startViralMakerApp() {
             const header = document.createElement('div');
             header.className = 'modal-gallery-item-header';
 
+            const sceneBadges = [
+              '1번 표지 (시선 강탈 히어로)',
+              '2번 고민 (사용 전 비포)',
+              '3번 해결 (리얼 인액션)',
+              '4번 결과 (완성/구매 좌표)',
+              '5번 만족 (애프터/CTA)'
+            ];
             const title = document.createElement('span');
             title.className = 'modal-gallery-item-title';
-            title.textContent = `카드 #${i + 1}`;
+            title.textContent = sceneBadges[i] || `카드 #${i + 1}`;
 
             const btnSave = document.createElement('button');
             btnSave.type = 'button';
@@ -2158,10 +2198,10 @@ function startViralMakerApp() {
             btnSave.textContent = '📥 저장';
             btnSave.onclick = () => {
               const link = document.createElement('a');
-              link.download = `card_news_${i + 1}.png`;
+              link.download = `card_news_${i + 1}_step${i + 1}.png`;
               link.href = url;
               link.click();
-              showToast(`카드 #${i + 1} 다운로드를 시작했습니다.`);
+              showToast(`${sceneBadges[i] || `카드 #${i + 1}`} 다운로드를 시작했습니다.`);
             };
 
             header.appendChild(title);

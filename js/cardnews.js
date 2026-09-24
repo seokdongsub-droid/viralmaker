@@ -542,8 +542,22 @@ class CardNewsStudioEngine {
       const pad = is916 ? 70 : 65;
       let startY = is916 ? (height - 400) : (height - 190);
       const titleLines = slide.mainTitle.split('\n');
-      const titleSize = is916 ? 66 : 62;
-      const titleStep = is916 ? 88 : 82;
+      const baseTitleSize = is916 ? 66 : 62;
+
+      // 긴 제목 자동 스케일링 (화면 밖 잘림 방지)
+      const maxTextW = width - (pad * 2);
+      ctx.save();
+      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
+      let titleSize = baseTitleSize;
+      for (const line of titleLines) {
+        const textW = ctx.measureText(line).width;
+        if (textW > maxTextW) {
+          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
+          if (scaled < titleSize) titleSize = Math.max(38, scaled);
+        }
+      }
+      ctx.restore();
+      const titleStep = Math.round(titleSize * 1.32);
 
       for (let i = titleLines.length - 1; i >= 0; i--) {
         drawOutlinedText(titleLines[i], pad, startY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'left');
@@ -558,8 +572,21 @@ class CardNewsStudioEngine {
       // 1번 표지 (상단 배치): 감성 푸드/라이프스타일 매거진 타이틀 (과일롤 스타일)
       let curY = is916 ? 300 : 170;
       const titleLines = slide.mainTitle.split('\n');
-      const titleSize = is916 ? 62 : 58;
-      const titleStep = is916 ? 84 : 78;
+      const baseTitleSize = is916 ? 62 : 58;
+
+      const maxTextW = width - 120;
+      ctx.save();
+      ctx.font = `${isSerif ? '800' : '900'} ${baseTitleSize}px ${fontFam}`;
+      let titleSize = baseTitleSize;
+      for (const line of titleLines) {
+        const textW = ctx.measureText(line).width;
+        if (textW > maxTextW) {
+          const scaled = Math.floor(baseTitleSize * (maxTextW / textW));
+          if (scaled < titleSize) titleSize = Math.max(36, scaled);
+        }
+      }
+      ctx.restore();
+      const titleStep = Math.round(titleSize * 1.32);
 
       titleLines.forEach(line => {
         drawOutlinedText(line, width / 2, curY, `${isSerif ? '800' : '900'} ${titleSize}px ${fontFam}`, '#FFFFFF', 'rgba(0,0,0,0.95)', strokeWidth + 1, 'center');

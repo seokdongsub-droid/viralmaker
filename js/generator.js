@@ -832,7 +832,16 @@ ${cleanNegative}
     };
 
     // 3단계: 첫 댓글 고정용 수익화 문구 (스팸 필터 안전 단일 링크 + 공정위 문구 완비)
-    const pinned_comment_ko = `다들 이거 어디서 샀냐고 물어보셔서 링크 남겨둘게! 🤍
+    let commentLeadKo = '다들 이거 어디서 샀냐고 물어보셔서 링크 남겨둘게! 🤍';
+    if (isBeauty) {
+      commentLeadKo = '피부과/화장품 어디 거냐고 디엠 많이 주셔서 좌표 남겨둘게! 🤍';
+    } else if (isFood) {
+      commentLeadKo = '식단/재료 어디서 쟁여두냐고 문의 많아서 제가 사는 최저가처 남겨둘게! 🤍';
+    } else if (isLiving) {
+      commentLeadKo = '공간/인테리어 문의 주신 분들 보시라고 구매 좌표 남겨둘게! 🤍';
+    }
+
+    const pinned_comment_ko = `${commentLeadKo}
 
 👉 최저가 바로가기: ${link}
 
@@ -939,9 +948,16 @@ ${ftcText}
 
 #${name.replace(/\s+/g, '')} #살림템추천 #내돈내산추천 #삶의질향상 #인생템 #자취꿀템 #주부스타그램 #꿀템리뷰 #살림노하우 #생활꿀팁 #쿠팡추천템 #가성비갑 #살림스타그램 #신박템 #홈스타그램`;
 
+    const title = `[${name}] 솔직 후기! 내돈내산 삶의 질 수직상승템 추천`;
+    const cleanBody = fullText
+      .replace(title, '')
+      .replace(/\[이미지 \d+ 삽입:[^\]]+\]\n*/g, '')
+      .trim();
+
     return {
-      title: `[${name}] 솔직 후기! 내돈내산 삶의 질 수직상승템 추천`,
+      title,
       fullText,
+      cleanBody,
       photoCount: imageCount,
       dimensions: '1200 x 900px (4:3 가로형)',
       hashtags: `#${name.replace(/\s+/g, '')} #살림템추천 #내돈내산추천 #삶의질향상 #인생템 #자취꿀템 #주부스타그램 #꿀템리뷰 #살림노하우 #생활꿀팁 #쿠팡추천템 #가성비갑 #살림스타그램 #신박템 #홈스타그램`
