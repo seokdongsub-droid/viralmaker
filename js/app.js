@@ -397,6 +397,7 @@ function startViralMakerApp() {
     state.product.link = sampleLink;
     state.product.memo = item.memo;
     state.product.platform = platId;
+    if (item.category) state.product.category = item.category;
     state.generatedData = null;
 
     if (inputModeARealLink) {
@@ -1103,6 +1104,9 @@ function startViralMakerApp() {
       return;
     }
 
+    if (inputProductName && inputProductName.value.trim()) {
+      state.product.name = inputProductName.value.trim();
+    }
     state.product.link = link;
     state.product.memo = memo;
     state.product.slideCount = state.slideCount;

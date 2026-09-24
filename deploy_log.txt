@@ -1,4 +1,4 @@
-=== ViralMaker Deploy Log (2026-09-24 18:05:11) ===
+=== ViralMaker Deploy Log (2026-09-24 19:20:46) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
@@ -6,82 +6,41 @@
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
 M PROJECT.md
- M css/style.css
- M deploy.py
  M deploy_log.txt
- D deploy_v22.py
- M index.html
- M js/app.js
  M js/cardnews.js
- D js/content_generator.js
  M js/generator.js
- D prepare_deploy.py
- D repair_encoding.py
- M update_github.py
+ M js/templates.js
  M viralmaker_portable.html
-?? icons/
-?? manifest.json
-?? sw.js
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
 warning: in the working copy of 'PROJECT.md', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/cardnews.js', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'update_github.py', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'manifest.json', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'sw.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/templates.js', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
 M  PROJECT.md
-M  css/style.css
-M  deploy.py
 M  deploy_log.txt
-D  deploy_v22.py
-A  icons/icon-192.png
-A  icons/icon-512-maskable.png
-A  icons/icon-512.png
-A  icons/icon.svg
-M  index.html
-M  js/app.js
 M  js/cardnews.js
-D  js/content_generator.js
 M  js/generator.js
-A  manifest.json
-D  prepare_deploy.py
-D  repair_encoding.py
-A  sw.js
-M  update_github.py
+M  js/templates.js
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_180511)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_192046)
   [출력]
-[main 2ad510c] ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_180511)
- 20 files changed, 964 insertions(+), 951 deletions(-)
- delete mode 100644 deploy_v22.py
- create mode 100644 icons/icon-192.png
- create mode 100644 icons/icon-512-maskable.png
- create mode 100644 icons/icon-512.png
- create mode 100644 icons/icon.svg
- delete mode 100644 js/content_generator.js
- create mode 100644 manifest.json
- delete mode 100644 prepare_deploy.py
- delete mode 100644 repair_encoding.py
- create mode 100644 sw.js
+[main 9a3bd0f] ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_192046)
+ 6 files changed, 1270 insertions(+), 286 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+9a3bd0f ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_192046)
 2ad510c ViralMaker v3.5: Mobile PWA install & dynamic N-cut Gemini all-in-one split edition (20260924_180511)
 0905050 ViralMaker v3.4: Mobile fast & safe gallery edition (20260924_171424)
-35966b2 ViralMaker v3.4: Mobile fast & safe gallery edition (20260924_165112)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -89,9 +48,9 @@ M  viralmaker_portable.html
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   0905050..2ad510c  main -> main
+   2ad510c..9a3bd0f  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.5_20260924_180511
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.5_20260924_192046
 
 === End of Log ===

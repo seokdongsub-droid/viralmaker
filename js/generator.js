@@ -66,52 +66,77 @@ class ContentGeneratorEngine {
     return '화제의 인기 추천템';
   }
 
-  // 제품 카테고리 추론 (식품, 살림/주방, 리빙/가전, 뷰티 등)
+  // 제품 카테고리 추론 (뷰티, 주방도구, 식품/식단, 셀프케어/가전, 살림/수납)
   inferCategory(product) {
+    if (product.category && ['kitchen_tool', 'food_diet', 'beauty', 'selfcare_tech', 'living'].includes(product.category)) {
+      return product.category;
+    }
     const text = `${product.name || ''} ${product.memo || ''} ${product.link || ''}`.toLowerCase();
-    if (text.includes('립') || text.includes('틴트') || text.includes('앰플') || text.includes('세럼') || text.includes('크림') || text.includes('패치') || text.includes('화장') || text.includes('뷰티')) {
+    
+    // 1. 뷰티 / 화장품 / 코스메틱
+    if (/립|틴트|립스틱|립밤|플럼퍼|앰플|세럼|크림|토너|패치|화장|화장품|뷰티|쿠션|파운데이션|선크림|클렌징|아이라이너|마스카라|마스크팩|피부|헤어|트리트먼트|향수/.test(text)) {
       return 'beauty';
     }
-    if (text.includes('페이퍼') || text.includes('과일') || text.includes('간식') || text.includes('디저트') || text.includes('레시피') || text.includes('소스') || text.includes('팬') || text.includes('다지기') || text.includes('주방') || text.includes('요리')) {
-      return 'kitchen_food';
+    
+    // 2. 주방 조리도구 / 주방가전 / 팬 / 칼 / 다지기 (식품보다 먼저 검사하여 주방도구가 식품으로 오인되는 것 방지!)
+    if (/팬|프라이팬|후라이팬|냄비|칼|도마|다지기|스프레이|오일스프레이|에어프라이어|에프|조리도구|주방도구|식기|그릇|뚝배기|채칼|텀블러|가위|믹서|주방용품|주방|냄비받침|수저|수세미|키친|인덕션|와플기|커피머신|토스터|실리콘|덮개|집게|밀폐용기|반찬통|보온병/.test(text)) {
+      return 'kitchen_tool';
     }
-    if (text.includes('마사지') || text.includes('넥케어') || text.includes('청소') || text.includes('스폰지') || text.includes('워터블럭') || text.includes('수납') || text.includes('선반') || text.includes('배수구') || text.includes('진공')) {
-      return 'living';
+    
+    // 3. 식품 / 간식 / 식단 / 다이어트 레시피 재료
+    if (/단호박|호박|고구마|오트밀|닭가슴살|과일|간식|디저트|식단|다이어트|레시피|소스|페이퍼|라이스페이퍼|프로틴|단백질|밀키트|만두|베이글|그릭요거트|요거트|견과류|차|커피|원두|음료|간편식|반찬|김치|식품|굴소스|두부|콩나물|한우|고기|삼겹살|다짐육/.test(text)) {
+      return 'food_diet';
     }
-    return 'general';
+    
+    // 4. 셀프케어 / 마사지 / 소형가전 / 건강
+    if (/마사지|안마|스트레칭|목마사지|넥케어|베개|경추베개|폼롤러|자세|가전|소형가전|청소기|가습기|공기청정기|헤어드라이어|이어폰|스마트워치|거치대|충전기|보조배터리|스탠드|조명/.test(text)) {
+      return 'selfcare_tech';
+    }
+    
+    // 5. 살림 / 수납 / 청소 / 정리 / 생활용품 (기본)
+    return 'living';
   }
 
   // 💡 카테고리별 최적 이미지 장수(3컷 vs 4컷) 및 추천 근거 제공
   recommendCutCount(product) {
     const cat = this.inferCategory(product);
-    const text = `${product.name || ''} ${product.memo || ''}`.toLowerCase();
-    
-    // 조리도구 / 프라이팬 / 냄비 / 칼 / 뷰티 / 화장품: 4컷 추천
-    if (cat === 'beauty' || /팬|도마|칼|냄비|그릇|조리|주방|식기|다지기|프라이팬|뚝배기/.test(text)) {
+    if (cat === 'beauty') {
       return {
         count: 4,
-        categoryName: cat === 'beauty' ? '뷰티/코스메틱' : '주방용품/조리도구',
-        reason: '표지 ➔ 실사용 액션 ➔ 소재/발색 초근접 접사 ➔ 완성/CTA 4단계 풀스토리가 가장 전환율이 높습니다.',
-        badge: '🎯 4컷 추천 (풀스토리)'
+        categoryName: '뷰티/코스메틱',
+        reason: '표지 ➔ 톤업/밀착 액션 ➔ 발색/텍스처 접사 ➔ 완성/CTA 4단계 풀스토리가 가장 전환율이 높습니다.',
+        badge: '🎯 4컷 추천 (뷰티 풀스토리)'
       };
     }
-
-    // 수납 / 정리 / 청소 / 욕실 / 간편식 레시피: 3컷 추천
-    if (cat === 'living' || /수납|정리|선반|압축|청소|욕실|페이퍼|과일|디저트|레시피/.test(text)) {
+    if (cat === 'kitchen_tool') {
       return {
-        count: 3,
-        categoryName: /페이퍼|과일|디저트|레시피/.test(text) ? '간편 레시피' : '살림/수납/정리',
-        reason: '비포(고민 후킹) ➔ 1초 해결 과정 ➔ 완벽한 애프터 3단계 스피드 임팩트가 가장 효과적입니다.',
-        badge: '⚡ 3컷 추천 (스피드 임팩트)'
+        count: 4,
+        categoryName: '주방용품/조리도구',
+        reason: '표지 ➔ 실사용 조리 액션 ➔ 특수코팅/내구성 접사 ➔ 완성/CTA 4단계가 구매 전환율이 가장 높습니다.',
+        badge: '🎯 4컷 추천 (주방도구 검증)'
       };
     }
-
-    // 기본: 인스타그램 표준 4컷 데이즈홈 스타일
+    if (cat === 'selfcare_tech') {
+      return {
+        count: 4,
+        categoryName: '셀프케어/소형가전',
+        reason: '고민 후킹 ➔ 15분 작동 ➔ 마사지헤드/기술 접사 ➔ 개운한 애프터 4단계가 설득력이 가장 높습니다.',
+        badge: '🎯 4컷 추천 (피로 순삭)'
+      };
+    }
+    if (cat === 'food_diet') {
+      return {
+        count: 4,
+        categoryName: '식품/식단/레시피',
+        reason: '비주얼 후킹 ➔ 5분 초간단 조리 ➔ 김 모락 디테일 ➔ 한 입 결과 4컷이 댓글 폭발을 만듭니다.',
+        badge: '🎯 4컷 추천 (식욕 자극)'
+      };
+    }
     return {
       count: 4,
-      categoryName: '생활/일반 상품',
-      reason: '인스타그램 피드에서 가장 검증된 4컷 스토리텔링을 권장합니다.',
-      badge: '🎯 4컷 권장'
+      categoryName: '살림/수납/정리',
+      reason: '비포 고충 ➔ 1초 정리 액션 ➔ 수납/소재 디테일 ➔ 깔끔한 애프터 4컷이 가장 반응이 좋습니다.',
+      badge: '🎯 4컷 추천 (삶의 질 상승)'
     };
   }
 
@@ -169,16 +194,18 @@ class ContentGeneratorEngine {
   }
 
   // ==========================================
-  // ① 가변 카드뉴스 슬라이드 렌더러 데이터 생성
+  // ① 가변 카드뉴스 슬라이드 렌더러 데이터 생성 (제품 홍보 & 제휴마케팅 100% 특화)
   // ==========================================
   generateCardNewsSlides(p, count = 4, lang = 'ko', monetizationMode = 'link') {
     const isJa = lang === 'ja';
     const name = p.name;
     const memo = p.memo;
-    const cat = p.category;
-    const textLower = `${name} ${memo}`.toLowerCase();
-    const isBeauty = cat === 'beauty' || /립|틴트|화장|뷰티|세럼|크림|앰플|패치/.test(textLower);
-    const isFood = cat === 'kitchen_food' || /단호박|호박|레시피|에프|과일|식단|요리|간식|디저트|소스|에어프라이어|파스타|고기|토마토/.test(textLower);
+    const cat = p.category || this.inferCategory(p);
+    const isBeauty = cat === 'beauty';
+    const isKitchenTool = cat === 'kitchen_tool';
+    const isFoodDiet = cat === 'food_diet';
+    const isSelfcare = cat === 'selfcare_tech';
+    const isLiving = cat === 'living';
     const isDM = monetizationMode === 'dm';
 
     if (count === 1) {
@@ -256,90 +283,265 @@ class ContentGeneratorEngine {
     }
 
     if (count === 3) {
-      // ⚡ 3장: 스피드 임팩트형 (과일 라이스페이퍼 롤 스타일)
+      // ⚡ 3장: 스피드 임팩트형 (5대 카테고리 100% 맞춤 생성)
       if (isJa) {
+        if (isKitchenTool) {
+          return [
+            { slideNum: 1, type: 'cover', textPosition: 'top', badge: '料理の神アイテム 🍳', mainTitle: `${name}`, subTitle: '自炊と片付けのストレスをゼロにする必須アイテム', extra: 'SNSで話題沸騰' },
+            { slideNum: 2, type: 'detail', textPosition: 'top', badge: 'CHECK POINT 🔍', mainTitle: '焦げ付かず1秒で仕上がる', subTitle: `${memo}\n料理初心者でもプロ級の仕上がり確定`, extra: '洗い物も秒殺で完了' },
+            { slideNum: 3, type: 'cta', textPosition: 'top', badge: 'SPECIAL CTA 🤍', mainTitle: isDM ? '最安値情報は「ナド」残してね！' : '保存して自炊に活用してね', subTitle: isDM ? 'コメントで「ナド」と書くとDMでリンクをお届け💌' : `商品の詳細リンクはプロフィールのリンクから🔗`, extra: '保存しておくと便利！' }
+          ];
+        }
+        if (isFoodDiet) {
+          return [
+            { slideNum: 1, type: 'cover', textPosition: 'top', badge: 'もちっと爽やか ✦', mainTitle: `${name}`, subTitle: '火を使わずに作れる、見た目もかわいい神アイテム', extra: 'おうちカフェにぴったり' },
+            { slideNum: 2, type: 'detail', textPosition: 'top', badge: '재료 & 꿀팁 🔍', mainTitle: '材料入れて焼くだけで完成', subTitle: `${memo}\n誰でも1分でプロ級の仕上がり`, extra: '洗い物も少なくて超快適' },
+            { slideNum: 3, type: 'cta', textPosition: 'top', badge: 'QUESTION 🤍', mainTitle: isDM ? 'どのフルーツ入れたい？\n情報は「ナド」残してね！' : '保存して作ってみてね', subTitle: isDM ? 'コメントで「ナド」と書くとDMでリンクをお届け💌' : '商品の詳細リンクはプロフィールのリンクから🔗', extra: '保存しておくと便利！' }
+          ];
+        }
+        if (isBeauty) {
+          return [
+            { slideNum: 1, type: 'cover', textPosition: 'top', badge: '女優愛用アイテム 💄', mainTitle: `${name}`, subTitle: '女優リップ可愛いと思ったら全部これだった件', extra: '完売前に要チェック' },
+            { slideNum: 2, type: 'detail', textPosition: 'top', badge: '発色 & 密着 🔍', mainTitle: 'サッと塗るだけで顔色パッと華やか', subTitle: `${memo}\n乾燥知らずで一日中うるツヤ持続`, extra: '撮影現場の定番' },
+            { slideNum: 3, type: 'cta', textPosition: 'top', badge: 'SPECIAL CTA 🤍', mainTitle: isDM ? '品番情報は「ナド」残してね！' : '詳細はプロフィールのリンクから🔗', subTitle: isDM ? 'コメントで「ナド」と書くとDMでリンクをお届け💌' : `プロフィールのリンクから【${name}】をチェック！`, extra: '今年の優勝コスメ' }
+          ];
+        }
+        if (isSelfcare) {
+          return [
+            { slideNum: 1, type: 'cover', textPosition: 'top', badge: 'デスクワーク必須 💆', mainTitle: `${name}`, subTitle: '長年のコリと疲労が15分で消える話題の神グッズ', extra: 'SNS大バズり' },
+            { slideNum: 2, type: 'detail', textPosition: 'top', badge: '疲労回復 🔍', mainTitle: 'プロの手揉み感覚で深層までほぐれる', subTitle: `${memo}\nコードレスだから移動中や作業中も超快適`, extra: '家族みんなで愛用' },
+            { slideNum: 3, type: 'cta', textPosition: 'top', badge: 'SPECIAL CTA 🎁', mainTitle: isDM ? '割引情報は「ナド」残してね！' : '詳細はプロフィールのリンクから🔗', subTitle: isDM ? 'コメントで「ナド」と書くとDMでお届け💌' : `プロフィールのリンクから【${name}】をチェック！`, extra: '限定セール中' }
+          ];
+        }
+        return [
+          { slideNum: 1, type: 'cover', textPosition: 'top', badge: '暮らしの神アイテム 🔥', mainTitle: `${name}`, subTitle: '散らかった部屋が一瞬で片付く話題の神アイテム', extra: '生活激変アイテム' },
+          { slideNum: 2, type: 'detail', textPosition: 'top', badge: '空間活用 🔍', mainTitle: '1秒でスッキリ整って部屋が2倍広く', subTitle: `${memo}\n誰でも簡単設置で見た目もスタイリッシュ`, extra: '手放せない生活必需品' },
+          { slideNum: 3, type: 'cta', textPosition: 'top', badge: 'SPECIAL CTA 🎁', mainTitle: isDM ? '購入先情報は「ナド」残してね！' : '詳細はプロフィールのリンクから🔗', subTitle: isDM ? 'コメントで「ナド」と書くとDMでお届け💌' : `プロフィールのリンクから【${name}】をチェック！`, extra: '保存しておくと便利！' }
+        ];
+      }
+
+      // 🇰🇷 한국어 3컷: 카테고리별 상품 전용 카피
+      if (isKitchenTool) {
         return [
           {
             slideNum: 1,
             type: 'cover',
             textPosition: 'top',
-            badge: 'もちっと爽やか ✦',
+            badge: '삶의 질 수직상승 🍳',
             mainTitle: `${name}`,
-            subTitle: '火を使わずに作れる、見た目もかわいい神アイテム',
-            extra: 'おうちカフェにぴったり'
+            subTitle: '요리·살림 스트레스 제로 만들어주는 주방 필수템',
+            extra: '주방 대란템'
           },
           {
             slideNum: 2,
             type: 'detail',
             textPosition: 'top',
-            badge: 'POINT 01 🔍',
-            mainTitle: 'さっと濡らして\nきゅっと巻くだけ',
-            subTitle: `${memo}\n誰でも1分でプロ級の仕上がり`,
-            extra: '洗い物も少なくて超快適'
+            badge: 'CHECK POINT 🔍',
+            mainTitle: '눌어붙지 않고 1초 만에 뚝딱',
+            subTitle: `${memo}\n똥손도 식당 퀄리티로 완성되는 비법`,
+            extra: '설거지도 1초 컷'
           },
           {
             slideNum: 3,
             type: 'cta',
             textPosition: 'top',
-            badge: 'QUESTION 🤍',
-            mainTitle: isDM ? 'どのフルーツ入れたい？\n情報は「ナド」残してね！' : 'どのフルーツ入れたい？\n保存して作ってみてね',
-            subTitle: isDM ? 'コメントで「ナド」と書くとDMでリンクをお届け💌' : '商品の詳細リンクはプロフィールのリンクから🔗',
-            extra: '保存しておくと便利！'
+            badge: 'SPECIAL CTA 🤍',
+            mainTitle: isDM ? '요리 똥손 탈출템 정보는 "나도" 남겨줘!🤍' : '요리 똥손 탈출 필수템 저장해두고 써보세요',
+            subTitle: isDM ? '댓글에 "나도" 남겨주시면 최저가 구매처 DM 바로 쏴드려요!' : `📍 [${name}] 최저가 구매 좌표는 프로필 링크 확인🔗`,
+            extra: '놓치면 후회할 핫딜'
           }
         ];
       }
+
+      if (isFoodDiet) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'top',
+            badge: '쫀득상큼 감량 치트키 ✦',
+            mainTitle: `${name}`,
+            subTitle: '5분 만에 완성하는 비주얼 대란, 이 조합은 무조건 저장각',
+            extra: '초간단 식단 관리'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'top',
+            badge: '재료 & 조리 🔍',
+            mainTitle: '재료만 넣고 가볍게 조리하면 끝',
+            subTitle: `${memo}\n디저트처럼 달달한데 칼로리 부담 제로`,
+            extra: '설거지도 1개로 끝남'
+          },
+          {
+            slideNum: 3,
+            type: 'cta',
+            textPosition: 'top',
+            badge: 'Q&A / 저장 🤍',
+            mainTitle: isDM ? '레시피&재료 정보는 "나도" 남겨줘!🤍' : '다이어트 레시피 저장하고 만들어보세요',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매 링크 DM 바로 쏴드려요!` : `📍 [${name}] 레시피&구매 좌표는 프로필 링크에!`,
+            extra: 'ManyChat 자동 발송'
+          }
+        ];
+      }
+
+      if (isBeauty) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'top',
+            badge: '여배우 찐애정템 💄',
+            mainTitle: `${name}`,
+            subTitle: '여배우 메이크업 예쁘다 싶으면 전부 이거였음;',
+            extra: '품절 대란 주의'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'top',
+            badge: '발색 & 밀착 🔍',
+            mainTitle: '슥 바르자마자 얼굴에 화사한 생기',
+            subTitle: `${memo}\n각질 부각 없이 하루종일 촉촉한 물광 광채`,
+            extra: '실제 촬영장 필수템'
+          },
+          {
+            slideNum: 3,
+            type: 'cta',
+            textPosition: 'top',
+            badge: 'SPECIAL CTA 🤍',
+            mainTitle: isDM ? '청순이 추구미라면 "나도" 남겨줘!🤍' : '소장각 청순 인생템 저장해두세요',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 [${name}] 최저가 좌표는 프로필 링크 확인🔗`,
+            extra: '한정수량 핫딜'
+          }
+        ];
+      }
+
+      if (isSelfcare) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'top',
+            badge: '직장인 필수 힐링템 💆',
+            mainTitle: `${name}`,
+            subTitle: '뻐근하던 만성 피로 15분 만에 순삭해 주는 꿀템',
+            extra: 'SNS 대란템'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'top',
+            badge: '피로 순삭 🔍',
+            mainTitle: '인체공학 지압으로 뭉친 곳만 쏙쏙',
+            subTitle: `${memo}\n전문 마사지사 손맛 그대로 하루 피로 완전 해결`,
+            extra: '무선이라 이동 중에도 편함'
+          },
+          {
+            slideNum: 3,
+            type: 'cta',
+            textPosition: 'top',
+            badge: 'SPECIAL CTA 🎁',
+            mainTitle: isDM ? '피로에 찌든 직장인 힐링템 "나도" 남겨줘!🤍' : '삶의 질 200% 올려주는 힐링템 저장해두세요',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 [${name}] 최저가 구매 좌표는 프로필 링크 확인🔗`,
+            extra: '부모님 효도 선물'
+          }
+        ];
+      }
+
+      // 살림/수납/청소/정리 (living 기본)
       return [
         {
           slideNum: 1,
           type: 'cover',
           textPosition: 'top',
-          badge: '쫀득상큼 ✦',
+          badge: '삶의 질 수직상승 🔥',
           mainTitle: `${name}`,
-          subTitle: '불 없이 만드는 비주얼 대란, 이 조합은 무조건 저장각',
-          extra: '손님 접대·홈카페 필수'
+          subTitle: '복잡하고 지저분하던 공간 1초 만에 정리 끝',
+          extra: '살림 대란템'
         },
         {
           slideNum: 2,
           type: 'detail',
           textPosition: 'top',
-          badge: '재료 & 꿀팁 🔍',
-          mainTitle: '재료는 간단하게\n살짝 적신 뒤 돌돌 말면 끝',
-          subTitle: `${memo}\n똥손도 식당 퀄리티로 완성되는 비법`,
-          extra: '설거지도 1개로 끝남'
+          badge: '공간 활용 🔍',
+          mainTitle: '틈새까지 쏙 들어가 2배 넓어지는 기적',
+          subTitle: `${memo}\n자취생·주부 필수 정리템 속이 다 시원함`,
+          extra: '설치 1초 컷'
         },
         {
           slideNum: 3,
           type: 'cta',
           textPosition: 'top',
-          badge: 'Q&A / 저장 🤍',
-          mainTitle: isDM ? '어떤 거 넣어보고 싶나요?\n정보는 "나도" 남겨줘!🤍' : '어떤 거 넣어보고 싶나요?\n저장하고 만들어보세요',
-          subTitle: isDM ? '댓글에 "나도" 남겨주시면 최저가 구매처 DM 쏴드려요!' : '📍 영상 속 사용 제품 정보는 프로필 링크(또는 첫 댓글)에!',
-          extra: '저장해두고 필요할 때 꺼내보세요'
+          badge: 'SPECIAL CTA 🎁',
+          mainTitle: isDM ? '살림 스트레스 끝내는 꿀템 "나도" 남겨줘!🤍' : '삶의 질 200% 올려주는 살림템 저장해두세요',
+          subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 [${name}] 최저가 구매 좌표는 프로필 링크 확인🔗`,
+          extra: '놓치면 후회할 핫딜'
         }
       ];
     }
 
     if (count === 4) {
-      // 🎯 4장: 데이즈홈 / 데이즈코어 시그니처 템플릿 (8,000댓글 바이럴 검증 공식)
+      // 🎯 4장: 데이즈홈 / 데이즈코어 시그니처 템플릿 (8,000댓글 바이럴 검증 공식 - 5대 카테고리 100% 분리)
       if (isJa) {
-        if (isFood) {
+        if (isKitchenTool) {
+          return [
+            {
+              slideNum: 1,
+              type: 'cover',
+              textPosition: 'bottom',
+              badge: '料理好き絶賛 🍳',
+              mainTitle: `使った料理好きが絶賛する\n${name} 不動の1位`,
+              subTitle: 'これ使ってから料理と後片付けのストレス完全にゼロになった件🍳',
+              extra: '品薄注意⚠️'
+            },
+            {
+              slideNum: 2,
+              type: 'detail',
+              textPosition: 'center',
+              badge: 'CHECK POINT 01 ✨',
+              mainTitle: `焦げ付きや失敗してた料理が秒で解決ㄷㄷ\n${name} 1つでプロ級の仕上がりに`,
+              subTitle: memo || '手首に負担なく1秒でキレイに完成',
+              extra: '時短200%'
+            },
+            {
+              slideNum: 3,
+              type: 'detail',
+              textPosition: 'center',
+              badge: 'CHECK POINT 02 🔍',
+              mainTitle: 'ガチで使ってみて「なぜ今まで買わなかったのか」後悔したㅠㅠ\n洗い物まで秒殺で終わるの最高',
+              subTitle: '✔ 特殊コーティング ✔ 洗い物ラクラク ✔ コスパ最強',
+              extra: 'リピート率No.1'
+            },
+            {
+              slideNum: 4,
+              type: 'cta',
+              textPosition: 'center',
+              badge: 'SPECIAL CTA 💙',
+              mainTitle: isDM ? '自炊のストレスなくしたいなら絶対これ買い!!!!\n情報は「ナド」残してね!🤍' : '自炊のストレスなくしたいなら絶対これ買い!!!!\n詳細はプロフィールのリンクから🔗',
+              subTitle: isDM ? 'コメントで「ナド」と書くとDMで購入リンクをお届け💌' : `プロフィールのリンクから【${name}】をチェックしてね！`,
+              extra: '保存して後でチェック'
+            }
+          ];
+        }
+        if (isFoodDiet) {
           return [
             {
               slideNum: 1,
               type: 'cover',
               textPosition: 'bottom',
               badge: '話題のレシピ 🎃',
-              mainTitle: '毎朝これ食べたら\n2週間で-5KG消えた！',
+              mainTitle: `毎朝これ食べてる\n${name} ダイエットの神アイテム！`,
               subTitle: 'もちもちで甘くてガチで美味い件ㅠㅠ',
-              extra: 'エアフライヤー超簡単'
+              extra: '超簡単ダイエット'
             },
             {
               slideNum: 2,
               type: 'detail',
               textPosition: 'center',
               badge: 'POINT 01 👩‍🍳',
-              mainTitle: '簡単すぎて毎日食べてたら\nお腹周りスッキリしてきたww',
-              subTitle: memo || '材料入れてエアフライヤーで焼くだけで完成',
+              mainTitle: `簡単すぎて毎日食べてたら\n${name}のおかげでお腹周りスッキリしてきたww`,
+              subTitle: memo || '材料入れてサッと焼くだけで完成',
               extra: '手間ゼロ'
             },
             {
@@ -356,7 +558,7 @@ class ContentGeneratorEngine {
               type: 'cta',
               textPosition: 'center',
               badge: 'SPECIAL CTA 💙',
-              mainTitle: isDM ? '材料入れて焼くだけで完成！\nレシピは「ナド」残してね！💙🩵' : '材料入れて焼くだけで完成！\nレシピはプロフィールのリンクから🔗',
+              mainTitle: isDM ? '材料入れて焼くだけで完成！\nレシピ&道具は「ナド」残してね！💙🩵' : '材料入れて焼くだけで完成！\nレシピはプロフィールのリンクから🔗',
               subTitle: isDM ? 'コメントで「ナド」と書くとDMでレシピ＆道具情報をお届け💌' : `プロフィールのリンクから【${name}】をチェックしてね！`,
               extra: '保存して後でチェック'
             }
@@ -378,7 +580,7 @@ class ContentGeneratorEngine {
               type: 'detail',
               textPosition: 'center',
               badge: 'POINT 01 ✨',
-              mainTitle: '発色に色味まで神がかってると話題\n女優たちも撮影でガチ愛用中',
+              mainTitle: `発色に密着感まで神がかってると話題\n${name} サッと塗るだけで顔色がパッと明るくなる`,
               subTitle: memo || 'サッと塗るだけで顔色がパッと明るくなる',
               extra: '撮影現場の定番'
             },
@@ -402,13 +604,53 @@ class ContentGeneratorEngine {
             }
           ];
         }
+        if (isSelfcare) {
+          return [
+            {
+              slideNum: 1,
+              type: 'cover',
+              textPosition: 'bottom',
+              badge: 'デスクワーク必須 💆',
+              mainTitle: `デスクワーク民の間で話題\n${name} 不動の1位`,
+              subTitle: 'これ使ってから長年のコリと疲労が秒で消えた件💆',
+              extra: 'SNS大バズり'
+            },
+            {
+              slideNum: 2,
+              type: 'detail',
+              textPosition: 'center',
+              badge: 'POINT 01 ✨',
+              mainTitle: `毎日ガチガチだった首肩が15分でスッキリㄷㄷ\n${name} まるでプロの手揉み感覚`,
+              subTitle: memo || '強力モーターと人間工学設計で筋肉リフレッシュ',
+              extra: '疲労回復200%'
+            },
+            {
+              slideNum: 3,
+              type: 'detail',
+              textPosition: 'center',
+              badge: 'POINT 02 🔍',
+              mainTitle: '使った瞬間「なぜ今まで我慢してたのか」\n家族みんなで取り合いになるレベル ㅠㅠ❤️',
+              subTitle: '✔ コードレス急速充電 ✔ 本格指圧感覚 ✔ 圧倒的満足度',
+              extra: '満足度100%'
+            },
+            {
+              slideNum: 4,
+              type: 'cta',
+              textPosition: 'center',
+              badge: 'SPECIAL CTA 🎁',
+              mainTitle: isDM ? '毎日お疲れの自分へのご褒美に絶対これ買い!!!!\n情報は「ナド」残してね!🤍' : '毎日お疲れの自分へのご褒美に絶対これ買い!!!!\n詳細はプロフィールのリンクから🔗',
+              subTitle: isDM ? 'コメントで「ナド」と書くとDMで購入リンクをお届け💌' : `プロフィールのリンクから【${name}】をチェックしてね！`,
+              extra: '保存して後でチェック'
+            }
+          ];
+        }
         return [
           {
             slideNum: 1,
             type: 'cover',
             textPosition: 'bottom',
             badge: '話題の神アイテム 🔥',
-            mainTitle: `使った人が絶賛する\n${name} 不동の1位`,
+            mainTitle: `使った人が絶賛する\n${name} 暮らしの神アイテム`,
             subTitle: 'これ知ってから暮らしのストレス完全にゼロになった件✨',
             extra: '完売前に要チェック⚠️'
           },
@@ -417,7 +659,7 @@ class ContentGeneratorEngine {
             type: 'detail',
             textPosition: 'center',
             badge: 'POINT 01 ✨',
-            mainTitle: '1秒で使えて圧倒的に便利すぎる\n毎日のプチストレスがスッキリ解消',
+            mainTitle: `散らかってたスペースが1秒でスッキリ整う\n${name} 1つで部屋の雰囲気が激変`,
             subTitle: memo,
             extra: 'リアルな口コミ大絶賛'
           },
@@ -436,31 +678,72 @@ class ContentGeneratorEngine {
             textPosition: 'center',
             badge: 'SPECIAL CTA 🎁',
             mainTitle: isDM ? '生活の質上げたいなら絶対これ買い!!!!\n情報は「ナド」残してね!🤍' : '迷ったら絶対これ買い!!!!\n詳細はプロフィールのリンクから🔗',
-            subTitle: isDM ? 'コメントで「ナド」と書くとDMで購入リンクをお届け💌' : `프로필의 링크에서【${name}】를 확인하세요!`,
+            subTitle: isDM ? 'コメントで「ナド」と書くとDMで購入リンクをお届け💌' : `プロフィールのリンクから【${name}】をチェックしてね！`,
             extra: '保存して後でチェック'
           }
         ];
       }
 
-      // 🇰🇷 한국어 4컷: 데이즈홈/데이즈코어 실제 8,000댓글 포맷 100% 구현
-      if (isFood) {
+      // 🇰🇷 한국어 4컷: 데이즈홈/데이즈코어 실제 8,000댓글 바이럴 포맷 100% 구현 (카테고리별 상품 특화)
+      if (isKitchenTool) {
         return [
           {
             slideNum: 1,
             type: 'cover',
             textPosition: 'bottom',
-            badge: 'SNS 화제 레시피 🎃',
-            mainTitle: '아침마다 먹었더니\n2주 만에 -5KG 삭제!',
+            badge: '삶의 질 수직상승 🍳',
+            mainTitle: `써본 요리 고수들마다 극찬하는\n${name} 부동의 1위`,
+            subTitle: '이거 쓰고 요리·살림 스트레스 제로됨;',
+            extra: '주방 대란템'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 01 ✨',
+            mainTitle: `눌어붙고 터져서 망치던 요리 싹 해결ㄷㄷ\n${name} 하나로 전문가 퀄리티 됨`,
+            subTitle: memo || '손목 무리 없이 1초 만에 깔끔하게 완성',
+            extra: '요리 시간 50% 단축'
+          },
+          {
+            slideNum: 3,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 02 🔍',
+            mainTitle: '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n설거지까지 1초 컷이라 속이 다 시원함',
+            subTitle: '✔ 특수 코팅/강력 모터 ✔ 설거지 간편 ✔ 가성비 끝판왕',
+            extra: '재구매율 1위'
+          },
+          {
+            slideNum: 4,
+            type: 'cta',
+            textPosition: 'center',
+            badge: 'SPECIAL CTA 💙',
+            mainTitle: isDM ? '요리 똥손도 장인 만들어주는 필수 주방템!\n정보는 "나도" 남겨줘! 💙🩵' : '요리 똥손도 장인 만들어주는 필수 주방템!\n제품 정보는 프로필 링크 확인🔗',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 프로필링크에서 [${name}] 최저가 확인하기 🔗`,
+            extra: '한정수량 핫딜'
+          }
+        ];
+      }
+
+      if (isFoodDiet) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'bottom',
+            badge: 'SNS 화제 감량템 🎃',
+            mainTitle: `아침마다 챙겨먹는\n${name} 감량 치트키!`,
             subTitle: '쫀득하고 달달한게 진짜 맛있음 ㅠㅠ',
-            extra: '초간단 에프 다이어트'
+            extra: '초간단 식단 관리'
           },
           {
             slideNum: 2,
             type: 'detail',
             textPosition: 'center',
             badge: 'CHECK POINT 01 👩‍🍳',
-            mainTitle: '만들기 쉬워서 매일 먹었더니\n뱃살이 쏙 들어감ㄷㄷ',
-            subTitle: memo || '재료만 넣고 에어프라이어 돌리면 끝! 세상 간편함',
+            mainTitle: `만들기 쉬워서 매일 챙겨먹었더니\n${name} 덕분에 뱃살 쏙 들어감ㄷㄷ`,
+            subTitle: memo || '재료만 넣고 가볍게 조리하면 끝! 세상 간편함',
             extra: '간편함 끝판왕'
           },
           {
@@ -468,7 +751,7 @@ class ContentGeneratorEngine {
             type: 'detail',
             textPosition: 'center',
             badge: 'CHECK POINT 02 ✨',
-            mainTitle: '한 번 해두면 일주일 내내 먹는데\n너무 맛있어서 질리지도 않음ㅠㅠ',
+            mainTitle: '한 번 쟁여두면 일주일 내내 먹는데\n너무 맛있어서 질리지도 않음ㅠㅠ',
             subTitle: '✔ 겉바속쫀 식감 ✔ 디저트 같은 달달함 ✔ 칼로리 부담 제로',
             extra: '식단 스트레스 제로'
           },
@@ -477,8 +760,8 @@ class ContentGeneratorEngine {
             type: 'cta',
             textPosition: 'center',
             badge: 'SPECIAL CTA 💙',
-            mainTitle: isDM ? '재료 몽땅 넣고 에프 돌리면 끝!\n초간단레시피 "나도" 남겨죠! 💙🩵' : '재료 몽땅 넣고 에프 돌리면 끝!\n초간단레시피는 프로필링크 확인🔗',
-            subTitle: isDM ? '댓글에 "나도" 남겨주시면 재료+에프 꿀조합 정보 DM 바로 쏴드려요!' : `👉 프로필링크에서 [${name}] 레시피 & 재료 확인!`,
+            mainTitle: isDM ? '식단 스트레스 끝내는 역대급 꿀맛 다이어트템!\n재료&구매처 "나도" 남겨죠! 💙🩵' : '식단 스트레스 끝내는 역대급 꿀맛 다이어트템!\n레시피&재료는 프로필링크 확인🔗',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매 링크 DM 바로 쏴드려요!` : `👉 프로필링크에서 [${name}] 레시피 & 재료 확인! 🔗`,
             extra: 'ManyChat 댓글 자동화'
           }
         ];
@@ -492,7 +775,7 @@ class ContentGeneratorEngine {
             textPosition: 'bottom',
             badge: '여배우 찐애정템 💄',
             mainTitle: `여배우들이 애정하는\n${name} 부동의 1위`,
-            subTitle: '여배우 립 이쁘다.. 싶으면 전부 이거였음;',
+            subTitle: '여배우 립·피부 이쁘다.. 싶으면 전부 이거였음;',
             extra: '품절 대란 주의'
           },
           {
@@ -500,8 +783,8 @@ class ContentGeneratorEngine {
             type: 'detail',
             textPosition: 'center',
             badge: 'CHECK POINT 01 ✨',
-            mainTitle: '발색력에 색감까지 미쳤다는 추천템ㅠㅠ\n여배우들도 촬영 때 진짜 많이 쓴다고함',
-            subTitle: memo || '슥 바르자마자 맑고 투명하게 생기 살아남',
+            mainTitle: `발색력에 밀착력까지 미쳤다는 추천템ㅠㅠ\n${name} 슥 바르자마자 얼굴 화사해짐`,
+            subTitle: memo || '각질 부각 없이 하루종일 촉촉하고 맑은 생기',
             extra: '실제 촬영장 필수템'
           },
           {
@@ -510,7 +793,7 @@ class ContentGeneratorEngine {
             textPosition: 'center',
             badge: 'CHECK POINT 02 🔍',
             mainTitle: '바르는 순간 확 화사해지고\n청순한 느낌은 물론 분위기까지 우아해짐 ㅠㅠ❤️',
-            subTitle: '✔ 웜톤·쿨톤 인생립 ✔ 지속력 끝판왕 ✔ 촉촉 물광 광채',
+            subTitle: '✔ 웜톤·쿨톤 찰떡 ✔ 지속력 끝판왕 ✔ 촉촉 물광 광채',
             extra: '꾸안꾸 청순 치트키'
           },
           {
@@ -518,22 +801,63 @@ class ContentGeneratorEngine {
             type: 'cta',
             textPosition: 'center',
             badge: 'SPECIAL CTA 🤍',
-            mainTitle: isDM ? '청순이 추구미라면 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '청순이 추구미라면 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗',
-            subTitle: isDM ? '댓글에 "나도" 남겨주시면 최저가 구매처 DM 바로 쏴드려요!' : `👉 프로필링크에서 [${name}] 확인하기 🔗`,
-            extra: '소장각 인생립'
+            mainTitle: isDM ? '청순이 추구미라면 무조건 이거 사야 함!!!!\n정보는 "나도" 남겨죠!🤍' : '청순이 추구미라면 무조건 이거 사야 함!!!!\n제품 정보는 프로필 링크 확인🔗',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 프로필링크에서 [${name}] 확인하기 🔗`,
+            extra: '소장각 인생템'
           }
         ];
       }
 
-      // 살림/주방도구/일반형
+      if (isSelfcare) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'bottom',
+            badge: '직장인 필수 힐링템 💆',
+            mainTitle: `직장인들 사이에서 입소문 난\n${name} 부동의 1위`,
+            subTitle: '이거 쓰고 뻐근하던 만성 피로 싹 사라짐;',
+            extra: 'SNS 대란템'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 01 ✨',
+            mainTitle: `매일 굳어있던 부위 15분 만에 싹 풀림ㄷㄷ\n${name} 손맛 그대로 시원함 끝판왕`,
+            subTitle: memo || '강력한 모터와 인체공학 설계로 뭉친 근육 완벽 이완',
+            extra: '피로 회복 200%'
+          },
+          {
+            slideNum: 3,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 02 🔍',
+            mainTitle: '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n가족들까지 서로 쓰겠다고 난리 난 이유',
+            subTitle: '✔ 무선 간편 충전 ✔ 강력한 지압/마사지 ✔ 안마의자 부럽지 않음',
+            extra: '만족도 100%'
+          },
+          {
+            slideNum: 4,
+            type: 'cta',
+            textPosition: 'center',
+            badge: 'SPECIAL CTA 🎁',
+            mainTitle: isDM ? '피로에 찌든 직장인·부모님 효도템으로 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '피로에 찌든 직장인·부모님 효도템으로 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗',
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 프로필링크에서 [${name}] 확인하기 🔗`,
+            extra: '한정수량 핫딜'
+          }
+        ];
+      }
+
+      // 살림/수납/청소/정리/생활용품 (living 기본)
       return [
         {
           slideNum: 1,
           type: 'cover',
           textPosition: 'bottom',
           badge: '삶의 질 수직상승 🔥',
-          mainTitle: `써본 사람들마다 극찬하는\n${name} 부동의 1위`,
-          subTitle: '이거 쓰고 살림 스트레스 제로됨;',
+          mainTitle: `써본 사람들마다 극찬하는\n${name} 삶의 질 대란템`,
+          subTitle: '이거 쓰고 정리·살림 스트레스 제로됨;',
           extra: 'SNS 대란템'
         },
         {
@@ -541,9 +865,9 @@ class ContentGeneratorEngine {
           type: 'detail',
           textPosition: 'center',
           badge: 'CHECK POINT 01 ✨',
-          mainTitle: '손목 아프고 고생하던 시절 싹 끝남ㄷㄷ\n1초 만에 깔끔해져서 속이 다 시원함',
-          subTitle: memo || '복잡한 준비와 번거로운 설거지까지 1번에 해결',
-          extra: '시간 단축 200%'
+          mainTitle: `지저분하고 좁던 공간 1초 만에 싹 정리ㄷㄷ\n${name} 하나로 집안 분위기 확 바뀜`,
+          subTitle: memo || '손쉬운 설치와 넉넉한 수납, 속이 다 시원함',
+          extra: '공간 활용 200%'
         },
         {
           slideNum: 3,
@@ -551,7 +875,7 @@ class ContentGeneratorEngine {
           textPosition: 'center',
           badge: 'CHECK POINT 02 🔍',
           mainTitle: '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n자취생·주부 필수템인 이유가 있음',
-          subTitle: '✔ 누구나 쉬운 사용법 ✔ 만족도 100% ✔ 삶의 질 수직상승',
+          subTitle: '✔ 누구나 쉬운 사용법 ✔ 깔끔한 인테리어 효과 ✔ 튼튼한 내구성',
           extra: '재구매율 1위'
         },
         {
@@ -560,7 +884,7 @@ class ContentGeneratorEngine {
           textPosition: 'center',
           badge: 'SPECIAL CTA 🎁',
           mainTitle: isDM ? '삶의 질 수직상승템 찾고 있다면 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '삶의 질 수직상승템 찾고 있다면 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗',
-          subTitle: isDM ? '댓글에 "나도" 남겨주시면 최저가 구매처 DM 바로 쏴드려요!' : `👉 프로필링크에서 [${name}]을(를) 확인하세요! 🔗`,
+          subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 구매처 DM 바로 쏴드려요!` : `👉 프로필링크에서 [${name}]을(를) 확인하세요! 🔗`,
           extra: '놓치면 후회할 핫딜'
         }
       ];
@@ -611,10 +935,12 @@ class ContentGeneratorEngine {
   generateGeminiPrompts(p, count = 4, lang = 'ko', monetizationMode = 'link') {
     const name = p.name;
     const memo = p.memo || '';
-    const cat = p.category;
-    const textLower = `${name} ${memo}`.toLowerCase();
-    const isBeauty = cat === 'beauty' || /립|틴트|화장|뷰티|세럼|크림|앰플|패치/.test(textLower);
-    const isFood = cat === 'kitchen_food' || /단호박|호박|레시피|에프|과일|식단|요리|간식|디저트|소스|에어프라이어|파스타|고기|토마토/.test(textLower);
+    const cat = p.category || this.inferCategory(p);
+    const isBeauty = cat === 'beauty';
+    const isKitchenTool = cat === 'kitchen_tool';
+    const isFoodDiet = cat === 'food_diet';
+    const isSelfcare = cat === 'selfcare_tech';
+    const isLiving = cat === 'living';
     const isDM = monetizationMode === 'dm';
     const prompts = [];
 
@@ -694,17 +1020,17 @@ ${cleanNegative}
     }
 
     if (count === 3) {
-      // ⚡ 3장: 스피드 임팩트형 (수납/정리/간편레시피)
+      // ⚡ 3장: 스피드 임팩트형 (카테고리별 상품 맞춤 프롬프트)
       const p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Professional appetizing editorial lifestyle photography of finished ${name}.
-Composition: Close-up hero shot placed cleanly on a modern table or slate plate.
-Lighting: Warm soft studio lighting with gentle natural reflections.
+Scene: Professional commercial hero lifestyle photography of ${name}.
+Composition: Close-up hero shot placed cleanly on a modern table, countertop, or vanity.
+Lighting: Warm soft natural lighting with gentle reflections.
 ${cleanNegative}
 이미지 생성해줘.`;
 
       const p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Neat demonstration or flat-lay preparation shot of ${name} in actual practical use.
-Composition: Clean kitchen/home countertop setting, showing effortless step-by-step handling.
+Scene: Hands-on real demonstration or action shot showing practical 1-second usage and effortless operation of ${name}.
+Composition: Clean lifestyle home setting showing smooth, effortless handling.
 ${cleanNegative}
 이미지 생성해줘.`;
 
@@ -715,8 +1041,8 @@ ${cleanNegative}
 이미지 생성해줘.`;
 
       const collagePrompt3 = `${multimodalHeader}Canvas: A single high-resolution image cleanly divided into 3 equal vertical panels side-by-side (1x3 grid: Left, Center, Right) with clean thin divider borders.
-Panel 1 (Left, 33.3% width): Hero hook shot showcasing ${name} beautifully presented in a warm, aesthetic home setting.
-Panel 2 (Center, 33.3% width): Hands-on demonstration or step-by-step preparation shot showing ${name} effortlessly in action.
+Panel 1 (Left, 33.3% width): Hero hook shot showcasing ${name} beautifully presented in an aesthetic modern home setting.
+Panel 2 (Center, 33.3% width): Hands-on demonstration shot showing ${name} effortlessly in active use.
 Panel 3 (Right, 33.3% width): Extreme macro close-up highlighting satisfying final details, textures, and perfection of ${name}.
 Style: Professional commercial editorial photography, photorealistic, thin vertical dividing lines.
 ${cleanNegative}
@@ -737,7 +1063,7 @@ ${cleanNegative}
         title: '1번 표지/완성 컷 (Hero Hook)',
         role: '1번 완성 메인 컷 (Hero Hook)',
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
-        exactText: `쫀득상큼\n${name}`,
+        exactText: `${name}`,
         promptText: p1,
         prompt: p1
       });
@@ -745,9 +1071,9 @@ ${cleanNegative}
       prompts.push({
         slideNum: 2,
         title: '2번 준비 & 실사용 컷 (Prep & Action)',
-        role: '2번 재료 준비 & 조리 컷 (Ingredients & Prep)',
+        role: '2번 준비 & 실사용 컷 (Prep & Action)',
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
-        exactText: '재료는 간단하게\n살짝 적신 뒤 돌돌 말면 끝',
+        exactText: '손쉬운 1초 사용법',
         promptText: p2,
         prompt: p2
       });
@@ -755,9 +1081,9 @@ ${cleanNegative}
       prompts.push({
         slideNum: 3,
         title: '3번 클라이맥스 디테일 & CTA 컷 (Detail & CTA)',
-        role: '3번 단면 클로즈업 & CTA 컷 (Cutaway & Question)',
+        role: '3번 클라이맥스 디테일 & CTA 컷 (Detail & CTA)',
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
-        exactText: isDM ? '어떤 거 넣어보고 싶나요?\n정보는 "나도" 남겨줘!🤍' : '어떤 거 넣어보고 싶나요?\n저장하고 만들어보세요',
+        exactText: isDM ? '정보는 "나도" 남겨줘!🤍' : `[${name}] 프로필 링크 확인🔗`,
         promptText: p3,
         prompt: p3
       });
@@ -766,43 +1092,80 @@ ${cleanNegative}
     }
 
     if (count === 4) {
-      // 🎯 4장: 데이즈홈 / 데이즈코어 시그니처 템플릿 (8,000댓글 바이럴 실사 프롬프트)
+      // 🎯 4장: 데이즈홈 / 데이즈코어 시그니처 템플릿 (5대 카테고리 100% 맞춤 생성)
       let p1, p2, p3, p4, collagePrompt4;
 
-      if (isFood) {
+      if (isKitchenTool) {
         p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: POV extreme appetizing close-up of a person's hand wearing a transparent disposable plastic food prep glove (비닐장갑), holding warm freshly roasted caramelized ${name} slices with golden glistening sheen and slight roasted charred edges.
+Scene: Ultra-high quality commercial hero lifestyle product shot of ${name} beautifully positioned on a clean minimalist Korean apartment kitchen countertop or induction stovetop, in bright soft morning daylight.
+Composition: Clean sharp focus on ${name}, aesthetic kitchen decor in soft blurred background (olive oil bottle, fresh rosemary, minimalist backsplash).
+Style: Authentic mobile photography shot on iPhone 15 Pro, natural daylight, candid creator UGC aesthetic, sharp high-resolution textures, no CGI, no 3D cartoon render.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Hands-on real cooking action shot using ${name}. A person's hand holding a cooking spatula or ergonomic handle, cooking golden delicious appetizing food inside ${name} effortlessly without any sticking.
+Composition: Close-up on the active cooking action, natural daylight, candid lifestyle photo.
+Style: Authentic home cooking UGC photography, shot on iPhone 15 Pro, ultra-realistic textures.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Extreme macro close-up highlighting the superior non-stick coating, sturdy build quality, ergonomic handle, and fine craftsmanship details of ${name}.
+Composition: High-detail close-up shot capturing natural sunlight reflections and premium durable texture.
+Style: Crisp, authentic mobile photography, shot on iPhone 15 Pro, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p4 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Satisfying final outcome scene showing a mouth-watering, beautifully cooked dish plated on a modern ceramic plate, placed proudly right next to the clean ${name}.
+Composition: Confident, aesthetic, appetizing social media presentation, natural bright daylight.
+Style: Authentic viral Instagram creator photo, shot on iPhone 15 Pro, photorealistic 8k.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        collagePrompt4 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right) with clean thin dividing borders.
+Panel 1 (Top-Left): Commercial hero lifestyle shot of ${name} sitting cleanly on modern kitchen countertop.
+Panel 2 (Top-Right): Hands-on action shot cooking golden delicious food with ${name} showing effortless non-stick performance.
+Panel 3 (Bottom-Left): Extreme macro close-up highlighting the premium coating, fine craftsmanship, and build quality of ${name}.
+Panel 4 (Bottom-Right): Appetizing finished dish plated beside ${name}, mouth-watering lifestyle presentation.
+Style: Authentic Korean lifestyle creator UGC photography, shot on iPhone 15 Pro, natural warm daylight, photorealistic, thin divider lines between panels.
+${cleanNegative}
+이미지 생성해줘.`;
+      } else if (isFoodDiet) {
+        p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: POV extreme appetizing close-up of a person's hand wearing a transparent disposable plastic food prep glove (비닐장갑), holding warm freshly prepared/roasted ${name} with golden glistening sheen.
 Composition: Hand centered holding the appetizing food, warm cozy Korean apartment kitchen in background with soft natural daylight.
 Style: Authentic mobile photography shot on iPhone 15 Pro, natural daylight, candid food creator UGC aesthetic, sharp high-resolution textures, no CGI, no 3D cartoon render.
 ${cleanNegative}
 이미지 생성해줘.`;
 
         p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Hands-on action shot of a person wearing a clear plastic food prep glove holding a single crescent slice of roasted caramelized ${name} against a clean neutral countertop, showing tender golden-orange interior texture and roasted skin.
-Composition: Focus on the single roasted piece, natural daylight, candid lifestyle photo.
+Scene: Hands-on action shot of preparing a healthy meal with ${name} against a clean neutral countertop, showing tender appetizing texture and freshness.
+Composition: Focus on the preparation, natural daylight, candid lifestyle photo.
 Style: Authentic Korean lifestyle creator mobile photography, shot on iPhone 15 Pro, natural textures, photorealistic.
 ${cleanNegative}
 이미지 생성해줘.`;
 
         p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Close-up shot of light-colored wooden chopsticks gently picking up a tender, glistening roasted ${name} slice from a rustic ceramic bowl filled with freshly cooked pieces.
+Scene: Close-up shot of light-colored wooden chopsticks or fork gently picking up a tender, glistening bite of ${name} from a rustic ceramic bowl.
 Composition: Clean wooden chopsticks in action, delicious steam rising gently, soft natural warm kitchen lighting.
 Style: Authentic home cooking UGC photography, shot on iPhone 15 Pro, ultra-realistic food textures.
 ${cleanNegative}
 이미지 생성해줘.`;
 
         p4 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Top-down hero shot of generous pile of freshly air-fried golden caramelized ${name} slices presented in a warm stoneware plate, held in hand with clear vinyl glove ready to serve.
+Scene: Top-down hero shot of generous plate of freshly prepared ${name} served ready to eat on a stoneware dish.
 Composition: Highly appetizing, mouth-watering social media presentation, natural bright daylight.
 Style: Authentic viral Instagram creator photo, shot on iPhone 15 Pro, photorealistic 8k.
 ${cleanNegative}
 이미지 생성해줘.`;
 
         collagePrompt4 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right) with clean thin dividing borders.
-Panel 1 (Top-Left): POV close-up of a hand wearing a transparent plastic food prep glove holding steaming warm caramelized roasted ${name} slices.
-Panel 2 (Top-Right): Hand in clear food glove holding a single crescent slice of roasted caramelized ${name} showing delicious soft interior.
-Panel 3 (Bottom-Left): Light wooden chopsticks picking up one roasted caramelized slice from a rustic ceramic bowl.
-Panel 4 (Bottom-Right): Appetizing final plate of roasted ${name} slices held in hand with clear glove, golden roasted finish.
+Panel 1 (Top-Left): POV close-up of a hand holding warm appetizing ${name}.
+Panel 2 (Top-Right): Clean hands-on preparation shot of ${name} showing fresh texture.
+Panel 3 (Bottom-Left): Wooden chopsticks picking up one tender, glistening bite of ${name}.
+Panel 4 (Bottom-Right): Appetizing final plate of ${name} ready to serve, golden delicious finish.
 Style: Authentic Korean food creator UGC lifestyle photography, shot on iPhone 15 Pro, natural warm daylight, photorealistic, thin divider lines between panels.
 ${cleanNegative}
 이미지 생성해줘.`;
@@ -843,10 +1206,47 @@ Panel 4 (Bottom-Right): Close-up of beautiful hydrated lips wearing ${name}, hol
 Style: Professional authentic Korean beauty creator UGC photography, shot on iPhone 15 Pro, warm daylight, photorealistic, thin divider lines between panels.
 ${cleanNegative}
 이미지 생성해줘.`;
-      } else {
-        // 주방도구 / 살림 / 생활용품
+      } else if (isSelfcare) {
         p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
-Scene: Ultra-high quality authentic lifestyle product shot of ${name} held in hand or sitting gracefully on a warm minimalist kitchen/home table.
+Scene: Premium hero lifestyle shot of ${name} resting gracefully on a cozy minimalist modern sofa or nightstand in warm ambient room.
+Composition: Clean focus on ${name}, soft atmospheric evening interior lighting.
+Style: Authentic mobile photography shot on iPhone 15 Pro, natural daylight, candid creator UGC aesthetic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p2 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Hands-on demonstration shot of a person comfortably using ${name} to relieve muscle tension in neck, shoulders, or back, experiencing soothing relief.
+Composition: Comfortable natural lifestyle setting, soft warm lighting.
+Style: Authentic creator UGC lifestyle photography, shot on iPhone 15 Pro, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p3 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Extreme macro close-up highlighting the ergonomic massage nodes, breathable premium fabric, and sleek controls of ${name}.
+Composition: High-detail close-up shot capturing craftsmanship and premium texture.
+Style: Crisp, authentic mobile photography, shot on iPhone 15 Pro, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        p4 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Relaxed, serene lifestyle scene showing person smiling comfortably after using ${name}, peaceful happiness in modern cozy home.
+Composition: Confident, aesthetic, deeply satisfying visual.
+Style: Authentic lifestyle photography, shot on iPhone 15 Pro, photorealistic.
+${cleanNegative}
+이미지 생성해줘.`;
+
+        collagePrompt4 = `${multimodalHeader}Canvas: A single high-resolution image divided cleanly into a 2x2 grid (4 equal panels: top-left, top-right, bottom-left, bottom-right) with clean thin dividing borders.
+Panel 1 (Top-Left): Hero lifestyle shot of ${name} resting on modern sofa.
+Panel 2 (Top-Right): Hands-on action shot of person comfortably using ${name} for muscle tension relief.
+Panel 3 (Bottom-Left): Extreme macro close-up highlighting the ergonomic massage nodes and premium fabric of ${name}.
+Panel 4 (Bottom-Right): Satisfying relaxed lifestyle scene showcasing refreshed comfort with ${name}.
+Style: Professional authentic Korean creator UGC photography, shot on iPhone 15 Pro, warm home ambient lighting, thin divider borders.
+${cleanNegative}
+이미지 생성해줘.`;
+      } else {
+        // 살림 / 수납 / 청소 / 정리 / 생활용품 (living 기본)
+        p1 = `${multimodalHeader}Canvas: 1080 x 1350px vertical, 4:5 Instagram safe aspect ratio.
+Scene: Ultra-high quality authentic lifestyle product shot of ${name} held in hand or sitting gracefully on a warm minimalist home table or organized shelf.
 Composition: Clean focus on the product, natural soft bokeh in background, warm natural lighting.
 Style: Authentic mobile photography shot on iPhone 15 Pro, natural daylight, candid creator UGC aesthetic.
 ${cleanNegative}
@@ -893,21 +1293,31 @@ ${cleanNegative}
         prompt: collagePrompt4
       });
 
-      // 4컷 개별 씬 등록
+      // 4컷 개별 씬 등록 (카테고리별 맞춤 텍스트)
       let t1, t2, t3, t4;
-      if (isFood) {
-        t1 = '아침마다 먹었더니\n2주 만에 -5KG 삭제!';
-        t2 = '만들기 쉬워서 매일 먹었더니\n뱃살이 쏙 들어감ㄷㄷ';
-        t3 = '한 번 해두면 일주일 내내 먹는데\n너무 맛있어서 질리지도 않음ㅠㅠ';
-        t4 = isDM ? '재료 몽땅 넣고 에프 돌리면 끝!\n초간단레시피 "나도" 남겨죠! 💙🩵' : '재료 몽땅 넣고 에프 돌리면 끝!\n초간단레시피는 프로필링크 확인🔗';
+      if (isKitchenTool) {
+        t1 = `써본 요리 고수들마다 극찬하는\n${name} 부동의 1위`;
+        t2 = `눌어붙고 터져서 망치던 요리 싹 해결ㄷㄷ\n${name} 하나로 전문가 퀄리티 됨`;
+        t3 = `직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n설거지까지 1초 컷이라 속이 다 시원함`;
+        t4 = isDM ? '요리 똥손도 장인 만들어주는 필수 주방템!\n정보는 "나도" 남겨줘! 💙🩵' : '요리 똥손도 장인 만들어주는 필수 주방템!\n제품 정보는 프로필 링크 확인🔗';
+      } else if (isFoodDiet) {
+        t1 = `아침마다 챙겨먹는\n${name} 감량 치트키!`;
+        t2 = `만들기 쉬워서 매일 챙겨먹었더니\n${name} 덕분에 뱃살 쏙 들어감ㄷㄷ`;
+        t3 = '한 번 쟁여두면 일주일 내내 먹는데\n너무 맛있어서 질리지도 않음ㅠㅠ';
+        t4 = isDM ? '식단 스트레스 끝내는 역대급 꿀맛 다이어트템!\n재료&구매처 "나도" 남겨죠! 💙🩵' : '식단 스트레스 끝내는 역대급 꿀맛 다이어트템!\n레시피&재료는 프로필링크 확인🔗';
       } else if (isBeauty) {
-        t1 = `여배우 립 이쁘다.. 싶으면 전부 이거였음;\n${name} 부동의 1위`;
-        t2 = '발색력에 색감까지 미쳤다는 추천템ㅠㅠ\n여배우들도 촬영 때 진짜 많이 쓴다고 함';
+        t1 = `여배우들이 애정하는\n${name} 부동의 1위`;
+        t2 = `발색력에 밀착력까지 미쳤다는 추천템ㅠㅠ\n${name} 슥 바르자마자 얼굴 화사해짐`;
         t3 = '바르는 순간 확 화사해지고\n청순한 느낌은 물론 분위기까지 우아해짐 ㅠㅠ❤️';
-        t4 = isDM ? '청순이 추구미라면 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '청순이 추구미라면 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗';
+        t4 = isDM ? '청순이 추구미라면 무조건 이거 사야 함!!!!\n정보는 "나도" 남겨죠!🤍' : '청순이 추구미라면 무조건 이거 사야 함!!!!\n제품 정보는 프로필 링크 확인🔗';
+      } else if (isSelfcare) {
+        t1 = `직장인들 사이에서 입소문 난\n${name} 부동의 1위`;
+        t2 = `매일 굳어있던 부위 15분 만에 싹 풀림ㄷㄷ\n${name} 손맛 그대로 시원함 끝판왕`;
+        t3 = '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n가족들까지 서로 쓰겠다고 난리 난 이유';
+        t4 = isDM ? '피로에 찌든 직장인·부모님 효도템으로 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '피로에 찌든 직장인·부모님 효도템으로 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗';
       } else {
-        t1 = `써본 사람들마다 극찬하는\n${name} 부동의 1위`;
-        t2 = '손목 아프고 고생하던 시절 싹 끝남ㄷㄷ\n1초 만에 깔끔해져서 속이 다 시원함';
+        t1 = `써본 사람들마다 극찬하는\n${name} 삶의 질 대란템`;
+        t2 = `지저분하고 좁던 공간 1초 만에 싹 정리ㄷㄷ\n${name} 하나로 집안 분위기 확 바뀜`;
         t3 = '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n자취생·주부 필수템인 이유가 있음';
         t4 = isDM ? '삶의 질 수직상승템 찾고 있다면 무조건 이거임!!!!\n정보는 "나도" 남겨죠!🤍' : '삶의 질 수직상승템 찾고 있다면 무조건 이거임!!!!\n제품 정보는 프로필 링크 확인🔗';
       }
@@ -924,8 +1334,8 @@ ${cleanNegative}
 
       prompts.push({
         slideNum: 2,
-        title: '2번 1차 실사용/발색 씬 (Hands-on Action)',
-        role: '2번 1차 실사용/발색 씬 (Hands-on Action & Proof)',
+        title: '2번 1차 실사용/조리 씬 (Hands-on Action)',
+        role: '2번 1차 실사용/조리 씬 (Hands-on Action & Proof)',
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: t2,
         promptText: p2,
@@ -934,8 +1344,8 @@ ${cleanNegative}
 
       prompts.push({
         slideNum: 3,
-        title: '3번 제형/질감/디테일 씬 (Macro Texture & Sheen)',
-        role: '3번 제형/질감/디테일 씬 (Macro Texture & Sheen)',
+        title: '3번 소재/코팅/디테일 씬 (Macro Texture & Quality)',
+        role: '3번 소재/코팅/디테일 씬 (Macro Texture & Quality)',
         previewHint: '4:5 인스타 | 첨부 이미지 참조',
         exactText: t3,
         promptText: p3,
@@ -1030,9 +1440,9 @@ ${cleanNegative}
 
     const category = p.category || this.inferCategory(p);
     const textLower = `${name} ${memo}`.toLowerCase();
-    const isFood = /과일|참외|토마토|고기|삼겹살|한우|다짐육|식단|굴소스|소스|파스타|두부|콩나물|요거트|그래놀라|식재료/.test(textLower);
     const isBeauty = category === 'beauty';
-    const isLiving = category === 'living' || /수납|선반|트롤리|정리|청소|휴지통|스펀지|워터블럭|배수구|마사지|넥케어|선풍기|보풀|진공/.test(textLower);
+    const isFood = category === 'food_diet' || (!/팬|다지기|칼|냄비|에어프라이어|스프레이/.test(textLower) && /과일|참외|토마토|고기|삼겹살|한우|다짐육|식단|굴소스|소스|파스타|두부|콩나물|요거트|그래놀라|식재료/.test(textLower));
+    const isLiving = category === 'living' || category === 'selfcare_tech' || /수납|선반|트롤리|정리|청소|휴지통|스펀지|워터블럭|배수구|마사지|넥케어|선풍기|보풀|진공/.test(textLower);
 
     let type1, type2, type3, type4;
 
@@ -1382,25 +1792,33 @@ ${ftcText}
       : (typeof AffiliatePlatforms !== 'undefined' ? AffiliatePlatforms['coupang'] : null);
     const disclaimer = (platMeta && platMeta.disclaimer) ? platMeta.disclaimer : '※ 본 게시물은 제휴마케팅 활동의 일환으로 일정 수수료를 제공받습니다.';
 
-    const textLower = `${name} ${memo}`.toLowerCase();
-    const isBeauty = p.category === 'beauty' || /립|틴트|화장|뷰티|세럼|크림|앰플|패치/.test(textLower);
-    const isFood = p.category === 'kitchen_food' || /단호박|호박|레시피|에프|과일|식단|요리|간식|디저트|소스|에어프라이어|파스타|고기|토마토/.test(textLower);
+    const category = p.category || this.inferCategory(p);
 
-    let bundleItem2 = '함께 쓰면 2배 편한 추천 에어프라이어/도구';
-    let bundleLink2 = 'https://link.coupang.com/a/synergy-tool';
-    let bundleItem3 = '부담 없는 0칼로리 소스/알룰로스 시럽';
-    let bundleLink3 = 'https://link.coupang.com/a/synergy-sauce';
+    let bundleItem2 = '공간 활용 200% 올려주는 정리 수납 트레이';
+    let bundleLink2 = 'https://link.coupang.com/a/synergy-tray';
+    let bundleItem3 = '자국 없이 깨끗하게 닦이는 전용 살림 클리너';
+    let bundleLink3 = 'https://link.coupang.com/a/synergy-cleaner';
 
-    if (isBeauty) {
-      bundleItem2 = '입술 각질 잠재우는 보습 립밤/립플럼퍼';
+    if (category === 'kitchen_tool') {
+      bundleItem2 = '흠집 없이 오래 쓰는 실리콘 조리도구 세트';
+      bundleLink2 = 'https://link.coupang.com/a/synergy-silicone-tools';
+      bundleItem3 = '기름때 1초 컷 친환경 전용 수세미/클리너';
+      bundleLink3 = 'https://link.coupang.com/a/synergy-kitchen-cleaner';
+    } else if (category === 'food_diet') {
+      bundleItem2 = '함께 쓰면 2배 편한 추천 에어프라이어/찜기';
+      bundleLink2 = 'https://link.coupang.com/a/synergy-airfryer';
+      bundleItem3 = '부담 없는 0칼로리 알룰로스/저칼로리 소스';
+      bundleLink3 = 'https://link.coupang.com/a/synergy-diet-sauce';
+    } else if (category === 'beauty') {
+      bundleItem2 = '입술 각질 잠재우는 보습 립밤/수분 프라이머';
       bundleLink2 = 'https://link.coupang.com/a/synergy-lipcare';
       bundleItem3 = '하루종일 무너짐 없는 롱래스팅 메이크업 픽서';
       bundleLink3 = 'https://link.coupang.com/a/synergy-fixer';
-    } else if (!isFood) {
-      bundleItem2 = '공간 활용 200% 올려주는 정리 수납 트레이';
-      bundleLink2 = 'https://link.coupang.com/a/synergy-tray';
-      bundleItem3 = '자국 없이 깨끗하게 닦이는 전용 클리너';
-      bundleLink3 = 'https://link.coupang.com/a/synergy-cleaner';
+    } else if (category === 'selfcare_tech') {
+      bundleItem2 = '마사지 효과 2배 높여주는 온열 찜질팩';
+      bundleLink2 = 'https://link.coupang.com/a/synergy-heatpack';
+      bundleItem3 = '편안한 수면 돕는 메모리폼 경추베개';
+      bundleLink3 = 'https://link.coupang.com/a/synergy-pillow';
     }
 
     const followerDm = `안녕하세요! 요청하신 [${name}] 정보와 꿀조합 키트 보내드려요 🤍
@@ -1435,8 +1853,8 @@ ${ftcText}
       keywords: ['나도', '나두', '레시피', '정보', '좌표', '구매처', '링크'],
       keywordsText: '나도, 나두, 레시피, 정보, 좌표, 구매처, 링크',
       triggerKeywords: '나도, 나두, 레시피, 정보, 좌표, 구매처, 링크',
-      autoReply: `DM으로 요청하신 [${name}] 레시피 & 최저가 구매 링크 보내드렸어요! 메시지 요청함을 확인해 보세요 💌`,
-      autoReplyComment: `DM으로 요청하신 최저가 구매 링크와 상세 정보 보내드렸어요! 보관함(요청) 확인해 보세요 💌`,
+      autoReply: `DM으로 요청하신 [${name}] 최저가 구매 링크와 상세 정보 보내드렸어요! 메시지 요청함을 확인해 보세요 💌`,
+      autoReplyComment: `DM으로 요청하신 [${name}] 최저가 구매 링크와 꿀팁 보내드렸어요! 보관함(요청) 확인해 보세요 💌`,
       followerDm,
       nonFollowerDm,
       productLink: link
@@ -1444,7 +1862,7 @@ ${ftcText}
   }
 
   // ==========================================
-  // 인스타그램 캡션 생성기 (8,000댓글 바이럴 호흡 & 공정위 문구 완비)
+  // 인스타그램 캡션 생성기 (8,000댓글 바이럴 호흡 & 공정위 문구 완비 - 5대 카테고리 100% 특화)
   // ==========================================
   generateInstagramCaption(p, count, monetizationMode) {
     const name = p.name;
@@ -1452,9 +1870,6 @@ ${ftcText}
     const link = p.link || 'https://link.coupang.com/...';
     const isDM = monetizationMode === 'dm';
     const category = p.category || this.inferCategory(p);
-    const textLower = `${name} ${memo}`.toLowerCase();
-    const isFood = category === 'kitchen_food' || /단호박|호박|레시피|에프|과일|식단|요리|간식|디저트|소스|에어프라이어|파스타|고기|토마토/.test(textLower);
-    const isBeauty = category === 'beauty' || /립|틴트|화장|뷰티|세럼|크림|앰플|패치/.test(textLower);
     const platId = p.platform || 'coupang';
     const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[platId])
       ? AffiliatePlatforms[platId]
@@ -1462,50 +1877,101 @@ ${ftcText}
     const ftcDisclaimer = (platMeta && platMeta.disclaimer) ? platMeta.disclaimer : '※ 본 게시물은 제휴마케팅 활동의 일환으로 일정 수수료를 제공받습니다.';
 
     // 고유 검색 번호 생성 (데이즈홈 시그니처: "프로필링크에서 464번 검색해주세요!")
-    let searchNum = '464';
-    if (isBeauty) searchNum = '513';
-    else if (!isFood) searchNum = '327';
+    let searchNum = '327';
+    if (category === 'kitchen_tool') searchNum = '284';
+    else if (category === 'food_diet') searchNum = '464';
+    else if (category === 'beauty') searchNum = '513';
+    else if (category === 'selfcare_tech') searchNum = '189';
 
-    if (isFood) {
+    if (category === 'kitchen_tool') {
       if (isDM) {
-        return `만드는데 5분컷! 이거 먹고 감량했다는 사람이 왜 이렇게 많은지 알겠네요👀
+        return `써보고 요리·살림 스트레스 싹 사라진 찐후기..🍳✨
+
+친구들이 집에 놀러 올 때마다
+어디서 샀냐고 물어보던
+${name}인데 직접 써보니 신세계네요🥹
+
+눌어붙지 않고 1초 만에 요리 완성되고
+설거지까지 너무 편해서
+매일 요리하는 시간이 즐거워져요✨
+${memo}
+
+요리 똥손 탈출하고 싶다면
+이건 진짜 소장각🤍
+정보는 "나도" 남겨주세요💌
+
+✔ 제품은 프로필링크에서 확인 가능해요
+👉 프로필링크에서 ${searchNum}번 검색해주세요!
+📸 ⓒviralmaker 복제 🚫
+
+(${ftcDisclaimer})
+
+#주방용품 #조리도구 #살림템 #요리스타그램 #자취요리 #인생템 #살림노하우 #주부스타그램 #쿠팡추천템`;
+      }
+      return `써보고 요리·살림 스트레스 싹 사라진 찐후기..🍳✨
+
+친구들이 집에 놀러 올 때마다
+어디서 샀냐고 물어보던
+${name}인데 직접 써보니 신세계네요🥹
+
+눌어붙지 않고 1초 만에 요리 완성되고
+설거지까지 너무 편해서
+매일 요리하는 시간이 즐거워져요✨
+${memo}
+
+요리 똥손 탈출하고 싶다면 이건 진짜 소장각🤍
+📍 [${name}] 최저가 구매 좌표 & 상세 정보:
+👉 프로필링크에서 ${searchNum}번 검색해주세요! 🔗
+
+📸 ⓒviralmaker 복제 🚫
+
+(${ftcDisclaimer})
+
+#주방용품 #조리도구 #살림템 #요리스타그램 #자취요리 #인생템 #살림노하우 #주부스타그램 #쿠팡추천템`;
+    }
+
+    if (category === 'food_diet') {
+      if (isDM) {
+        return `만드는데 5분컷! 이거 챙겨먹고 감량했다는 사람이 왜 이렇게 많은지 알겠네요👀
 
 쫀득하고 달달해서
 디저트 같은데,
 
 재료만 넣고
-에프에 돌리면 끝.
+가볍게 조리하면 끝.
+${memo}
 
 너무 맛있어서
-매일 먹게 되는 레시피인데
-관리할 때도 부담이 적더라고요✨
+매일 챙겨먹게 되는데
+식단 관리할 때도 부담이 적더라고요✨
 
 레시피와 재료 정보는
 "나도" 남겨주세요! 💙🩵
 
 ✔ 제품 및 재료는 프로필링크에서 확인 가능해요
-👉 프로필링크에서 ${searchNum} 검색해주세요!
+👉 프로필링크에서 ${searchNum}번 검색해주세요!
 📸 ⓒviralmaker 복제 🚫
 
 (${ftcDisclaimer})
 
 #식단관리 #다이어트레시피 #에어프라이어요리 #초간단요리 #다이어트식단 #자취요리 #간식추천 #간편식 #홈쿡`;
       }
-      return `만드는데 5분컷! 이거 먹고 감량했다는 사람이 왜 이렇게 많은지 알겠네요👀
+      return `만드는데 5분컷! 이거 챙겨먹고 감량했다는 사람이 왜 이렇게 많은지 알겠네요👀
 
 쫀득하고 달달해서
 디저트 같은데,
 
 재료만 넣고
-에프에 돌리면 끝.
+가볍게 조리하면 끝.
+${memo}
 
 너무 맛있어서
-매일 먹게 되는 레시피인데
-관리할 때도 부담이 적더라고요✨
+매일 챙겨먹게 되는데
+식단 관리할 때도 부담이 적더라고요✨
 
-📍 초간단 레시피 & 사용 재료 최저가 정보:
-👉 프로필 링크에서 ${searchNum} 검색해주세요! 🔗
-(재료 품절 빠르니 재고 있을 때 쟁여두세요!)
+📍 초간단 레시피 & [${name}] 최저가 정보:
+👉 프로필 링크에서 ${searchNum}번 검색해주세요! 🔗
+(인기 상품이라 품절 빠르니 재고 있을 때 쟁여두세요!)
 
 📸 ⓒviralmaker 복제 🚫
 
@@ -1514,18 +1980,19 @@ ${ftcText}
 #식단관리 #다이어트레시피 #에어프라이어요리 #초간단요리 #다이어트식단 #자취요리 #간식추천 #간편식 #홈쿡`;
     }
 
-    if (isBeauty) {
+    if (category === 'beauty') {
       if (isDM) {
-        return `여배우 립 예쁘다 싶으면 은근 다 이거였음..💄❤️
+        return `여배우 메이크업 예쁘다 싶으면 은근 다 이거였음..💄❤️
 
 여배우들도 촬영 때 자주 쓴다는
-${name} 인기 립인데
-발색이 진짜 너무 예뻐요🥹
+${name} 인기템인데
+발색이랑 밀착력이 진짜 너무 예뻐요🥹
 
 슥 바르면 얼굴은 화사해지고
 청순하면서도 우아한 분위기가 확 살아남✨
+${memo}
 
-꾸안꾸 청순립 좋아한다면
+꾸안꾸 청순 무드 좋아한다면
 이건 진짜 소장각🤍
 정보는 "나도" 남겨주세요💌
 
@@ -1537,16 +2004,17 @@ ${name} 인기 립인데
 
 #뷰티스타그램 #립스틱추천 #여배우립 #인생립 #코덕스타그램 #웜톤립 #쿨톤립 #화장품추천 #메이크업`;
       }
-      return `여배우 립 예쁘다 싶으면 은근 다 이거였음..💄❤️
+      return `여배우 메이크업 예쁘다 싶으면 은근 다 이거였음..💄❤️
 
 여배우들도 촬영 때 자주 쓴다는
-${name} 인기 립인데
-발색이 진짜 너무 예뻐요🥹
+${name} 인기템인데
+발색이랑 밀착력이 진짜 너무 예뻐요🥹
 
 슥 바르면 얼굴은 화사해지고
 청순하면서도 우아한 분위기가 확 살아남✨
+${memo}
 
-꾸안꾸 청순립 좋아한다면 이건 진짜 소장각🤍
+꾸안꾸 청순 무드 좋아한다면 이건 진짜 소장각🤍
 📍 [${name}] 최저가 구매 좌표 & 컬러 정보:
 👉 프로필링크에서 ${searchNum}번 검색해주세요! 🔗
 
@@ -1557,9 +2025,56 @@ ${name} 인기 립인데
 #뷰티스타그램 #립스틱추천 #여배우립 #인생립 #코덕스타그램 #웜톤립 #쿨톤립 #화장품추천 #메이크업`;
     }
 
-    // 살림 / 주방용품 / 일반
+    if (category === 'selfcare_tech') {
+      if (isDM) {
+        return `써보고 만성 피로 싹 풀린 직장인 찐후기..💆✨
+
+매일 컴퓨터 보고 폰 보느라
+돌덩이처럼 굳어있던 목·어깨였는데
+${name} 쓰고 광명 찾았어요🥹
+
+15분만 하고 있으면
+전문 마사지사가 손으로 꾹꾹 눌러주는 것처럼
+시원해서 하루 피로가 싹 녹아내림✨
+${memo}
+
+뻐근함 달고 사는 직장인·부모님 선물로
+이건 진짜 무조건 추천🤍
+정보는 "나도" 남겨주세요💌
+
+✔ 제품은 프로필링크에서 확인 가능해요
+👉 프로필링크에서 ${searchNum}번 검색해주세요!
+📸 ⓒviralmaker 복제 🚫
+
+(${ftcDisclaimer})
+
+#마사지기 #피로회복 #직장인스타그램 #효도선물 #힐링템 #목마사지기 #삶의질향상 #내돈내산 #꿀템추천`;
+      }
+      return `써보고 만성 피로 싹 풀린 직장인 찐후기..💆✨
+
+매일 컴퓨터 보고 폰 보느라
+돌덩이처럼 굳어있던 목·어깨였는데
+${name} 쓰고 광명 찾았어요🥹
+
+15분만 하고 있으면
+전문 마사지사가 손으로 꾹꾹 눌러주는 것처럼
+시원해서 하루 피로가 싹 녹아내림✨
+${memo}
+
+뻐근함 달고 사는 분들께 강력 추천🤍
+📍 [${name}] 최저가 구매 좌표 & 상세 스펙:
+👉 프로필링크에서 ${searchNum}번 검색해주세요! 🔗
+
+📸 ⓒviralmaker 복제 🚫
+
+(${ftcDisclaimer})
+
+#마사지기 #피로회복 #직장인스타그램 #효도선물 #힐링템 #목마사지기 #삶의질향상 #내돈내산 #꿀템추천`;
+    }
+
+    // 살림 / 수납 / 청소 / 정리 / 생활용품 (living 기본)
     if (isDM) {
-      return `써보고 삶의 질 수직상승한 찐후기..🤍✨
+      return `써보고 삶의 질 수직상승한 살림 찐후기..🤍✨
 
 친구들이 집 놀러올 때마다
 어디서 샀냐고 물어보던
@@ -1568,6 +2083,7 @@ ${name}인데 직접 써보니 차원이 다름🥹
 1초 만에 깔끔해지고
 복잡하던 정리가 싹 끝나서
 하루하루가 너무 편해지는 거 있죠✨
+${memo}
 
 삶의 질 상승템 좋아한다면
 이건 진짜 소장각🤍
@@ -1582,7 +2098,7 @@ ${name}인데 직접 써보니 차원이 다름🥹
 #살림템 #인생템 #꿀템추천 #내돈내산 #삶의질수직상승 #살림스타그램 #소장각 #자취꿀템 #주부스타그램`;
     }
 
-    return `써보고 삶의 질 수직상승한 찐후기..🤍✨
+    return `써보고 삶의 질 수직상승한 살림 찐후기..🤍✨
 
 친구들이 집 놀러올 때마다
 어디서 샀냐고 물어보던
@@ -1591,6 +2107,7 @@ ${name}인데 직접 써보니 차원이 다름🥹
 1초 만에 깔끔해지고
 복잡하던 정리가 싹 끝나서
 하루하루가 너무 편해지는 거 있죠✨
+${memo}
 
 삶의 질 상승템 좋아한다면 이건 진짜 소장각🤍
 📍 [${name}] 최저가 구매 좌표 & 상세 정보:
