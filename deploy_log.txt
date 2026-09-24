@@ -1,41 +1,62 @@
-=== ViralMaker Deploy Log (2026-09-24 01:00:55) ===
+=== ViralMaker Deploy Log (2026-09-24 16:35:36) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
-M deploy_log.txt
+M PROJECT.md
+ M css/style.css
+ M deploy.py
+ M deploy_log.txt
  M index.html
  M js/app.js
+ M js/cardnews.js
+ M js/generator.js
+ M js/templates.js
+ M update_github.py
  M viralmaker_portable.html
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
+warning: in the working copy of 'PROJECT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/cardnews.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/generator.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/templates.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'update_github.py', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
+M  PROJECT.md
+M  css/style.css
+M  deploy.py
 M  deploy_log.txt
 M  index.html
 M  js/app.js
+M  js/cardnews.js
+M  js/generator.js
+M  js/templates.js
+M  update_github.py
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_010055)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.4: Mobile fast & safe gallery edition (20260924_163536)
   [출력]
-[main cb38c6b] ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_010055)
- 4 files changed, 334 insertions(+), 307 deletions(-)
+[main af256ea] ViralMaker v3.4: Mobile fast & safe gallery edition (20260924_163536)
+ 11 files changed, 710 insertions(+), 207 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+af256ea ViralMaker v3.4: Mobile fast & safe gallery edition (20260924_163536)
 cb38c6b ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_010055)
 b86d209 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_003955)
-4c4b8a3 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi-Image Handling (20260924_003441)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -43,9 +64,9 @@ b86d209 ViralMaker v3.1: Variable Slide Count Sync (3/4/5 Cards) & Dynamic Multi
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   b86d209..cb38c6b  main -> main
+   cb38c6b..af256ea  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.1_20260924_010055
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.4_20260924_163536
 
 === End of Log ===

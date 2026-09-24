@@ -2300,9 +2300,6 @@ body {
         </div>
       </div>
       <div class="header-actions">
-        <button type="button" class="btn-header" id="btn-force-refresh" title="최신 버전으로 강력 새로고침" style="padding: 6px 9px;">
-          <span>🔄</span>
-        </button>
         <button type="button" class="btn-header" id="btn-open-qr-modal" style="border-color: #10b981; color: #6ee7b7; font-weight: 700;" title="스마트폰 카메라로 스캔하여 모바일로 바로 열기">
           <span>📱</span> <span>폰으로 열기</span>
         </button>
@@ -2317,6 +2314,17 @@ body {
         </button>
       </div>
     </header>
+
+    <!-- 최신 버전 확인 & 강력 새로고침 배너 -->
+    <div style="background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(99, 102, 241, 0.18)); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 7px 14px; font-size: 11.5px; color: #fbbf24; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
+        <span><strong>v3.4 모바일 초고속 &amp; 세이프 갤러리 탑재</strong></span>
+      </div>
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.4_' + Date.now());" style="background: rgba(245, 158, 11, 0.18); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+        <span>🔄</span> <span>강력 새로고침</span>
+      </button>
+    </div>
 
     <!-- MAIN CONTENT VIEWS -->
     <main>
