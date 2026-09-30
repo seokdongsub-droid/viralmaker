@@ -2477,6 +2477,19 @@ body {
   transition: opacity 0.3s ease;
 }
 
+/* ⚡ 원클릭 퀵 임포트 카드 */
+.quick-import-card {
+  transition: all 0.25s ease;
+}
+.quick-import-card:hover {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 4px 18px rgba(2, 132, 199, 0.3) !important;
+}
+.quick-import-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.5) !important;
+}
+
 
 
 

@@ -148,6 +148,20 @@
             SNS 화제의 검증 추천템을 터치만 하거나, 내가 직접 홍보하고 싶은 상품명과 링크를 자유롭게 입력하세요!
           </p>
 
+          <!-- ⚡ 1초 원클릭 링크/공유문구 가져오기 바 (브라우저 권한 차단 완벽 해결) -->
+          <div id="quick-import-card" class="quick-import-card" style="margin-bottom: 10px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(99, 102, 241, 0.16)); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;">
+              <span style="font-size: 22px;">⚡</span>
+              <div>
+                <div style="font-size: 12.5px; font-weight: 800; color: #fff;">오늘의집 / 쿠팡에서 [링크 복사] 하셨나요?</div>
+                <div style="font-size: 10.5px; color: #bae6fd;">이 버튼을 누르면 복사하신 <strong>상품명과 링크</strong>가 1초 만에 자동 세팅됩니다!</div>
+              </div>
+            </div>
+            <button type="button" id="btn-quick-import-shopping-link" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; font-weight: 800; font-size: 12px; padding: 8px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35); white-space: nowrap;">
+              <span>📋</span> <span>복사한 상품/링크 즉시 불러오기</span>
+            </button>
+          </div>
+
           <!-- 📋 v3.7 스마트 클립보드 링크 감지 플로팅 배너 -->
           <div id="clipboard-detect-banner" class="clipboard-detect-banner" style="display: none;">
             <div class="clipboard-detect-content">

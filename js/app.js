@@ -800,6 +800,69 @@ function startViralMakerApp() {
     showToast('🎉 감지된 제휴 링크가 1초 만에 세팅되었습니다! 수익 적립 준비 완료 ✨');
   }
 
+  // ⚡ 1초 원클릭 쇼핑몰 링크/공유문구 가져오기 엔진 (브라우저 권한 차단 100% 극복)
+  async function executeQuickShoppingImport(providedText = null) {
+    let clipText = providedText;
+
+    if (!clipText && navigator.clipboard && navigator.clipboard.readText) {
+      try {
+        clipText = await navigator.clipboard.readText();
+      } catch (err) {
+        // 브라우저 백그라운드 보안 차단 시 아래 프롬프트로 부드럽게 폴백
+      }
+    }
+
+    if (!clipText || !clipText.trim()) {
+      clipText = prompt(
+        '📋 오늘의집이나 쿠팡에서 복사하신 링크 또는 공유 텍스트를 여기에 붙여넣어 주세요 (Ctrl+V):',
+        ''
+      );
+    }
+
+    if (!clipText || !clipText.trim()) {
+      showToast('⚠️ 복사된 링크나 상품 정보가 없습니다. 쇼핑몰에서 링크 복사 후 다시 눌러주세요.');
+      return;
+    }
+
+    const trimmed = clipText.trim();
+
+    // 1. 쇼핑몰 공유 텍스트 스마트 파서 실행
+    const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+      ? ContentGenerator.extractShoppingShareInfo(trimmed)
+      : null;
+
+    if (shareInfo && shareInfo.url) {
+      showToast(`⚡ [${shareInfo.platLabel}] "${shareInfo.title || '제휴 상품'}" 인식 완료! 즉시 생성 중...`, 2500);
+      triggerDirectThreadsPipeline(shareInfo.url, shareInfo.title);
+      return;
+    }
+
+    // 2. 일반 URL 정규식 추출
+    const urlMatch = trimmed.match(/https?:\/\/[^\s"'<>]+/i);
+    if (urlMatch) {
+      const url = urlMatch[0];
+      const nonUrl = trimmed.replace(url, '').replace(/[|:\-_[\]]/g, ' ').trim();
+      showToast('⚡ 제휴 링크 감지 완료! 스레드 글 & 카드뉴스 생성 중...', 2500);
+      triggerDirectThreadsPipeline(url, nonUrl || null);
+      return;
+    }
+
+    // 3. 링크 없이 텍스트(상품명)만 들어온 경우
+    const titleOnly = trimmed.slice(0, 35).trim();
+    if (inputProductName) inputProductName.value = titleOnly;
+    state.product.name = titleOnly;
+    if (selectedViralTitle) selectedViralTitle.textContent = titleOnly;
+    if (inputMemo) {
+      inputMemo.value = `${titleOnly} 실사용 찐후기 추천`;
+      state.product.memo = inputMemo.value;
+    }
+    if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
+      state.product.category = ContentGenerator.inferCategory(state.product);
+    }
+    saveCurrentSession(true);
+    showToast(`🏷️ '${titleOnly}' 상품명이 적용되었습니다! 바로 [✨ 1초 만에 완성하기]를 눌러주세요.`, 3500);
+  }
+
   function restoreSavedSession() {
     try {
       const raw = localStorage.getItem(SESSION_KEY);
@@ -1021,20 +1084,17 @@ function startViralMakerApp() {
     });
   }
 
+  // ⚡ 상단 원클릭 퀵 임포트 버튼 & 제휴 링크 붙여넣기 버튼
+  const btnQuickImportShoppingLink = document.getElementById('btn-quick-import-shopping-link');
+  if (btnQuickImportShoppingLink) {
+    btnQuickImportShoppingLink.addEventListener('click', async () => {
+      await executeQuickShoppingImport();
+    });
+  }
+
   if (btnPasteModeARealLink) {
     btnPasteModeARealLink.addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text && text.startsWith('http')) {
-          applyDetectedShoppingUrl(text.trim());
-        } else {
-          if (inputLink) inputLink.focus();
-          showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
-        }
-      } catch (err) {
-        if (inputLink) inputLink.focus();
-        showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
-      }
+      await executeQuickShoppingImport();
     });
   }
 
@@ -1092,6 +1152,34 @@ function startViralMakerApp() {
   }
 
   if (inputLink) {
+    inputLink.addEventListener('paste', () => {
+      setTimeout(() => {
+        const raw = inputLink.value.trim();
+        const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+          ? ContentGenerator.extractShoppingShareInfo(raw)
+          : null;
+        if (shareInfo && shareInfo.url) {
+          inputLink.value = shareInfo.url;
+          state.product.link = shareInfo.url;
+          if (shareInfo.title) {
+            state.product.name = shareInfo.title;
+            if (inputProductName) inputProductName.value = shareInfo.title;
+            if (selectedViralTitle) selectedViralTitle.textContent = shareInfo.title;
+            if (inputMemo) {
+              inputMemo.value = `${shareInfo.title} 실사용 찐후기 추천`;
+              state.product.memo = inputMemo.value;
+            }
+          }
+          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
+            state.product.category = ContentGenerator.inferCategory(state.product);
+          }
+          updateModeBBadge();
+          saveCurrentSession(true);
+          showToast(`🎉 [${shareInfo.platLabel}] "${shareInfo.title || '제휴 링크'}" 분리 입력 완료! ✨`);
+        }
+      }, 50);
+    });
+
     inputLink.addEventListener('input', () => {
       updateModeBBadge();
       const url = inputLink.value.trim();
@@ -1260,6 +1348,30 @@ function startViralMakerApp() {
 
   // --- ✍️ 상품명 & 메모 직접 수정 및 1초 키워드 칩 연동 ---
   if (inputProductName) {
+    inputProductName.addEventListener('paste', () => {
+      setTimeout(() => {
+        const raw = inputProductName.value.trim();
+        const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+          ? ContentGenerator.extractShoppingShareInfo(raw)
+          : null;
+        if (shareInfo && shareInfo.title) {
+          inputProductName.value = shareInfo.title;
+          state.product.name = shareInfo.title;
+          if (selectedViralTitle) selectedViralTitle.textContent = shareInfo.title;
+          if (shareInfo.url && inputLink) {
+            inputLink.value = shareInfo.url;
+            state.product.link = shareInfo.url;
+            updateModeBBadge();
+          }
+          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
+            state.product.category = ContentGenerator.inferCategory(state.product);
+          }
+          saveCurrentSession(true);
+          showToast(`🎉 [${shareInfo.platLabel}] "${shareInfo.title}" 상품명과 링크 자동 세팅 완료! ✨`);
+        }
+      }, 50);
+    });
+
     inputProductName.addEventListener('input', () => {
       const val = inputProductName.value.trim();
       if (val) {

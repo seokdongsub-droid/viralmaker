@@ -27,6 +27,8 @@ with open('viralmaker_portable.html', 'r', encoding='utf-8') as f:
 
 # 2. 필수 DOM 요소 확인
 required_dom_ids = [
+    'quick-import-card',
+    'btn-quick-import-shopping-link',
     'clipboard-detect-banner',
     'clipboard-detect-badge',
     'clipboard-detect-text',
@@ -62,6 +64,7 @@ assert dom_pass, "DOM ID 검증 실패!"
 
 # 3. CSS 클래스 검증
 required_classes = [
+    '.quick-import-card',
     '.clipboard-detect-banner',
     '.clipboard-detect-badge',
     '.clipboard-detect-text',
@@ -87,6 +90,7 @@ with open('js/generator.js', 'r', encoding='utf-8') as f:
     generator_js_content = f.read()
 
 required_js_tokens = [
+    'executeQuickShoppingImport',
     'autoFetchProductMetadata',
     'triggerDirectThreadsPipeline',
     'showClipboardDetectBanner',
