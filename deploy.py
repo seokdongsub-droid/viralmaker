@@ -60,7 +60,7 @@ res_add = run_cmd(["git", "add", "-A"], "Git Add")
 run_cmd(["git", "status", "-s"], "Git Status After Add")
 
 # 3. Git Commit
-commit_msg = f"ViralMaker v3.6: 실전 제휴마케팅 제품 홍보 특화 엔진 (5대 카테고리 맞춤 생성) ({timestamp_str})"
+commit_msg = f"ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 ({timestamp_str})"
 res_commit = run_cmd(["git", "commit", "-m", commit_msg], "Git Commit")
 run_cmd(["git", "log", "-n", "3", "--oneline"], "Recent Git Commits")
 
@@ -73,14 +73,14 @@ print("\n" + "=" * 60)
 success = (res_push is not None and res_push.returncode == 0)
 
 if success:
-    print("🎉 ✅ [성공] 최신 v3.6 (실전 제휴마케팅 & 제품 홍보 특화 엔진)가 깃허브 서버로 안전하게 전송되었습니다!")
+    print("🎉 ✅ [성공] 최신 v3.7 (실시간 세션 자동 복원 & 스마트 클립보드 감지)가 깃허브 서버로 안전하게 전송되었습니다!")
     print("=" * 60)
     print("\n📱 [스마트폰 접속 안내]")
     print("1. 깃허브 서버가 새 코드를 배포하는 데 약 40초 ~ 1분 30초가 소요됩니다.")
     print(f"2. 캐시 없이 즉시 최신 버전을 열 수 있는 타임스탬프 전용 주소:")
-    print(f"   👉 https://seokdongsub-droid.github.io/viralmaker/?v=3.6_{timestamp_str}")
-    print("\n3. 화면 상단에 [v3.6 제품 홍보 전용]이 보이면 최신 버전 적용 성공입니다!")
-    log(f"\n배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.6_{timestamp_str}")
+    print(f"   👉 https://seokdongsub-droid.github.io/viralmaker/?v=3.7_{timestamp_str}")
+    print("\n3. 화면 상단에 [v3.7 자동복원 & 감지]가 보이면 최신 버전 적용 성공입니다!")
+    log(f"\n배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.7_{timestamp_str}")
 else:
     print("⚠️ ❌ [주의] 깃허브 전송 중 오류가 발생했습니다.")
     print("자세한 원인은 생성된 'deploy_log.txt' 파일을 확인해 주세요.")
