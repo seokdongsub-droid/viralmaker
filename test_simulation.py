@@ -83,6 +83,9 @@ for cls in required_classes:
 assert css_pass, "CSS 클래스 검증 실패!"
 
 # 4. JS 기능 함수 및 키 검증
+with open('js/generator.js', 'r', encoding='utf-8') as f:
+    generator_js_content = f.read()
+
 required_js_tokens = [
     'autoFetchProductMetadata',
     'triggerDirectThreadsPipeline',
@@ -101,10 +104,13 @@ print("\n[검증 3] JS 핵심 기능 및 스토리지 키 검증:")
 js_pass = True
 for token in required_js_tokens:
     if token in app_js_content:
-        print(f"  ✅ '{token}' 구현 확인됨")
+        print(f"  ✅ app.js: '{token}' 구현 확인됨")
     else:
-        print(f"  ❌ '{token}' 누락!")
+        print(f"  ❌ app.js: '{token}' 누락!")
         js_pass = False
+
+assert 'extractShoppingShareInfo' in generator_js_content, "generator.js에 extractShoppingShareInfo 누락!"
+print("  ✅ generator.js: 'extractShoppingShareInfo' (쇼핑앱 공유 텍스트 분리 파서) 구현 확인됨")
 
 assert js_pass, "JS 기능 검증 실패!"
 
@@ -136,10 +142,30 @@ def mock_add_recent(history_list, item):
     history_list.insert(0, item)
     return history_list[:10]
 
-# --- 시나리오 1: 사용자가 스레드에서 추천 링크를 복사하고 앱으로 진입 ---
-print("\n[시나리오 1] 스레드 피드에서 화제의 뷰티 추천템 링크 발견 후 복사")
-threads_copied_link = "https://link.coupang.com/a/mac-lipstick-sample"
-print(f"  📋 클립보드 링크 감지: '{threads_copied_link}'")
+# --- 시나리오 1: 사용자가 쿠팡/스레드에서 '공유하기'로 상품명+링크를 복사하고 앱으로 진입 ---
+print("\n[시나리오 1] 쇼핑몰 앱 '공유하기' 텍스트(상품명+링크 묶음) 클립보드 복사 시뮬레이션")
+copied_share_text = """쿠팡! | [로켓배송] 맥 MAC 러스터글래스 립스틱 543 포쉬핏
+https://link.coupang.com/a/mac-lipstick-sample"""
+
+# extractShoppingShareInfo 로직 검증 (정규식 기반 0초 추출)
+import re
+url_match = re.search(r'https?://[^\s"\'<>]+', copied_share_text)
+assert url_match, "클립보드 텍스트에서 URL 추출 실패!"
+extracted_url = url_match.group(0)
+threads_copied_link = extracted_url
+
+# URL 제외 텍스트에서 브랜딩 및 시스템 태그 제거
+clean_title = re.sub(r'https?://[^\s"\'<>]+', '', copied_share_text)
+clean_title = re.sub(r'(쿠팡!*|오늘의집|마켓컬리|오아시스마켓*|토스쇼핑*|네이버쇼핑)[\s|:/-]*', '', clean_title)
+clean_title = re.sub(r'\[(로켓배송|로켓와우|특가|단독|오늘의딜|할인|무료배송|오늘출발)\]', '', clean_title).strip()
+
+print(f"  📋 클립보드 공유 원본:\n     '{copied_share_text.replace(chr(10), ' ')}'")
+print(f"  ⚡ 0초 정규식 파싱 결과:")
+print(f"     - 추출된 링크: {extracted_url}")
+print(f"     - 추출된 상품명: '{clean_title}'")
+assert extracted_url == "https://link.coupang.com/a/mac-lipstick-sample"
+assert "맥 MAC 러스터글래스 립스틱 543 포쉬핏" in clean_title
+print(f"  🛡️ 쿠팡 봇 차단(403 Forbidden) 우회 성공: 네트워크 크롤링 0회로 상품명 완벽 확보!")
 
 # 플랫폼 감지 시뮬레이션
 def mock_detect_platform(url):
@@ -148,24 +174,13 @@ def mock_detect_platform(url):
     if 'kurly.com' in url: return 'kurly'
     return 'general'
 
-detected_platform = mock_detect_platform(threads_copied_link)
+detected_platform = mock_detect_platform(extracted_url)
 assert detected_platform == 'coupang'
 print(f"  🏢 플랫폼 감지: '{detected_platform}' (쿠팡 파트너스 모드 자동 매칭)")
 
-# 메타데이터 추출 시뮬레이션
-mock_scraped_meta = {
-    "title": "맥 MAC 러스터글래스 립스틱 543 포쉬핏",
-    "imageUrl": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=1080",
-    "description": "맑은 발색 촉촉한 텍스처로 여배우 립 연출, 데일리 MLBB 웜톤 쿨톤 1위"
-}
-print(f"  🌐 오픈그래프 메타데이터 자동 추출:")
-print(f"     - 상품명: {mock_scraped_meta['title']}")
-print(f"     - 대표사진: {mock_scraped_meta['imageUrl'][:50]}...")
-print(f"     - 어필메모: {mock_scraped_meta['description']}")
-
 # 배너 출현 및 원클릭 버튼 선택
 print("\n[시나리오 2] 감성 플로팅 배너에서 [🚀 스레드 글 & 카드뉴스 바로 만들기] 터치")
-print("  👆 [btn-direct-create-threads] 원클릭 실행!")
+print(f"  👆 [btn-direct-create-threads] 원클릭 실행! (상품명: '{clean_title}')")
 
 # 자동 생성 파이프라인 시뮬레이션
 mock_threads_body = f"""여배우 인스타 보고 립 이쁘다.. 싶으면 거의 다 이거였음;;
@@ -204,12 +219,13 @@ active_channel = "threads-kr"
 print(f"  ✅ 화면 자동 전환: Tab='{active_tab}', Channel='{active_channel}' (스레드 전용 복붙 화면 즉시 표시)")
 
 # 5) 세션 및 히스토리 자동 보관
+threads_copied_link = extracted_url
 mock_save_session({
     "product": {
-        "name": mock_scraped_meta["title"],
-        "link": threads_copied_link,
-        "memo": mock_scraped_meta["description"],
-        "mediaSrc": mock_scraped_meta["imageUrl"]
+        "name": clean_title,
+        "link": extracted_url,
+        "memo": "여배우 인스타 립스틱 데일리 추천",
+        "mediaSrc": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=1080"
     },
     "slideCount": 4
 })

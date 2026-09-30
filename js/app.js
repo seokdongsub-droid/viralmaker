@@ -486,7 +486,7 @@ function startViralMakerApp() {
     });
   }
 
-  // 📋 화면 복귀 시 클립보드 제휴 링크 스마트 자동 감지
+  // 📋 화면 복귀 시 클립보드 제휴 링크 & 공유 텍스트 스마트 자동 감지
   function checkClipboardForShoppingLink() {
     if (!navigator.clipboard || !navigator.clipboard.readText) return;
     const banner = document.getElementById('clipboard-detect-banner');
@@ -494,39 +494,20 @@ function startViralMakerApp() {
 
     navigator.clipboard.readText().then(text => {
       if (!text || typeof text !== 'string') return;
-      const trimmed = text.trim();
-      if (!trimmed.startsWith('http')) return;
+      
+      const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+        ? ContentGenerator.extractShoppingShareInfo(text)
+        : null;
 
-      const isShopping = /(ohou\.se|coupang\.com|kurly\.com|oasis\.co\.kr|toss\.im|smartstore\.naver\.com)/i.test(trimmed);
-      if (!isShopping) return;
+      if (!shareInfo) return;
+      const { url, title, platLabel, platIcon } = shareInfo;
 
-      if (inputLink && inputLink.value.trim() === trimmed) return;
-      if (lastDetectedClipUrl === trimmed) return;
-
-      let platLabel = '제휴 쇼핑몰';
-      let platIcon = '🛍️';
-      if (/ohou\.se/i.test(trimmed)) {
-        platLabel = '오늘의집';
-        platIcon = '🏠';
-      } else if (/coupang\.com/i.test(trimmed)) {
-        platLabel = '쿠팡';
-        platIcon = '🚀';
-      } else if (/kurly\.com/i.test(trimmed)) {
-        platLabel = '마켓컬리';
-        platIcon = '💜';
-      } else if (/oasis\.co\.kr/i.test(trimmed)) {
-        platLabel = '오아시스';
-        platIcon = '🌱';
-      } else if (/toss\.im/i.test(trimmed)) {
-        platLabel = '토스쇼핑';
-        platIcon = '⚡';
-      } else if (/naver\.com/i.test(trimmed)) {
-        platLabel = '네이버 쇼핑';
-        platIcon = '📦';
-      }
+      if (inputLink && inputLink.value.trim() === url) return;
+      if (lastDetectedClipUrl === url) return;
 
       showClipboardDetectBanner({
-        url: trimmed,
+        url,
+        title,
         platLabel,
         platIcon
       });
@@ -582,7 +563,7 @@ function startViralMakerApp() {
   }
 
   // 🚀 스레드 글 & 카드뉴스 다이렉트 1초 완성 파이프라인
-  async function triggerDirectThreadsPipeline(url) {
+  async function triggerDirectThreadsPipeline(url, presetTitle = null) {
     showToast('🔍 제품 링크 분석 및 스레드 글 생성 중... ⚡', 2500);
 
     // 1. 기본 링크 입력 및 플랫폼 감지
@@ -598,35 +579,53 @@ function startViralMakerApp() {
     updateModeALinkStatus(url);
     updateModeBBadge();
 
-    // 2. 메타데이터 (제목, 대표사진, 설명) 추출
-    const meta = await autoFetchProductMetadata(url);
+    // 2. 상품명 결정: 클립보드 공유텍스트에서 추출된 presetTitle 최우선 적용
+    let determinedTitle = presetTitle;
 
-    if (meta && meta.title) {
-      state.product.name = meta.title;
-      if (inputProductName) inputProductName.value = meta.title;
-      if (selectedViralTitle) selectedViralTitle.textContent = meta.title;
-    } else if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
+    // 공유텍스트에 제목이 없었던 경우 웹 메타데이터 비동기 수집 시도
+    if (!determinedTitle) {
+      const meta = await autoFetchProductMetadata(url);
+      if (meta && meta.title) {
+        determinedTitle = meta.title;
+      }
+      if (meta && meta.imageUrl) {
+        state.product.mediaSrc = meta.imageUrl;
+        if (inputImageUrl) inputImageUrl.value = meta.imageUrl;
+        applyImageUrlDirectly(meta.imageUrl);
+      }
+      if (meta && meta.description) {
+        const shortDesc = meta.description.slice(0, 80);
+        if (!inputMemo.value || inputMemo.value.includes('호텔 조식') || inputMemo.value.includes('하루 15분')) {
+          inputMemo.value = shortDesc;
+          state.product.memo = shortDesc;
+        }
+      }
+    }
+
+    // 여전히 제목이 없으면 URL 슬러그 분석
+    if (!determinedTitle && typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
       const inferred = ContentGenerator.inferProductName({ link: url });
       if (inferred && inferred !== '화제의 인기 추천템') {
-        state.product.name = inferred;
-        if (inputProductName) inputProductName.value = inferred;
-        if (selectedViralTitle) selectedViralTitle.textContent = inferred;
+        determinedTitle = inferred;
       }
     }
 
-    if (meta && meta.description) {
-      const shortDesc = meta.description.slice(0, 80);
-      if (!inputMemo.value || inputMemo.value.includes('호텔 조식') || inputMemo.value.includes('하루 15분')) {
-        inputMemo.value = shortDesc;
-        state.product.memo = shortDesc;
+    // 쿠팡 봇 차단/단축링크로 인해 상품명을 전혀 못 읽어온 경우: 1초 퀵 프롬프트 폴백!
+    if (!determinedTitle || determinedTitle === '화제의 인기 추천템') {
+      const quickInput = prompt(
+        '💡 쿠팡/쇼핑몰의 보안 봇 차단 정책으로 상품명을 자동으로 읽어오지 못했습니다.\n상품명이 무엇인가요? (예: 5구 멀티탭, 모던 장스탠드):',
+        ''
+      );
+      if (quickInput && quickInput.trim()) {
+        determinedTitle = quickInput.trim();
+      } else {
+        determinedTitle = (detectedPlat === 'coupang' ? '쿠팡 로켓 추천템' : (detectedPlat === 'ohou' ? '오늘의집 인기 리빙템' : 'SNS 화제의 꿀템'));
       }
     }
 
-    if (meta && meta.imageUrl) {
-      state.product.mediaSrc = meta.imageUrl;
-      if (inputImageUrl) inputImageUrl.value = meta.imageUrl;
-      applyImageUrlDirectly(meta.imageUrl);
-    }
+    state.product.name = determinedTitle;
+    if (inputProductName) inputProductName.value = determinedTitle;
+    if (selectedViralTitle) selectedViralTitle.textContent = determinedTitle;
 
     renderPlatformSearchToolbar({ 
       name: state.product.name, 
@@ -681,16 +680,21 @@ function startViralMakerApp() {
     }
   }
 
-  function showClipboardDetectBanner({ url, platLabel, platIcon }) {
+  function showClipboardDetectBanner({ url, title, platLabel, platIcon }) {
     const banner = document.getElementById('clipboard-detect-banner');
     const badge = document.getElementById('clipboard-detect-badge');
     const textEl = document.getElementById('clipboard-detect-text');
     if (!banner || !badge || !textEl) return;
 
-    badge.innerHTML = `${platIcon} ${platLabel} 링크 복사 감지`;
-    let displayUrl = url;
-    if (displayUrl.length > 40) displayUrl = displayUrl.slice(0, 37) + '...';
-    textEl.textContent = `방금 복사하신 [${platLabel}] 링크(${displayUrl})로 즉시 세팅할까요?`;
+    badge.innerHTML = `${platIcon} ${platLabel} ${title ? '상품' : '링크'} 감지`;
+    if (title) {
+      const dispTitle = title.length > 32 ? title.slice(0, 30) + '...' : title;
+      textEl.innerHTML = `방금 복사하신 [${platLabel}] <b>"${dispTitle}"</b> 상품으로 즉시 제작할까요?`;
+    } else {
+      let displayUrl = url;
+      if (displayUrl.length > 40) displayUrl = displayUrl.slice(0, 37) + '...';
+      textEl.textContent = `방금 복사하신 [${platLabel}] 링크(${displayUrl})로 즉시 세팅할까요?`;
+    }
 
     banner.style.display = 'block';
 
@@ -699,16 +703,22 @@ function startViralMakerApp() {
     const btnDismiss = document.getElementById('btn-dismiss-detected-clip');
 
     if (btnDirectThreads) {
+      if (title) {
+        const shortBtnTitle = title.length > 14 ? title.slice(0, 13) + '..' : title;
+        btnDirectThreads.innerHTML = `🚀 "${shortBtnTitle}" 스레드 글 & 카드뉴스 바로 만들기`;
+      } else {
+        btnDirectThreads.innerHTML = `🚀 스레드 글 & 카드뉴스 바로 만들기`;
+      }
       btnDirectThreads.onclick = () => {
         banner.style.display = 'none';
         lastDetectedClipUrl = url;
-        triggerDirectThreadsPipeline(url);
+        triggerDirectThreadsPipeline(url, title);
       };
     }
 
     if (btnApply) {
       btnApply.onclick = () => {
-        applyDetectedShoppingUrl(url);
+        applyDetectedShoppingUrl(url, title);
         banner.style.display = 'none';
         lastDetectedClipUrl = url;
       };
@@ -722,7 +732,7 @@ function startViralMakerApp() {
     }
   }
 
-  function applyDetectedShoppingUrl(url) {
+  function applyDetectedShoppingUrl(url, presetTitle = null) {
     if (inputLink) inputLink.value = url;
     if (inputModeARealLink) inputModeARealLink.value = url;
     state.product.link = url;
@@ -733,9 +743,15 @@ function startViralMakerApp() {
     state.product.platform = detectedPlat;
     currentActivePlatform = detectedPlat;
 
-    // 메타데이터 비동기 조회
+    if (presetTitle) {
+      state.product.name = presetTitle;
+      if (inputProductName) inputProductName.value = presetTitle;
+      if (selectedViralTitle) selectedViralTitle.textContent = presetTitle;
+    }
+
+    // 메타데이터 비동기 조회 (이미지가 필요할 수 있으므로)
     autoFetchProductMetadata(url).then(meta => {
-      if (meta && meta.title) {
+      if (!presetTitle && meta && meta.title) {
         state.product.name = meta.title;
         if (inputProductName) inputProductName.value = meta.title;
         if (selectedViralTitle) selectedViralTitle.textContent = meta.title;
@@ -755,7 +771,7 @@ function startViralMakerApp() {
     });
 
     // 링크에서 상품명 추론 가능한 경우 반영
-    if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
+    if (!presetTitle && typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
       const inferred = ContentGenerator.inferProductName({ link: url });
       if (inferred && inferred !== '화제의 인기 추천템') {
         const curName = inputProductName ? inputProductName.value.trim() : '';

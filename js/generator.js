@@ -46,6 +46,71 @@ class ContentGeneratorEngine {
     return 'general';
   }
 
+  // 📋 쇼핑몰 앱 '공유하기' 복사 텍스트(상품명 + 링크 한 묶음)에서 상품명과 URL 분리 추출
+  extractShoppingShareInfo(rawText) {
+    if (!rawText || typeof rawText !== 'string') return null;
+    const text = rawText.trim();
+    
+    // 1. URL 정규식 추출
+    const urlMatch = text.match(/https?:\/\/[^\s"'<>]+/i);
+    if (!urlMatch) return null;
+    const url = urlMatch[0];
+
+    // 2. 쇼핑몰 링크 판별
+    const isShopping = /(ohou\.se|ozip\.to|coupang\.com|kurly\.com|oasis\.co\.kr|toss\.im|smartstore\.naver\.com|shopping\.naver\.com|aliexpress\.com|oliveyoung\.co\.kr)/i.test(url);
+    if (!isShopping) return null;
+
+    const platKey = this.detectPlatform(url);
+    let platLabel = '제휴 쇼핑몰';
+    let platIcon = '🛍️';
+
+    if (platKey === 'ohou') {
+      platLabel = '오늘의집';
+      platIcon = '🏠';
+    } else if (platKey === 'coupang') {
+      platLabel = '쿠팡';
+      platIcon = '🚀';
+    } else if (platKey === 'kurly') {
+      platLabel = '마켓컬리';
+      platIcon = '💜';
+    } else if (platKey === 'oasis') {
+      platLabel = '오아시스';
+      platIcon = '🌱';
+    } else if (platKey === 'toss') {
+      platLabel = '토스쇼핑';
+      platIcon = '⚡';
+    } else if (platKey === 'smartstore') {
+      platLabel = '네이버 쇼핑';
+      platIcon = '📦';
+    }
+
+    // 3. URL을 제외한 텍스트에서 '상품명' 추출 (공유하기 텍스트 분리)
+    let nonUrlText = text.replace(url, '').trim();
+    let cleanedTitle = nonUrlText
+      .replace(/(쿠팡!*|오늘의집|마켓컬리|오아시스마켓*|토스쇼핑*|네이버쇼핑|스마트스토어|올리브영)[\s|:/-]*/gi, '')
+      .replace(/\[(로켓배송|로켓와우|특가|단독|오늘의딜|할인|무료배송|오늘출발|쿠팡|오늘의집)\]/gi, '')
+      .replace(/(지금\s*.*에서\s*확인해보세요!?|앱에서\s*확인해보세요!?|자세한\s*내용은\s*링크에서!?)/gi, '')
+      .replace(/^[\s|:/-]+|[\s|:/-]+$/g, '')
+      .trim();
+
+    // 4. URL 슬러그 한글 디코딩 폴백
+    if (!cleanedTitle) {
+      const inferred = this.inferProductName({ link: url });
+      if (inferred && inferred !== '화제의 인기 추천템') {
+        cleanedTitle = inferred;
+      }
+    }
+
+    return {
+      url,
+      title: cleanedTitle || null,
+      platKey,
+      platLabel,
+      platIcon,
+      rawText: text
+    };
+  }
+
   // 제품명 추론
   inferProductName(product) {
     if (product.name && product.name.trim()) return product.name.trim();
@@ -59,7 +124,7 @@ class ContentGeneratorEngine {
         const pathParts = url.pathname.split('/').filter(Boolean);
         if (pathParts.length > 0) {
           const last = decodeURIComponent(pathParts[pathParts.length - 1]).replace(/[-_]/g, ' ');
-          if (last.length >= 2 && last.length <= 25) return last;
+          if (last.length >= 2 && last.length <= 35 && !/^\d+$/.test(last)) return last;
         }
       } catch (e) {}
     }
