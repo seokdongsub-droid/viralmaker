@@ -148,6 +148,36 @@
             SNS 화제의 검증 추천템을 터치만 하거나, 내가 직접 홍보하고 싶은 상품명과 링크를 자유롭게 입력하세요!
           </p>
 
+          <!-- 📋 v3.7 스마트 클립보드 링크 감지 플로팅 배너 -->
+          <div id="clipboard-detect-banner" class="clipboard-detect-banner" style="display: none;">
+            <div class="clipboard-detect-content">
+              <div class="clipboard-detect-info">
+                <span id="clipboard-detect-badge" class="clipboard-detect-badge">🏠 오늘의집 감지</span>
+                <span id="clipboard-detect-text" class="clipboard-detect-text">방금 복사한 링크로 즉시 세팅할까요?</span>
+              </div>
+              <div class="clipboard-detect-actions">
+                <button type="button" id="btn-apply-detected-clip" class="btn-clipboard-apply">⚡ 1초 자동 적용</button>
+                <button type="button" id="btn-dismiss-detected-clip" class="btn-clipboard-dismiss" title="닫기">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🕒 v3.7 최근 작업/조회한 상품 히스토리 퀵 바 -->
+          <div id="recent-history-section" class="recent-history-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 4px;">
+                <span>🕒 최근 본/작업한 상품:</span>
+                <span id="recent-history-count" style="font-size: 10px; color: #94a3b8; font-weight: 700;"></span>
+              </span>
+              <button type="button" id="btn-clear-recent-history" style="font-size: 10px; color: #71717a; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0;">
+                기록 비우기
+              </button>
+            </div>
+            <div id="recent-history-container" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch;">
+              <!-- 동적 칩 렌더링 -->
+            </div>
+          </div>
+
           <!-- 🏬 5대 제휴쇼핑몰 전용관 바로가기 필터 탭 -->
           <div style="margin-bottom: 8px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; padding: 8px 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -187,6 +217,7 @@
                 <label for="input-product-name" style="font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer;">
                   <span>🏷️ 홍보 상품명:</span>
                   <span id="selected-platform-badge" class="platform-mini-badge">🚀 쿠팡 모드</span>
+                  <span id="session-save-badge" class="session-save-badge" title="모든 작업 내용이 기기에 실시간 자동 저장됩니다">💾 자동 저장됨</span>
                 </label>
                 <span class="platform-search-hint">💡 추천템 클릭 시 자동 채워지며, 원하는 상품명으로 직접 수정 가능합니다</span>
               </div>

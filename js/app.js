@@ -348,6 +348,356 @@ function startViralMakerApp() {
     { id: 'smartstore', label: '네이버 🛍️', colorClass: 'smartstore', sampleDomain: 'smartstore.naver.com/sample/' }
   ];
 
+  // ============================================================
+  // v3.7 💾 실시간 자동 저장 & 🕒 최근 본 히스토리 & 📋 스마트 클립보드 감지
+  // ============================================================
+  const SESSION_KEY = 'viralmaker_active_session_v37';
+  const HISTORY_KEY = 'viralmaker_recent_history_v37';
+  let autoSaveTimer = null;
+  let lastDetectedClipUrl = '';
+
+  function saveCurrentSession(immediate = false) {
+    const doSave = () => {
+      try {
+        const sessionData = {
+          version: '3.7',
+          savedAt: Date.now(),
+          product: {
+            name: (inputProductName ? inputProductName.value.trim() : state.product.name) || '',
+            link: (inputLink ? inputLink.value.trim() : state.product.link) || '',
+            memo: (inputMemo ? inputMemo.value : state.product.memo) || '',
+            platform: state.product.platform || currentActivePlatform || 'coupang',
+            category: state.product.category || 'general',
+            mediaSrc: state.product.mediaSrc || null
+          },
+          slideCount: state.slideCount || 4,
+          ratio: state.ratio || '4:5',
+          monetizationMode: state.monetizationMode || 'link',
+          threadsType: state.threadsType || 'type1',
+          currentViralCat: currentViralCat || 'all',
+          currentPlatformFilter: currentPlatformFilter || 'all'
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+
+        const badge = document.getElementById('session-save-badge');
+        if (badge) {
+          badge.style.opacity = '1';
+          badge.textContent = '💾 자동 저장됨';
+        }
+      } catch (e) {
+        console.warn('Auto-save error:', e);
+      }
+    };
+
+    if (immediate) {
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      doSave();
+    } else {
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(doSave, 350);
+    }
+  }
+
+  function getRecentHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function addToRecentHistory(item) {
+    if (!item || (!item.name && !item.title)) return;
+    try {
+      let history = getRecentHistory();
+      const title = item.title || item.name;
+      // 중복 제거 (이름 또는 링크 기준)
+      history = history.filter(h => (h.name !== item.name && h.title !== title) && (!item.link || h.link !== item.link));
+
+      const entry = {
+        id: item.id || ('hist_' + Date.now()),
+        name: item.name || title,
+        title: title,
+        icon: item.icon || (item.defaultPlatform === 'ohou' ? '🏠' : (item.defaultPlatform === 'coupang' ? '🚀' : '✨')),
+        defaultPlatform: item.defaultPlatform || currentActivePlatform || 'coupang',
+        link: item.link || (inputLink ? inputLink.value.trim() : ''),
+        memo: item.memo || (inputMemo ? inputMemo.value : ''),
+        search: item.search || item.coupangSearch || item.name,
+        imageUrl: item.imageUrl || null,
+        timestamp: Date.now()
+      };
+      history.unshift(entry);
+      if (history.length > 10) history = history.slice(0, 10);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderRecentHistory();
+    } catch (e) {
+      console.warn('addToRecentHistory error:', e);
+    }
+  }
+
+  function renderRecentHistory() {
+    const section = document.getElementById('recent-history-section');
+    const container = document.getElementById('recent-history-container');
+    const countEl = document.getElementById('recent-history-count');
+    if (!section || !container) return;
+
+    const history = getRecentHistory();
+    if (!history || history.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    if (countEl) countEl.textContent = `(${history.length}개 보관 중)`;
+    container.innerHTML = '';
+
+    history.forEach(item => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'recent-chip';
+
+      const plat = item.defaultPlatform || 'coupang';
+      const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[plat])
+        ? AffiliatePlatforms[plat]
+        : null;
+      const platName = platMeta ? platMeta.shortName : plat;
+
+      chip.innerHTML = `<span>${item.icon || '✨'}</span> <span class="recent-chip-plat">${platName}</span> <strong>${item.title || item.name}</strong>`;
+
+      chip.addEventListener('click', (e) => {
+        e.preventDefault();
+        container.querySelectorAll('.recent-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        applyViralItem(item);
+        showToast(`'${item.title || item.name}' 작업 모드로 복원되었습니다! ⚡`);
+      });
+
+      container.appendChild(chip);
+    });
+  }
+
+  const btnClearRecentHistory = document.getElementById('btn-clear-recent-history');
+  if (btnClearRecentHistory) {
+    btnClearRecentHistory.addEventListener('click', () => {
+      localStorage.removeItem(HISTORY_KEY);
+      renderRecentHistory();
+      showToast('최근 본 상품 기록이 비워졌습니다.');
+    });
+  }
+
+  // 📋 화면 복귀 시 클립보드 제휴 링크 스마트 자동 감지
+  function checkClipboardForShoppingLink() {
+    if (!navigator.clipboard || !navigator.clipboard.readText) return;
+    const banner = document.getElementById('clipboard-detect-banner');
+    if (banner && banner.style.display !== 'none') return;
+
+    navigator.clipboard.readText().then(text => {
+      if (!text || typeof text !== 'string') return;
+      const trimmed = text.trim();
+      if (!trimmed.startsWith('http')) return;
+
+      const isShopping = /(ohou\.se|coupang\.com|kurly\.com|oasis\.co\.kr|toss\.im|smartstore\.naver\.com)/i.test(trimmed);
+      if (!isShopping) return;
+
+      if (inputLink && inputLink.value.trim() === trimmed) return;
+      if (lastDetectedClipUrl === trimmed) return;
+
+      let platLabel = '제휴 쇼핑몰';
+      let platIcon = '🛍️';
+      if (/ohou\.se/i.test(trimmed)) {
+        platLabel = '오늘의집';
+        platIcon = '🏠';
+      } else if (/coupang\.com/i.test(trimmed)) {
+        platLabel = '쿠팡';
+        platIcon = '🚀';
+      } else if (/kurly\.com/i.test(trimmed)) {
+        platLabel = '마켓컬리';
+        platIcon = '💜';
+      } else if (/oasis\.co\.kr/i.test(trimmed)) {
+        platLabel = '오아시스';
+        platIcon = '🌱';
+      } else if (/toss\.im/i.test(trimmed)) {
+        platLabel = '토스쇼핑';
+        platIcon = '⚡';
+      } else if (/naver\.com/i.test(trimmed)) {
+        platLabel = '네이버 쇼핑';
+        platIcon = '📦';
+      }
+
+      showClipboardDetectBanner({
+        url: trimmed,
+        platLabel,
+        platIcon
+      });
+    }).catch(() => {
+      // 권한 미승인 또는 비활성 탭 시 조용히 무시
+    });
+  }
+
+  function showClipboardDetectBanner({ url, platLabel, platIcon }) {
+    const banner = document.getElementById('clipboard-detect-banner');
+    const badge = document.getElementById('clipboard-detect-badge');
+    const textEl = document.getElementById('clipboard-detect-text');
+    if (!banner || !badge || !textEl) return;
+
+    badge.innerHTML = `${platIcon} ${platLabel} 링크 복사 감지`;
+    let displayUrl = url;
+    if (displayUrl.length > 40) displayUrl = displayUrl.slice(0, 37) + '...';
+    textEl.textContent = `방금 복사하신 [${platLabel}] 링크(${displayUrl})로 즉시 세팅할까요?`;
+
+    banner.style.display = 'block';
+
+    const btnApply = document.getElementById('btn-apply-detected-clip');
+    const btnDismiss = document.getElementById('btn-dismiss-detected-clip');
+
+    if (btnApply) {
+      btnApply.onclick = () => {
+        applyDetectedShoppingUrl(url);
+        banner.style.display = 'none';
+        lastDetectedClipUrl = url;
+      };
+    }
+
+    if (btnDismiss) {
+      btnDismiss.onclick = () => {
+        banner.style.display = 'none';
+        lastDetectedClipUrl = url;
+      };
+    }
+  }
+
+  function applyDetectedShoppingUrl(url) {
+    if (inputLink) inputLink.value = url;
+    if (inputModeARealLink) inputModeARealLink.value = url;
+    state.product.link = url;
+
+    const detectedPlat = (typeof ContentGenerator !== 'undefined' && ContentGenerator.detectPlatform)
+      ? ContentGenerator.detectPlatform(url)
+      : 'general';
+    state.product.platform = detectedPlat;
+    currentActivePlatform = detectedPlat;
+
+    // 링크에서 상품명 추론 가능한 경우 반영
+    if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
+      const inferred = ContentGenerator.inferProductName({ link: url });
+      if (inferred && inferred !== '화제의 인기 추천템') {
+        const curName = inputProductName ? inputProductName.value.trim() : '';
+        if (!curName || curName.includes('계란말이') || curName.includes('넥케어')) {
+          if (inputProductName) inputProductName.value = inferred;
+          state.product.name = inferred;
+          if (selectedViralTitle) selectedViralTitle.textContent = inferred;
+        }
+      }
+    }
+
+    updateModeALinkStatus(url);
+    updateModeBBadge();
+    if (typeof updateCopyTextView === 'function') updateCopyTextView();
+
+    if (typeof autoFetchProductImage === 'function') {
+      autoFetchProductImage(url);
+    }
+
+    saveCurrentSession(true);
+    addToRecentHistory({
+      name: state.product.name || '복사된 제휴 상품',
+      title: state.product.name || '복사된 제휴 상품',
+      link: url,
+      memo: state.product.memo || '',
+      defaultPlatform: detectedPlat,
+      icon: detectedPlat === 'ohou' ? '🏠' : (detectedPlat === 'coupang' ? '🚀' : '✨')
+    });
+
+    showToast('🎉 감지된 제휴 링크가 1초 만에 세팅되었습니다! 수익 적립 준비 완료 ✨');
+  }
+
+  function restoreSavedSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      const session = JSON.parse(raw);
+      if (!session || !session.product || (!session.product.name && !session.product.link)) return false;
+
+      // 1. 상태 객체 복원
+      state.product = { ...state.product, ...session.product };
+      if (session.slideCount && typeof syncSlideCountUI === 'function') {
+        state.slideCount = session.slideCount;
+        syncSlideCountUI(session.slideCount);
+      }
+      if (session.ratio) {
+        applyRatio(session.ratio, false);
+      }
+      if (session.monetizationMode) {
+        state.monetizationMode = session.monetizationMode;
+        monetizeModeChips.forEach(chip => {
+          chip.classList.toggle('active', chip.getAttribute('data-mode') === session.monetizationMode);
+        });
+      }
+      if (session.threadsType) {
+        state.threadsType = session.threadsType;
+        const threadChip = document.querySelector(`.thread-type-chip[data-type="${session.threadsType}"]`);
+        if (threadChip) {
+          document.querySelectorAll('.thread-type-chip').forEach(c => c.classList.remove('active'));
+          threadChip.classList.add('active');
+        }
+      }
+
+      currentViralCat = session.currentViralCat || 'all';
+      currentPlatformFilter = session.currentPlatformFilter || 'all';
+      currentActivePlatform = session.product.platform || 'coupang';
+
+      if (viralCatBtns) {
+        viralCatBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-cat') === currentViralCat));
+      }
+      if (platformFilterChips) {
+        platformFilterChips.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-platform') === currentPlatformFilter));
+      }
+
+      // 2. DOM 입력값 복원
+      if (inputProductName) inputProductName.value = session.product.name || '';
+      if (selectedViralTitle) selectedViralTitle.textContent = session.product.name || '';
+      if (inputLink) inputLink.value = session.product.link || '';
+      if (inputModeARealLink) inputModeARealLink.value = session.product.link || '';
+      if (inputMemo) inputMemo.value = session.product.memo || '';
+
+      // 3. 뱃지 및 플랫폼 검색 툴바 복원
+      updateModeALinkStatus(session.product.link);
+      updateModeBBadge();
+      renderPlatformSearchToolbar({ 
+        name: session.product.name, 
+        search: session.product.name, 
+        coupangSearch: session.product.name 
+      }, currentActivePlatform);
+
+      // 4. 이미지 복원
+      if (session.product.mediaSrc) {
+        if (uploadPreview && uploadPrompt) {
+          uploadPreview.src = session.product.mediaSrc;
+          uploadPreview.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+        }
+        if (typeof CardNewsStudio !== 'undefined') {
+          CardNewsStudio.clearSlideImages();
+          CardNewsStudio.setUserMedia(session.product.mediaSrc);
+        }
+      }
+
+      // 5. 추천템 목록 렌더링 (첫 번째 자동선택 건너뜀)
+      renderViralItems(currentViralCat, currentPlatformFilter, true);
+
+      // 6. 안내 토스트
+      setTimeout(() => {
+        showToast('💾 직전 작업 중이던 제품으로 100% 자동 복원되었습니다! ✨', 2500);
+      }, 350);
+
+      return true;
+    } catch (e) {
+      console.warn('Failed to restore session:', e);
+      return false;
+    }
+  }
+
   function renderPlatformSearchToolbar(item, activePlatId) {
     if (!platformSearchButtons) return;
     platformSearchButtons.innerHTML = '';
@@ -365,11 +715,20 @@ function startViralMakerApp() {
       btn.className = `platform-quick-btn ${plat.colorClass} ${plat.id === activePlatId ? 'active' : ''}`;
       btn.href = searchUrl;
       btn.target = '_blank';
+      btn.rel = 'noopener noreferrer';
       btn.innerHTML = `<span>${plat.label}</span> <span style="font-size: 9px; opacity: 0.8;">↗</span>`;
-      btn.title = `${plat.label} 검색창 열기 + ${plat.label} 카피로 즉시 전환`;
+      btn.title = `${plat.label} 검색창 열기 + 검색어 클립보드 자동 복사`;
 
       btn.addEventListener('click', () => {
         selectPlatformForItem(item, plat.id);
+        saveCurrentSession(true);
+        addToRecentHistory(item);
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(query).then(() => {
+            showToast(`📋 '${query}' 검색어가 복사되었습니다! ${plat.label} 검색창에 바로 붙여넣기 하세요.`, 2200);
+          }).catch(() => {});
+        }
       });
 
       platformSearchButtons.appendChild(btn);
@@ -437,6 +796,7 @@ function startViralMakerApp() {
     if (typeof updateCopyTextView === 'function') {
       updateCopyTextView();
     }
+    saveCurrentSession();
     showToast(`'${platMeta ? platMeta.name : platId}' 스타일로 전환되었습니다! ✨`);
   }
 
@@ -468,6 +828,7 @@ function startViralMakerApp() {
         updateModeALinkStatus(val);
         updateModeBBadge();
         if (typeof updateCopyTextView === 'function') updateCopyTextView();
+        saveCurrentSession();
       }
     });
   }
@@ -477,13 +838,7 @@ function startViralMakerApp() {
       try {
         const text = await navigator.clipboard.readText();
         if (text && text.startsWith('http')) {
-          if (inputModeARealLink) inputModeARealLink.value = text.trim();
-          if (inputLink) inputLink.value = text.trim();
-          state.product.link = text.trim();
-          updateModeALinkStatus(text.trim());
-          updateModeBBadge();
-          if (typeof updateCopyTextView === 'function') updateCopyTextView();
-          showToast('내 제휴 링크가 적용되었습니다! 수익 적립 준비 완료 🎉');
+          applyDetectedShoppingUrl(text.trim());
         } else {
           if (inputLink) inputLink.focus();
           showToast('입력창을 꾹 눌러 복사한 제휴 링크를 붙여넣으세요.');
@@ -527,6 +882,8 @@ function startViralMakerApp() {
       CardNewsStudio.setUserMedia(item.imageUrl);
       updateSlideSceneBar();
     }
+    saveCurrentSession(true);
+    addToRecentHistory(item);
   }
 
   // Mode B URL 실시간 플랫폼 감지
@@ -569,7 +926,7 @@ function startViralMakerApp() {
     });
   }
 
-  function renderViralCategory(catKey, platFilter) {
+  function renderViralCategory(catKey, platFilter, skipAutoSelect = false) {
     if (!viralItemsContainer || typeof ViralProductLibrary === 'undefined') return;
     if (catKey !== undefined) currentViralCat = catKey;
     if (platFilter !== undefined) currentPlatformFilter = platFilter;
@@ -608,7 +965,8 @@ function startViralMakerApp() {
     pool.forEach((item, idx) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = `preset-chip ${idx === 0 ? 'active' : ''}`;
+      const isInitialActive = !skipAutoSelect && idx === 0;
+      btn.className = `preset-chip ${isInitialActive ? 'active' : ''}`;
 
       const itemPlat = item.defaultPlatform || 'coupang';
       const platMeta = (typeof AffiliatePlatforms !== 'undefined' && AffiliatePlatforms[itemPlat])
@@ -626,10 +984,23 @@ function startViralMakerApp() {
       viralItemsContainer.appendChild(btn);
     });
 
-    if (pool.length > 0) {
+    if (skipAutoSelect) {
+      const currentName = state.product.name;
+      let matched = false;
+      viralItemsContainer.querySelectorAll('.preset-chip').forEach((btn, idx) => {
+        if (pool[idx] && (pool[idx].name === currentName || pool[idx].title === currentName)) {
+          btn.classList.add('active');
+          matched = true;
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    } else if (pool.length > 0) {
       applyViralItem(pool[0]);
     }
   }
+
+  const renderViralItems = renderViralCategory;
 
   // 🏬 5대 제휴쇼핑몰 모아보기 필터 클릭 리스너
   if (platformFilterChips && platformFilterChips.length > 0) {
@@ -699,9 +1070,6 @@ function startViralMakerApp() {
     });
   }
 
-  // 초기 전체 카테고리 + 전체 몰 추천템 즉시 렌더링
-  renderViralCategory('all', 'all');
-
   // --- ✍️ 상품명 & 메모 직접 수정 및 1초 키워드 칩 연동 ---
   if (inputProductName) {
     inputProductName.addEventListener('input', () => {
@@ -714,6 +1082,7 @@ function startViralMakerApp() {
         if (typeof updateCopyTextView === 'function') {
           updateCopyTextView();
         }
+        saveCurrentSession();
       }
     });
   }
@@ -724,6 +1093,7 @@ function startViralMakerApp() {
       if (typeof updateCopyTextView === 'function') {
         updateCopyTextView();
       }
+      saveCurrentSession();
     });
   }
 
@@ -741,6 +1111,7 @@ function startViralMakerApp() {
           if (typeof updateCopyTextView === 'function') {
             updateCopyTextView();
           }
+          saveCurrentSession();
           showToast('✍️ 메모에 핵심 어필 키워드가 추가되었습니다! ✨');
         }
       });
@@ -2619,9 +2990,29 @@ function startViralMakerApp() {
   // 기본 화면 규격 4:5 (인스타 세로 황금비율) 초기화
   applyRatio('4:5', false);
 
-  // 첫 번째 샘플 로드
-  presetChips[0]?.click();
+  // v3.7 세션 자동 복원 (이전 작업 상태가 있으면 100% 자동 복원)
+  const isRestored = restoreSavedSession();
+  if (!isRestored) {
+    renderViralCategory('all', 'all', false);
+    presetChips[0]?.click();
+  }
+  renderRecentHistory();
   updateSlideSceneBar();
+
+  // 브라우저 백그라운드 전환 및 복귀 라이프사이클 이벤트 리스너
+  window.addEventListener('beforeunload', () => saveCurrentSession(true));
+  window.addEventListener('blur', () => saveCurrentSession(true));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      saveCurrentSession(true);
+    } else if (document.visibilityState === 'visible') {
+      checkClipboardForShoppingLink();
+    }
+  });
+  window.addEventListener('focus', checkClipboardForShoppingLink);
+
+  // 첫 진입 1초 후 클립보드 검사 시도 (브라우저 정책 허용 시)
+  setTimeout(checkClipboardForShoppingLink, 1000);
 }
 
 if (document.readyState === 'loading') {

@@ -20,7 +20,7 @@ timestamp_str = now.strftime("%Y%m%d_%H%M%S")
 timestamp_display = now.strftime("%Y-%m-%d %H:%M:%S")
 
 print("=" * 60)
-print(f"🚀 [ViralMaker v3.6] 깃허브 자동 배포 시작 ({timestamp_display})")
+print(f"🚀 [ViralMaker v3.7] 깃허브 자동 배포 시작 ({timestamp_display})")
 print("=" * 60)
 
 log_entries = []

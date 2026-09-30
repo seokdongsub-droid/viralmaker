@@ -2298,6 +2298,160 @@ body {
   line-height: 1.5;
 }
 
+/* ============================================================
+   v3.7 📋 스마트 클립보드 링크 감지 & 🕒 최근 작업 히스토리 & 💾 실시간 세션 자동 저장
+   ============================================================ */
+
+/* 📋 스마트 클립보드 링크 감지 플로팅 배너 */
+.clipboard-detect-banner {
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.98));
+  border: 1.5px solid #38bdf8;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.28);
+  animation: bannerSlideDown 0.28s ease-out forwards;
+}
+
+@keyframes bannerSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.clipboard-detect-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clipboard-detect-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.clipboard-detect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.clipboard-detect-text {
+  font-size: 11.5px;
+  color: var(--text-main);
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.clipboard-detect-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-clipboard-apply {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 13px;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-clipboard-apply:active {
+  transform: scale(0.96);
+}
+
+.btn-clipboard-dismiss {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-clipboard-dismiss:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+/* 🕒 최근 본 / 작업한 상품 히스토리 바 */
+.recent-history-section {
+  margin-bottom: 10px;
+  background: rgba(19, 27, 46, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.recent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.recent-chip:hover, .recent-chip.active {
+  background: rgba(99, 102, 241, 0.22);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.recent-chip-plat {
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 800;
+}
+
+/* 💾 실시간 자동 저장 상태 뱃지 */
+.session-save-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: opacity 0.3s ease;
+}
+
+
 
 
 
