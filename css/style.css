@@ -470,6 +470,130 @@ body {
   box-shadow: 0 0 10px rgba(255, 107, 107, 0.25);
 }
 
+/* 🎯 실전 4단계 스튜디오 스텝 뱃지 */
+.step-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* 🏷️ 제품 카테고리 톤 선택 칩 */
+.product-cat-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.product-cat-chip {
+  padding: 6px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-cat-chip:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.product-cat-chip.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.25));
+  border-color: #a5b4fc;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.35);
+  font-weight: 800;
+}
+
+/* 📸 4컷 슬라이드 이미지 배분 슬롯 */
+.multi-photo-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.photo-slot {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.photo-slot:hover {
+  border-color: rgba(56, 189, 248, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.photo-slot.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.slot-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
+.photo-slot.active .slot-badge {
+  color: #38bdf8;
+}
+
+.slot-img-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.slot-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.slot-img-wrap:hover img {
+  transform: scale(1.05);
+}
+
+.slot-text {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 700;
+}
+
 /* 🏬 5대 제휴센터 모달 카드 */
 .affiliate-modal-card {
   max-width: 520px;

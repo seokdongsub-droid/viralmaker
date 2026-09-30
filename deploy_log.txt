@@ -1,38 +1,47 @@
-=== ViralMaker Deploy Log (2026-09-30 17:44:55) ===
+=== ViralMaker Deploy Log (2026-09-30 18:13:45) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
-M deploy_log.txt
+M css/style.css
+ M deploy_log.txt
+ M index.html
  M js/app.js
+ M test_simulation.py
  M viralmaker_portable.html
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
+warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test_simulation.py', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
+M  css/style.css
 M  deploy_log.txt
+M  index.html
 M  js/app.js
+M  test_simulation.py
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_174455)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_181345)
   [출력]
-[main 98c31cf] ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_174455)
- 3 files changed, 150 insertions(+), 145 deletions(-)
+[main d04eb34] ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_181345)
+ 6 files changed, 313 insertions(+), 36 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+d04eb34 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_181345)
 98c31cf ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_174455)
 3421f53 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_145556)
-04ef072 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_144805)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -40,9 +49,9 @@ M  viralmaker_portable.html
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   3421f53..98c31cf  main -> main
+   98c31cf..d04eb34  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.7_20260930_174455
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.7_20260930_181345
 
 === End of Log ===

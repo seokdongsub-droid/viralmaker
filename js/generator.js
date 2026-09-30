@@ -205,6 +205,55 @@ class ContentGeneratorEngine {
     };
   }
 
+  // 💬 실제 고객 찐후기/리뷰(memo)에서 카드뉴스 및 스레드용 바이럴 포인트 분리 추출
+  extractReviewPoints(memo, cat = 'living') {
+    if (!memo || typeof memo !== 'string') {
+      return {
+        hasRealReview: false,
+        hookBadge: '실제 구매 찐후기 ⭐',
+        hookQuote: '써본 사람마다 극찬하는 이유가 있었음',
+        point1: '기대 이상으로 만족스럽고 삶의 질 수직상승',
+        point2: '온가족이 극찬하고 재구매율 1위',
+        rawText: ''
+      };
+    }
+
+    const clean = memo.trim();
+    // 기본 플레이스홀더나 템플릿 기본값인지 확인
+    const isGeneric = clean.includes('호텔 조식') || clean.includes('하루 15분') || clean.length < 5;
+    if (isGeneric) {
+      return {
+        hasRealReview: false,
+        hookBadge: '실제 구매 찐후기 ⭐',
+        hookQuote: '써본 사람마다 극찬하는 이유가 있었음',
+        point1: clean || '기대 이상으로 만족스럽고 삶의 질 수직상승',
+        point2: '온가족이 극찬하고 재구매율 1위',
+        rawText: clean
+      };
+    }
+
+    // 문장, 쉼표, 줄바꿈 단위로 분리
+    const chunks = clean.split(/[.\n!?~,]+/).map(s => s.trim()).filter(s => s.length >= 3);
+    const firstChunk = chunks[0] || clean;
+
+    let hookQuote = firstChunk;
+    if (hookQuote.length > 28) {
+      hookQuote = hookQuote.slice(0, 26) + '..';
+    }
+
+    const p1 = chunks[1] || chunks[0] || '품질과 실사용 만족도 기대 이상';
+    const p2 = chunks[2] || chunks[0] || '가족들도 인정하고 벌써 재구매각';
+
+    return {
+      hasRealReview: true,
+      hookBadge: '실제 구매 찐후기 ⭐',
+      hookQuote: `"${hookQuote}"`,
+      point1: p1.length > 35 ? p1.slice(0, 33) + '..' : p1,
+      point2: p2.length > 35 ? p2.slice(0, 33) + '..' : p2,
+      rawText: clean
+    };
+  }
+
   // 전체 결과 일괄 생성 (3~5장 가변 장수 및 수익화 모드 지원)
   async generateAll(product, apiKey = '', slideCount = 4, monetizationMode = 'link') {
     const name = this.inferProductName(product);
@@ -272,6 +321,7 @@ class ContentGeneratorEngine {
     const isSelfcare = cat === 'selfcare_tech';
     const isLiving = cat === 'living';
     const isDM = monetizationMode === 'dm';
+    const rev = this.extractReviewPoints(memo, cat);
 
     if (count === 1) {
       // 🌟 1장: 단독 피드 / 원컷 임팩트 / 썸네일
@@ -749,7 +799,49 @@ class ContentGeneratorEngine {
         ];
       }
 
-      // 🇰🇷 한국어 4컷: 데이즈홈/데이즈코어 실제 8,000댓글 바이럴 포맷 100% 구현 (카테고리별 상품 특화)
+      // 🇰🇷 한국어 4컷: 실제 고객 찐후기(memo) 최우선 반영 고전환 레이아웃
+      if (rev.hasRealReview) {
+        return [
+          {
+            slideNum: 1,
+            type: 'cover',
+            textPosition: 'bottom',
+            badge: rev.hookBadge,
+            mainTitle: `써본 사람들마다 극찬하는\n${name} 실제 후기 난리 난 이유;;`,
+            subTitle: `${rev.hookQuote}\n왜 다들 극찬하는지 1초 만에 확인하기`,
+            extra: '실제 구매 찐후기'
+          },
+          {
+            slideNum: 2,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 01 ✨',
+            mainTitle: `실제 구매 고객 감탄 포인트 01ㄷㄷ\n${name} 하나로 일상이 달라짐`,
+            subTitle: `${rev.point1}\n실제 써보고 감탄한 핵심 포인트`,
+            extra: '만족도 200%'
+          },
+          {
+            slideNum: 3,
+            type: 'detail',
+            textPosition: 'center',
+            badge: 'CHECK POINT 02 🔍',
+            mainTitle: '직접 써보고 왜 진작 안 샀나 후회함ㅠㅠ\n후기 좋은 이유가 있었음',
+            subTitle: `${rev.point2}\n✔ 재구매율 1위 ✔ 삶의 질 수직상승`,
+            extra: '재구매율 1위'
+          },
+          {
+            slideNum: 4,
+            type: 'cta',
+            textPosition: 'center',
+            badge: 'SPECIAL CTA 💙',
+            mainTitle: isDM ? `${name} 최저가 구매처는\n"나도" 남겨줘! 💙🩵` : `${name} 최저가 구매처는\n프로필 링크 또는 첫 댓글 확인🔗`,
+            subTitle: isDM ? `댓글에 "나도" 남겨주시면 [${name}] 최저가 링크 DM 바로 쏴드려요!` : `👉 첫 댓글 및 프로필 링크에서 [${name}] 최저가 바로가기 🔗`,
+            extra: '한정수량 핫딜'
+          }
+        ];
+      }
+
+      // 🇰🇷 카테고리별 상품 특화 기본 템플릿
       if (isKitchenTool) {
         return [
           {
@@ -1664,6 +1756,17 @@ ${cleanNegative}
 ✓ 손목에 부담 없이 누구나 1초 만에 프로급 마무리
 🔽 영상에서 사용한 애용 아이템은 여기 🔽
 (Amazon 링크)`;
+
+    const rev = this.extractReviewPoints(memo, category);
+    if (rev.hasRealReview) {
+      type1 = {
+        title: '유형 1. 실구매자 찐후기/입소문형 (판매전환 1위)',
+        desc: '실제 구매 후기를 활용한 100% 리얼 내돈내산 바이브 스토리',
+        body_ko: `쇼핑몰에서 후기 폭발하길래 속는 셈 치고 샀는데... 진짜 리뷰 그대로였음;;\n\n👉 실제 구매자 찐후기:\n"${rev.rawText}"\n\n[${name} 솔직 체감 포인트 3가지]\n1. ${rev.point1}\n2. ${rev.point2}\n3. 시간·돈 아껴주고 만족도 200%\n\n진짜 광고 아니고 내돈내산 찐만족이라 피드에 남겨둡니다.\n(가족들도 다 극찬해서 벌써 재구매각 ㅠㅠ)\n\n👉 자세한 정보랑 최저가 링크는 첫 댓글에 남겨둘게요!`,
+        body_ja: `口コミで話題沸騰してて半信半疑で買ったけど… ガチでレビュー通りだった件;;\n\n👉 リアルな購入者レビュー:\n"${rev.rawText}"\n\n[${name} 本音ポイント]\n1. ${rev.point1}\n2. ${rev.point2}\n3. コスパ最強で満足度200%\n\n詳しいレビューと購入先リンクは最初の返信に載せておくね！`,
+        body_ja_trans: `리뷰에서 화제길래 반신반의하면서 샀는데… 진심 리뷰 그대로였음;; 실제 구매자 리뷰: "${rev.rawText}". 자세한 정보와 구매 링크는 첫 댓글에 남겨둘게!`
+      };
+    }
 
     return {
       type1,

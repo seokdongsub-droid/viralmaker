@@ -45,9 +45,10 @@ function startViralMakerApp() {
     activeCardSubtab: 'canvas', // 'canvas' | 'prompts'
     generatedData: null,
     product: {
-      link: 'https://smartstore.naver.com/sample/products/neck-care',
-      memo: '하루 15분 거북목 승모근 케어, 깃털 무게 145g 온열 기능',
-      name: '무선 온열 넥케어 마사지기',
+      link: '',
+      memo: '',
+      name: '',
+      category: 'food_diet',
       mediaSrc: null
     },
     geminiKey: localStorage.getItem('social_promo_gemini_key') || ''
@@ -243,21 +244,63 @@ function startViralMakerApp() {
   ];
 
   function updateSlideSceneBar() {
-    const idx = CardNewsStudio.currentSlideIndex;
+    const idx = CardNewsStudio ? CardNewsStudio.currentSlideIndex : 0;
     const scene = sceneDescriptions[idx] || sceneDescriptions[0];
     if (slideSceneIcon) slideSceneIcon.textContent = scene.icon;
     if (slideSceneLabel) slideSceneLabel.textContent = `${scene.title} (${scene.desc})`;
 
     if (slideSceneStatus) {
-      if (CardNewsStudio.slideImages && CardNewsStudio.slideImages[idx]) {
+      if (CardNewsStudio && CardNewsStudio.slideImages && CardNewsStudio.slideImages[idx]) {
         slideSceneStatus.textContent = '개별 사진 적용됨 📸';
         slideSceneStatus.style.color = '#34d399';
-      } else if (CardNewsStudio.userImage) {
+      } else if (CardNewsStudio && CardNewsStudio.userImage) {
         slideSceneStatus.textContent = `${scene.desc} (5단 앵글 연출 ✨)`;
         slideSceneStatus.style.color = 'var(--primary-light)';
       } else {
         slideSceneStatus.textContent = '스튜디오 그래픽 🎨';
         slideSceneStatus.style.color = 'var(--text-muted)';
+      }
+    }
+    updateMultiPhotoSlots();
+  }
+
+  // 🖼️ 4컷 슬라이드 썸네일 배분 바 실시간 갱신
+  function updateMultiPhotoSlots() {
+    const statusBadge = document.getElementById('multi-photo-status-badge');
+    const slotLabels = ['대표컷', '조리/사용', '단면/상세', '완성/포장'];
+    const activeSlotIdx = CardNewsStudio ? CardNewsStudio.currentSlideIndex : 0;
+
+    for (let i = 0; i < 4; i++) {
+      const thumbEl = document.getElementById(`slot-thumb-${i}`);
+      const slotEl = document.querySelector(`.photo-slot[data-slot="${i}"]`);
+      if (!thumbEl || !slotEl) continue;
+
+      slotEl.classList.toggle('active', i === activeSlotIdx);
+
+      // 개별 슬라이드 이미지가 지정된 경우
+      if (CardNewsStudio && CardNewsStudio.slideImages && CardNewsStudio.slideImages[i]) {
+        const imgObj = CardNewsStudio.slideImages[i];
+        thumbEl.innerHTML = `<img src="${imgObj.src}" alt="${i + 1}번 컷">`;
+      } else if (state.product.mediaSrc) {
+        // 단일 대표 사진으로 5단 앵글 연출 중인 경우
+        thumbEl.innerHTML = `<img src="${state.product.mediaSrc}" alt="${i + 1}번 컷" style="opacity: 0.9;">`;
+      } else {
+        thumbEl.innerHTML = `<span class="slot-text">${slotLabels[i]}</span>`;
+      }
+    }
+
+    if (statusBadge) {
+      const hasCustomMulti = CardNewsStudio && CardNewsStudio.slideImages && CardNewsStudio.slideImages.filter(Boolean).length > 1;
+      if (hasCustomMulti) {
+        const count = CardNewsStudio.slideImages.filter(Boolean).length;
+        statusBadge.textContent = `다중 사진 ${count}장 배분 적용됨 📸`;
+        statusBadge.style.color = '#34d399';
+      } else if (state.product.mediaSrc) {
+        statusBadge.textContent = '1장으로 슬라이드별 맞춤 앵글 연출 중 ✨';
+        statusBadge.style.color = '#38bdf8';
+      } else {
+        statusBadge.textContent = '사진 첨부 시 실시간 미리보기 표시';
+        statusBadge.style.color = '#94a3b8';
       }
     }
   }
@@ -934,8 +977,13 @@ function startViralMakerApp() {
         }
       }
 
-      // 5. 추천템 목록 렌더링 (첫 번째 자동선택 건너뜀)
-      renderViralItems(currentViralCat, currentPlatformFilter, true);
+      // 5. 카테고리 및 사진 슬롯 복원
+      if (session.product.category && typeof syncProductCategoryUI === 'function') {
+        syncProductCategoryUI(session.product.category);
+      }
+      if (typeof updateMultiPhotoSlots === 'function') {
+        updateMultiPhotoSlots();
+      }
 
       // 6. 안내 토스트
       setTimeout(() => {
@@ -1418,6 +1466,50 @@ function startViralMakerApp() {
     });
   }
 
+  // 🏷️ 제품 카테고리 톤 선택 칩 리스너
+  const productCatChips = document.querySelectorAll('.product-cat-chip');
+  function syncProductCategoryUI(cat) {
+    if (!productCatChips || productCatChips.length === 0) return;
+    productCatChips.forEach(c => {
+      c.classList.toggle('active', c.getAttribute('data-cat') === cat);
+    });
+  }
+
+  if (productCatChips && productCatChips.length > 0) {
+    productCatChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        productCatChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const cat = chip.getAttribute('data-cat') || 'food_diet';
+        state.product.category = cat;
+        saveCurrentSession();
+        if (typeof updateCopyTextView === 'function') updateCopyTextView();
+        showToast(`🎯 '${chip.textContent.trim()}' 카테고리 톤으로 설정되었습니다! ✨`);
+      });
+    });
+  }
+
+  // 📸 4컷 슬라이드 썸네일 슬롯 클릭 시 해당 슬라이드로 이동 & 개별 사진 변경 지원
+  const photoSlots = document.querySelectorAll('.photo-slot');
+  let currentTargetSlot = 0;
+  if (photoSlots && photoSlots.length > 0) {
+    photoSlots.forEach(slot => {
+      slot.addEventListener('click', () => {
+        const slotIdx = parseInt(slot.getAttribute('data-slot') || '0', 10);
+        currentTargetSlot = slotIdx;
+        photoSlots.forEach(s => s.classList.remove('active'));
+        slot.classList.add('active');
+
+        if (typeof CardNewsStudio !== 'undefined') {
+          CardNewsStudio.currentSlideIndex = slotIdx;
+          CardNewsStudio.render();
+        }
+        updateSlideSceneBar();
+        updateMultiPhotoSlots();
+      });
+    });
+  }
+
   // --- 사진 / 동영상 첨부 처리 (라벨이 네이티브로 파일창을 엽니다) ---
 
   mediaFileInput.addEventListener('change', async (e) => {
@@ -1442,7 +1534,14 @@ function startViralMakerApp() {
         const reader = new FileReader();
         reader.onload = (event) => {
           const dataUrl = event.target.result;
-          onNewProductImageAttached(dataUrl, false);
+          if (currentTargetSlot > 0) {
+            CardNewsStudio.setSlideImage(currentTargetSlot, dataUrl);
+            updateSlideSceneBar();
+            updateMultiPhotoSlots();
+            showToast(`📸 ${currentTargetSlot + 1}번 슬라이드 사진이 변경되었습니다! ✨`);
+          } else {
+            onNewProductImageAttached(dataUrl, false);
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -3288,11 +3387,11 @@ function startViralMakerApp() {
   // v3.7 세션 자동 복원 (이전 작업 상태가 있으면 100% 자동 복원)
   const isRestored = restoreSavedSession();
   if (!isRestored) {
-    renderViralCategory('all', 'all', false);
-    presetChips[0]?.click();
+    renderPlatformSearchToolbar({ name: '', search: '추천템' }, 'coupang');
   }
   renderRecentHistory();
   updateSlideSceneBar();
+  updateMultiPhotoSlots();
 
   // 브라우저 백그라운드 전환 및 복귀 라이프사이클 이벤트 리스너
   window.addEventListener('beforeunload', () => saveCurrentSession(true));
