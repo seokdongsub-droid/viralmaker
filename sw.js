@@ -1,5 +1,5 @@
-// sw.js - ViralMaker Service Worker for PWA (v3.7)
-const CACHE_NAME = 'viralmaker-v3.7-cache';
+// sw.js - ViralMaker Service Worker for PWA (v3.8)
+const CACHE_NAME = 'viralmaker-v3.8-cache';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
