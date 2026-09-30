@@ -9216,23 +9216,7 @@ function startViralMakerApp() {
         const reader = new FileReader();
         reader.onload = (event) => {
           const dataUrl = event.target.result;
-          state.product.mediaSrc = dataUrl;
-          uploadPreview.src = dataUrl;
-          uploadPreview.style.display = 'block';
-          uploadPrompt.style.display = 'none';
-
-          // 단일 사진 등록 시 5개 슬라이드에 5가지 앵글(풀샷/줌/디테일) 자동 연출
-          CardNewsStudio.clearSlideImages();
-          CardNewsStudio.setUserMedia(dataUrl);
-          updateSlideSceneBar();
-          showToast('📸 사진 1장으로 5단 맞춤 앵글(풀샷·줌·접사)이 자동 완성되었습니다! ✨');
-
-          // AI 비전 분석 버튼 활성화
-          if (visionActionPanel) {
-            visionActionPanel.style.display = 'block';
-            if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
-            if (visionResult) visionResult.style.display = 'none';
-          }
+          onNewProductImageAttached(dataUrl, false);
         };
         reader.readAsDataURL(file);
       }
@@ -9272,6 +9256,71 @@ function startViralMakerApp() {
 
   // --- 🌐 제휴 쇼핑몰 사진 1초 첨부 엔진 (URL 복붙, 클립보드, 자동 추출) ---
 
+  // 📷 새로운 제품 사진이 등록/붙여넣기 되었을 때 이전 제품 정보와의 불일치 방지 및 스마트 동기화
+  function onNewProductImageAttached(dataUrl, isDirectPaste = false) {
+    if (!dataUrl) return;
+    state.product.mediaSrc = dataUrl;
+    if (uploadPreview && uploadPrompt) {
+      uploadPreview.src = dataUrl;
+      uploadPreview.style.display = 'block';
+      uploadPrompt.style.display = 'none';
+    }
+
+    CardNewsStudio.clearSlideImages();
+    CardNewsStudio.setUserMedia(dataUrl);
+    updateSlideSceneBar();
+    if (typeof updateSimulator === 'function') updateSimulator();
+
+    // AI 비전 분석 패널 노출
+    if (visionActionPanel) {
+      visionActionPanel.style.display = 'block';
+      if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
+      if (visionResult) visionResult.style.display = 'none';
+    }
+
+    const currentName = inputProductName ? inputProductName.value.trim() : '';
+
+    if (isDirectPaste) {
+      // 사진만 복사되어 들어온 경우 이전 상품명과 섞이는 것 방지
+      setTimeout(() => {
+        const promptMsg = currentName
+          ? `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n\n현재 이전 제품명("${currentName}")이 남아있습니다.\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`
+          : `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`;
+
+        const userInput = prompt(promptMsg, '');
+        if (userInput && userInput.trim()) {
+          const cleanName = userInput.trim();
+          state.product.name = cleanName;
+          if (inputProductName) inputProductName.value = cleanName;
+          if (selectedViralTitle) selectedViralTitle.textContent = cleanName;
+
+          // 메모도 새 상품에 맞게 갱신
+          if (inputMemo) {
+            inputMemo.value = `${cleanName} 실사용 추천 찐후기`;
+            state.product.memo = inputMemo.value;
+          }
+
+          // 카테고리 자동 추론 (수박 -> food_diet 등)
+          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
+            state.product.category = ContentGenerator.inferCategory(state.product);
+          }
+
+          saveCurrentSession(true);
+
+          showToast(`🍉 '${cleanName}'으로 상품 정보가 갱신되었습니다! 바로 [✨ 1초 만에 완성하기]를 눌러주세요. ✨`, 3500);
+        } else {
+          showToast('📷 새 사진 적용 완료! 상단 [상품명] 입력창에 제품명을 적어주세요.', 3500);
+          if (inputProductName) {
+            inputProductName.focus();
+            inputProductName.select();
+          }
+        }
+      }, 150);
+    } else {
+      showToast('📸 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+    }
+  }
+
   function applyImageUrlDirectly(imgUrl) {
     if (!imgUrl) return;
     const trimmed = imgUrl.trim();
@@ -9286,34 +9335,11 @@ function startViralMakerApp() {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      state.product.mediaSrc = trimmed;
-      if (uploadPreview && uploadPrompt) {
-        uploadPreview.src = trimmed;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
-      }
-      CardNewsStudio.clearSlideImages();
-      CardNewsStudio.setUserMedia(trimmed);
-      updateSlideSceneBar();
-      if (typeof updateSimulator === 'function') updateSimulator();
+      onNewProductImageAttached(trimmed, false);
       showToast('🎉 제휴몰 제품 사진이 5단 카드뉴스에 즉시 적용되었습니다! (5단 앵글 연출 ON)');
-
-      if (visionActionPanel) {
-        visionActionPanel.style.display = 'block';
-        if (btnVisionAnalyze) btnVisionAnalyze.style.display = 'flex';
-      }
     };
     img.onerror = () => {
-      state.product.mediaSrc = trimmed;
-      if (uploadPreview && uploadPrompt) {
-        uploadPreview.src = trimmed;
-        uploadPreview.style.display = 'block';
-        uploadPrompt.style.display = 'none';
-      }
-      CardNewsStudio.clearSlideImages();
-      CardNewsStudio.setUserMedia(trimmed);
-      updateSlideSceneBar();
-      if (typeof updateSimulator === 'function') updateSimulator();
+      onNewProductImageAttached(trimmed, false);
       showToast('🎉 제품 사진이 카드뉴스에 적용되었습니다!');
     };
     img.src = trimmed;
@@ -9379,17 +9405,7 @@ function startViralMakerApp() {
               const reader = new FileReader();
               reader.onload = (e) => {
                 const dataUrl = e.target.result;
-                state.product.mediaSrc = dataUrl;
-                if (uploadPreview && uploadPrompt) {
-                  uploadPreview.src = dataUrl;
-                  uploadPreview.style.display = 'block';
-                  uploadPrompt.style.display = 'none';
-                }
-                CardNewsStudio.clearSlideImages();
-                CardNewsStudio.setUserMedia(dataUrl);
-                updateSlideSceneBar();
-                if (typeof updateSimulator === 'function') updateSimulator();
-                showToast('📋 클립보드 사진이 카드뉴스에 적용되었습니다! ✨');
+                onNewProductImageAttached(dataUrl, true);
               };
               reader.readAsDataURL(blob);
               return;
@@ -9424,17 +9440,7 @@ function startViralMakerApp() {
             const reader = new FileReader();
             reader.onload = (ev) => {
               const dataUrl = ev.target.result;
-              state.product.mediaSrc = dataUrl;
-              if (uploadPreview && uploadPrompt) {
-                uploadPreview.src = dataUrl;
-                uploadPreview.style.display = 'block';
-                uploadPrompt.style.display = 'none';
-              }
-              CardNewsStudio.clearSlideImages();
-              CardNewsStudio.setUserMedia(dataUrl);
-              updateSlideSceneBar();
-              if (typeof updateSimulator === 'function') updateSimulator();
-              showToast('📋 복사한 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+              onNewProductImageAttached(dataUrl, true);
             };
             reader.readAsDataURL(blob);
             return;
