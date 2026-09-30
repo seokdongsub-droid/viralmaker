@@ -535,6 +535,152 @@ function startViralMakerApp() {
     });
   }
 
+  // 5. 제휴 상품 링크에서 메타데이터(대표 사진, 상품명, 설명) 자동 추출
+  async function autoFetchProductMetadata(url) {
+    if (!url || !url.startsWith('http')) return null;
+
+    try {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4500); // 4.5초 타임아웃
+      const resp = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      if (!data.contents) return null;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, 'text/html');
+
+      // 1. 대표 이미지
+      const ogImg = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')
+                 || doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content')
+                 || doc.querySelector('link[rel="image_src"]')?.getAttribute('href');
+
+      // 2. 상품명 (og:title / title 태그)
+      let rawTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content')
+                  || doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')
+                  || doc.querySelector('title')?.innerText || '';
+
+      // 정제: 쇼핑몰 브랜딩 문구 제거
+      rawTitle = rawTitle.replace(/\s*[-:|/]\s*(오늘의집|쿠팡!*|마켓컬리|오아시스마켓*|토스쇼핑*|스마트스토어|네이버쇼핑|NAVER).*$/i, '').trim();
+
+      // 3. 상품 설명 / 혜택 (og:description)
+      let rawDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content')
+                 || doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+      rawDesc = rawDesc.replace(/\s*[-:|/]\s*(오늘의집|쿠팡|마켓컬리|오아시스|토스).*$/i, '').trim();
+
+      return {
+        imageUrl: (ogImg && ogImg.startsWith('http')) ? ogImg : null,
+        title: rawTitle || null,
+        description: rawDesc || null
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // 🚀 스레드 글 & 카드뉴스 다이렉트 1초 완성 파이프라인
+  async function triggerDirectThreadsPipeline(url) {
+    showToast('🔍 제품 링크 분석 및 스레드 글 생성 중... ⚡', 2500);
+
+    // 1. 기본 링크 입력 및 플랫폼 감지
+    if (inputLink) inputLink.value = url;
+    if (inputModeARealLink) inputModeARealLink.value = url;
+    state.product.link = url;
+
+    const detectedPlat = (typeof ContentGenerator !== 'undefined' && ContentGenerator.detectPlatform)
+      ? ContentGenerator.detectPlatform(url)
+      : 'general';
+    state.product.platform = detectedPlat;
+    currentActivePlatform = detectedPlat;
+    updateModeALinkStatus(url);
+    updateModeBBadge();
+
+    // 2. 메타데이터 (제목, 대표사진, 설명) 추출
+    const meta = await autoFetchProductMetadata(url);
+
+    if (meta && meta.title) {
+      state.product.name = meta.title;
+      if (inputProductName) inputProductName.value = meta.title;
+      if (selectedViralTitle) selectedViralTitle.textContent = meta.title;
+    } else if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
+      const inferred = ContentGenerator.inferProductName({ link: url });
+      if (inferred && inferred !== '화제의 인기 추천템') {
+        state.product.name = inferred;
+        if (inputProductName) inputProductName.value = inferred;
+        if (selectedViralTitle) selectedViralTitle.textContent = inferred;
+      }
+    }
+
+    if (meta && meta.description) {
+      const shortDesc = meta.description.slice(0, 80);
+      if (!inputMemo.value || inputMemo.value.includes('호텔 조식') || inputMemo.value.includes('하루 15분')) {
+        inputMemo.value = shortDesc;
+        state.product.memo = shortDesc;
+      }
+    }
+
+    if (meta && meta.imageUrl) {
+      state.product.mediaSrc = meta.imageUrl;
+      if (inputImageUrl) inputImageUrl.value = meta.imageUrl;
+      applyImageUrlDirectly(meta.imageUrl);
+    }
+
+    renderPlatformSearchToolbar({ 
+      name: state.product.name, 
+      search: state.product.name, 
+      coupangSearch: state.product.name 
+    }, detectedPlat);
+
+    saveCurrentSession(true);
+    addToRecentHistory({
+      name: state.product.name || '스레드 제휴 상품',
+      title: state.product.name || '스레드 제휴 상품',
+      link: url,
+      memo: state.product.memo || '',
+      defaultPlatform: detectedPlat,
+      icon: detectedPlat === 'ohou' ? '🏠' : (detectedPlat === 'coupang' ? '🚀' : '✨')
+    });
+
+    // 3. 스레드 홍보글 & 카드뉴스 자동 생성 실행!
+    showToast('🚀 스레드 알고리즘 맞춤 글 & 4컷 카드뉴스 즉시 생성 중... ✨', 2000);
+
+    try {
+      const results = await ContentGenerator.generateAll(
+        state.product, 
+        state.geminiKey, 
+        state.slideCount || 4, 
+        state.monetizationMode || 'link'
+      );
+      state.generatedData = results;
+
+      // 카드뉴스 슬라이드 세팅
+      CardNewsStudio.setGeneratedSlides(results.cardnews_ko, results.cardnews_ja);
+      renderGeminiPromptsList(results.geminiPrompts || []);
+
+      // 4. 스레드 채널 활성화 및 Tab 2로 즉시 전환
+      state.activeChannel = 'threads-kr';
+      channelPills.forEach(p => {
+        p.classList.toggle('active', p.getAttribute('data-channel') === 'threads-kr');
+      });
+      updateCopyTextView();
+      switchTab('copy');
+
+      // 스레드 전용 컨테이너 위치로 부드럽게 스크롤
+      const threadsContainer = document.getElementById('threads-copy-container');
+      if (threadsContainer) {
+        threadsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      showToast('🎉 스레드 2단계 글(본문+첫댓글)과 카드뉴스가 1초 만에 완성되었습니다! ✨', 4000);
+    } catch (err) {
+      console.error(err);
+      showToast('생성 중 오류: ' + err.message);
+    }
+  }
+
   function showClipboardDetectBanner({ url, platLabel, platIcon }) {
     const banner = document.getElementById('clipboard-detect-banner');
     const badge = document.getElementById('clipboard-detect-badge');
@@ -548,8 +694,17 @@ function startViralMakerApp() {
 
     banner.style.display = 'block';
 
+    const btnDirectThreads = document.getElementById('btn-direct-create-threads');
     const btnApply = document.getElementById('btn-apply-detected-clip');
     const btnDismiss = document.getElementById('btn-dismiss-detected-clip');
+
+    if (btnDirectThreads) {
+      btnDirectThreads.onclick = () => {
+        banner.style.display = 'none';
+        lastDetectedClipUrl = url;
+        triggerDirectThreadsPipeline(url);
+      };
+    }
 
     if (btnApply) {
       btnApply.onclick = () => {
@@ -578,6 +733,27 @@ function startViralMakerApp() {
     state.product.platform = detectedPlat;
     currentActivePlatform = detectedPlat;
 
+    // 메타데이터 비동기 조회
+    autoFetchProductMetadata(url).then(meta => {
+      if (meta && meta.title) {
+        state.product.name = meta.title;
+        if (inputProductName) inputProductName.value = meta.title;
+        if (selectedViralTitle) selectedViralTitle.textContent = meta.title;
+      }
+      if (meta && meta.imageUrl) {
+        state.product.mediaSrc = meta.imageUrl;
+        if (inputImageUrl) inputImageUrl.value = meta.imageUrl;
+        applyImageUrlDirectly(meta.imageUrl);
+      }
+      if (meta && meta.description) {
+        if (!inputMemo.value || inputMemo.value.includes('호텔 조식') || inputMemo.value.includes('하루 15분')) {
+          inputMemo.value = meta.description.slice(0, 80);
+          state.product.memo = inputMemo.value;
+        }
+      }
+      saveCurrentSession(true);
+    });
+
     // 링크에서 상품명 추론 가능한 경우 반영
     if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferProductName) {
       const inferred = ContentGenerator.inferProductName({ link: url });
@@ -594,10 +770,6 @@ function startViralMakerApp() {
     updateModeALinkStatus(url);
     updateModeBBadge();
     if (typeof updateCopyTextView === 'function') updateCopyTextView();
-
-    if (typeof autoFetchProductImage === 'function') {
-      autoFetchProductImage(url);
-    }
 
     saveCurrentSession(true);
     addToRecentHistory({
@@ -1370,33 +1542,22 @@ function startViralMakerApp() {
     }
   });
 
-  // 5. 제휴 상품 링크 입력 시 대표 이미지 자동 추출 (오픈그래프 og:image 탐색)
+  // 5. 제휴 상품 링크 입력 시 대표 이미지 & 정보 자동 추출
   let autoFetchTimer = null;
   async function autoFetchProductImage(url) {
     if (!url || !url.startsWith('http')) return;
     if (state.product.mediaSrc && state.product.mediaSrc.startsWith('data:image')) return;
 
-    try {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      const resp = await fetch(proxyUrl);
-      if (!resp.ok) return;
-      const data = await resp.json();
-      if (!data.contents) return;
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(data.contents, 'text/html');
-
-      const ogImg = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')
-                 || doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content')
-                 || doc.querySelector('link[rel="image_src"]')?.getAttribute('href');
-
-      if (ogImg && ogImg.startsWith('http')) {
-        if (inputImageUrl) inputImageUrl.value = ogImg;
-        applyImageUrlDirectly(ogImg);
-        showToast('🎉 제휴 링크에서 제품 대표 사진을 자동으로 가져왔습니다!');
-      }
-    } catch (e) {
-      // CORS 실패 시 조용히 넘김
+    const meta = await autoFetchProductMetadata(url);
+    if (meta && meta.imageUrl) {
+      if (inputImageUrl) inputImageUrl.value = meta.imageUrl;
+      applyImageUrlDirectly(meta.imageUrl);
+      showToast('🎉 제휴 링크에서 제품 대표 사진을 자동으로 가져왔습니다!');
+    }
+    if (meta && meta.title && (!inputProductName.value || inputProductName.value.includes('계란말이') || inputProductName.value.includes('넥케어'))) {
+      inputProductName.value = meta.title;
+      state.product.name = meta.title;
+      if (selectedViralTitle) selectedViralTitle.textContent = meta.title;
     }
   }
 
@@ -3013,6 +3174,17 @@ function startViralMakerApp() {
 
   // 첫 진입 1초 후 클립보드 검사 시도 (브라우저 정책 허용 시)
   setTimeout(checkClipboardForShoppingLink, 1000);
+
+  // 🚀 PWA Web Share Target 및 쿼리 파라미터(?url=... or ?text=...) 자동 연동
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedUrl = urlParams.get('url') || (urlParams.get('text') && urlParams.get('text').match(/https?:\/\/[^\s]+/)?.[0]);
+    if (sharedUrl && sharedUrl.startsWith('http')) {
+      setTimeout(() => {
+        triggerDirectThreadsPipeline(sharedUrl);
+      }, 700);
+    }
+  } catch (e) {}
 }
 
 if (document.readyState === 'loading') {
