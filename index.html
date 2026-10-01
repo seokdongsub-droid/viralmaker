@@ -40,7 +40,7 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v4.0 N컷 연동 스튜디오</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v4.1 오늘의집/쿠팡 퍼펙트 연동</span>
         </div>
       </div>
       <div class="header-actions">
@@ -215,7 +215,7 @@
                 </div>
               </div>
               <div style="display: flex; gap: 6px;">
-                <input type="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="오늘의집/쿠팡 앱에서 [공유하기] 문구나 제품 링크 붙여넣기" value="" required>
+                <input type="text" inputmode="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="오늘의집/쿠팡 앱에서 [공유하기] 문구나 제품 링크 붙여넣기" value="" required>
                 <!-- 호환용 숨김 입력 필드 -->
                 <input type="hidden" id="input-mode-a-real-link" value="">
                 <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
@@ -1295,15 +1295,39 @@
             </div>
           </div>
         </div>
+    <!-- MODAL 6: 오늘의집/쿠팡 1초 링크 붙여넣기 모달 (스마트폰 브라우저 보안 차단 100% 극복) -->
+    <div class="modal-overlay" id="modal-quick-paste" style="display: none;">
+      <div class="modal-card" style="max-width: 420px; border: 1.5px solid rgba(56, 189, 248, 0.6); box-shadow: 0 10px 30px rgba(2, 132, 199, 0.35);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 6px;">
+            <span>📋</span>
+            <span>오늘의집 · 쿠팡 링크 붙여넣기</span>
+          </h3>
+          <button type="button" id="btn-close-quick-paste-modal" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 2px 6px;">✕</button>
+        </div>
+        
+        <div style="font-size: 11.5px; color: #bae6fd; line-height: 1.45; margin-bottom: 10px; background: rgba(14, 165, 233, 0.12); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3);">
+          💡 스마트폰 보안 정책으로 인해 클립보드 자동 읽기가 차단되었습니다.<br>
+          <strong>아래 입력창을 1초간 꾹 눌러 [붙여넣기]</strong>를 터치하시면 0.1초 만에 자동 분리 세팅됩니다!
+        </div>
+
+        <textarea id="textarea-quick-paste-box" class="input-control" rows="3" style="width: 100%; font-size: 12.5px; padding: 10px; resize: none; border-color: rgba(56, 189, 248, 0.5); background: rgba(15, 23, 42, 0.85);" placeholder="여기를 1초간 꾹 눌러 [붙여넣기]를 터치하세요! 📋&#10;(오늘의집 또는 쿠팡에서 복사하신 내용)"></textarea>
+
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button type="button" class="btn-primary-large" id="btn-apply-quick-paste-box" style="flex: 2; padding: 11px; font-size: 13.5px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #2563eb);">
+            ⚡ 즉시 1초 완성
+          </button>
+          <button type="button" class="btn-header" id="btn-cancel-quick-paste-box" style="flex: 1; padding: 11px; font-size: 12.5px; justify-content: center;">취소</button>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <!-- Scripts (캐시 방지 v4.0 적용) -->
-  <script src="js/templates.js?v=4.0"></script>
-  <script src="js/generator.js?v=4.0"></script>
-  <script src="js/cardnews.js?v=4.0"></script>
-  <script src="js/app.js?v=4.0"></script>
+  <!-- Scripts (캐시 방지 v4.1 적용) -->
+  <script src="js/templates.js?v=4.1"></script>
+  <script src="js/generator.js?v=4.1"></script>
+  <script src="js/cardnews.js?v=4.1"></script>
+  <script src="js/app.js?v=4.1"></script>
 </body>
 </html>

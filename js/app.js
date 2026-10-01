@@ -848,6 +848,162 @@ function startViralMakerApp() {
     showToast('🎉 감지된 제휴 링크가 1초 만에 세팅되었습니다! 수익 적립 준비 완료 ✨');
   }
 
+  // 📋 1초 퀵 링크 붙여넣기 모달 열기/닫기 (스마트폰 브라우저 보안 차단 100% 극복)
+  const modalQuickPaste = document.getElementById('modal-quick-paste');
+  const textareaQuickPaste = document.getElementById('textarea-quick-paste-box');
+  const btnApplyQuickPaste = document.getElementById('btn-apply-quick-paste-box');
+  const btnCloseQuickPaste = document.getElementById('btn-close-quick-paste-modal');
+  const btnCancelQuickPaste = document.getElementById('btn-cancel-quick-paste-box');
+
+  function openQuickPasteModal() {
+    if (!modalQuickPaste) return;
+    modalQuickPaste.style.display = 'flex';
+    if (textareaQuickPaste) {
+      textareaQuickPaste.value = '';
+      setTimeout(() => {
+        textareaQuickPaste.focus();
+      }, 100);
+    }
+  }
+
+  function closeQuickPasteModal() {
+    if (modalQuickPaste) {
+      modalQuickPaste.style.display = 'none';
+    }
+  }
+
+  if (btnCloseQuickPaste) btnCloseQuickPaste.addEventListener('click', closeQuickPasteModal);
+  if (btnCancelQuickPaste) btnCancelQuickPaste.addEventListener('click', closeQuickPasteModal);
+  if (modalQuickPaste) {
+    modalQuickPaste.addEventListener('click', (e) => {
+      if (e.target === modalQuickPaste) closeQuickPasteModal();
+    });
+  }
+
+  if (textareaQuickPaste) {
+    const handlePasteBoxInput = () => {
+      const val = textareaQuickPaste.value.trim();
+      if (val && (val.includes('http') || val.length >= 4)) {
+        setTimeout(() => {
+          closeQuickPasteModal();
+          executeQuickShoppingImport(val);
+        }, 100);
+      }
+    };
+    textareaQuickPaste.addEventListener('paste', () => setTimeout(handlePasteBoxInput, 40));
+    textareaQuickPaste.addEventListener('input', handlePasteBoxInput);
+  }
+
+  if (btnApplyQuickPaste && textareaQuickPaste) {
+    btnApplyQuickPaste.addEventListener('click', () => {
+      const val = textareaQuickPaste.value.trim();
+      if (val) {
+        closeQuickPasteModal();
+        executeQuickShoppingImport(val);
+      } else {
+        showToast('💡 입력창을 꾹 눌러 복사하신 링크를 붙여넣어주세요.');
+      }
+    });
+  }
+
+  // ⚡ 제품 링크 & 공유 텍스트 통합 분석 및 입력 처리 엔진 (input/paste/change 전역 통합)
+  function processLinkInputText(rawVal, isExplicitPaste = false) {
+    if (!rawVal || typeof rawVal !== 'string') return false;
+    const raw = rawVal.trim();
+    if (!raw) return false;
+
+    // 1. 쇼핑몰 공유 텍스트 스마트 파싱
+    const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+      ? ContentGenerator.extractShoppingShareInfo(raw)
+      : null;
+
+    if (shareInfo && shareInfo.url) {
+      if (inputLink && inputLink.value !== shareInfo.url) {
+        inputLink.value = shareInfo.url;
+      }
+      if (inputModeARealLink) inputModeARealLink.value = shareInfo.url;
+      state.product.link = shareInfo.url;
+      state.product.platform = shareInfo.platKey || 'general';
+      currentActivePlatform = state.product.platform;
+      updateModeALinkStatus(shareInfo.url);
+      updateModeBBadge();
+
+      if (shareInfo.title) {
+        state.product.name = shareInfo.title;
+        if (inputProductName) inputProductName.value = shareInfo.title;
+        if (selectedViralTitle) selectedViralTitle.textContent = shareInfo.title;
+        if (inputMemo && (!inputMemo.value || inputMemo.value.includes('호텔 조식') || inputMemo.value.includes('하루 15분'))) {
+          inputMemo.value = `${shareInfo.title} 실사용 찐후기 추천`;
+          state.product.memo = inputMemo.value;
+        }
+      } else {
+        // 링크만 들어온 경우 (예: 오늘의집 링크 복사) -> 상품명 입력 유도
+        const platName = shareInfo.platLabel || '쇼핑몰';
+        showToast(`💡 [${platName}] 제휴 링크 연결 완료! 상품명을 2~3글자로 가볍게 적어주세요. ✨`, 3500);
+        if (inputProductName) {
+          setTimeout(() => {
+            inputProductName.focus();
+            inputProductName.select();
+          }, 250);
+        }
+      }
+
+      if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
+        state.product.category = ContentGenerator.inferCategory(state.product);
+      }
+
+      // 시각적 피드백: 힌트 박스 표시
+      const linkHintBox = document.getElementById('link-action-hint-box');
+      const linkHintText = document.getElementById('link-action-hint-text');
+      if (linkHintBox && linkHintText) {
+        linkHintBox.style.display = 'block';
+        linkHintText.innerHTML = `🎉 <strong>[${shareInfo.platLabel}]</strong> 제휴 링크 연결 완료! 앱에서 대표 사진을 <strong>[사진 복사]</strong>하거나 캡처하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요.`;
+      }
+
+      renderPlatformSearchToolbar({
+        name: state.product.name || shareInfo.title || '',
+        search: state.product.name || shareInfo.title || ''
+      }, state.product.platform);
+
+      saveCurrentSession(true);
+      if (shareInfo.title) {
+        showToast(`🎉 [${shareInfo.platLabel}] "${shareInfo.title}" 상품명과 링크 자동 분리 세팅 완료! ✨`);
+      }
+      return true;
+    }
+
+    // 2. 일반 URL 정규식 추출
+    const urlMatch = raw.match(/https?:\/\/[^\s"'<>]+/i);
+    if (urlMatch) {
+      const url = urlMatch[0].replace(/[)\]}>.,;:~]+$/, '');
+      if (inputLink && inputLink.value !== url) {
+        inputLink.value = url;
+      }
+      if (inputModeARealLink) inputModeARealLink.value = url;
+      state.product.link = url;
+      const detectedPlat = (typeof ContentGenerator !== 'undefined' && ContentGenerator.detectPlatform)
+        ? ContentGenerator.detectPlatform(url)
+        : 'general';
+      state.product.platform = detectedPlat;
+      currentActivePlatform = detectedPlat;
+      updateModeALinkStatus(url);
+      updateModeBBadge();
+
+      const linkHintBox = document.getElementById('link-action-hint-box');
+      const linkHintText = document.getElementById('link-action-hint-text');
+      if (linkHintBox && linkHintText) {
+        linkHintBox.style.display = 'block';
+        const platName = (detectedPlat === 'ohou' ? '오늘의집' : (detectedPlat === 'coupang' ? '쿠팡' : '제휴 쇼핑몰'));
+        linkHintText.innerHTML = `🎉 <strong>[${platName}]</strong> 제휴 링크 연결 완료! 앱에서 대표 사진을 <strong>[사진 복사]</strong>하거나 캡처하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요.`;
+      }
+
+      saveCurrentSession();
+      return true;
+    }
+
+    return false;
+  }
+
   // ⚡ 1초 원클릭 쇼핑몰 링크/공유문구 가져오기 엔진 (브라우저 권한 차단 100% 극복)
   async function executeQuickShoppingImport(providedText = null) {
     let clipText = providedText;
@@ -856,16 +1012,13 @@ function startViralMakerApp() {
       try {
         clipText = await navigator.clipboard.readText();
       } catch (err) {
-        // 브라우저 백그라운드 보안 차단 시 아래 프롬프트로 부드럽게 폴백
+        // 브라우저 백그라운드 보안 차단 시 아래 모달창으로 부드럽게 폴백
       }
     }
 
+    // 클립보드 접근이 차단되었거나 비어있을 때: 1초 붙여넣기 모달창 즉시 오픈!
     if (!clipText || !clipText.trim()) {
-      showToast('💡 복사된 링크나 상품 정보가 없습니다. 오늘의집이나 쿠팡에서 [공유하기] 문구 복사 후 다시 눌러주세요.');
-      if (inputLink) {
-        inputLink.focus();
-        inputLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      openQuickPasteModal();
       return;
     }
 
@@ -877,18 +1030,40 @@ function startViralMakerApp() {
       : null;
 
     if (shareInfo && shareInfo.url) {
-      showToast(`⚡ [${shareInfo.platLabel}] "${shareInfo.title || '제휴 상품'}" 인식 완료! 즉시 생성 중...`, 2500);
-      triggerDirectThreadsPipeline(shareInfo.url, shareInfo.title);
+      if (shareInfo.title) {
+        showToast(`⚡ [${shareInfo.platLabel}] "${shareInfo.title}" 인식 완료! 즉시 세팅 중...`, 2500);
+        triggerDirectThreadsPipeline(shareInfo.url, shareInfo.title);
+      } else {
+        processLinkInputText(shareInfo.url, true);
+        showToast(`🎉 [${shareInfo.platLabel}] 제휴 링크 연결 완료! 상품명을 2~3글자로 가볍게 적어주세요. ✨`, 3500);
+        if (inputProductName) {
+          setTimeout(() => {
+            inputProductName.focus();
+            inputProductName.select();
+          }, 300);
+        }
+      }
       return;
     }
 
     // 2. 일반 URL 정규식 추출
     const urlMatch = trimmed.match(/https?:\/\/[^\s"'<>]+/i);
     if (urlMatch) {
-      const url = urlMatch[0];
-      const nonUrl = trimmed.replace(url, '').replace(/[|:\-_[\]]/g, ' ').trim();
-      showToast('⚡ 제휴 링크 감지 완료! 스레드 글 & 카드뉴스 생성 중...', 2500);
-      triggerDirectThreadsPipeline(url, nonUrl || null);
+      const url = urlMatch[0].replace(/[)\]}>.,;:~]+$/, '');
+      const nonUrl = trimmed.replace(urlMatch[0], '').replace(/[|:\-_[\]]/g, ' ').trim();
+      if (nonUrl) {
+        showToast('⚡ 제휴 링크 감지 완료! 스레드 글 & 카드뉴스 생성 중...', 2500);
+        triggerDirectThreadsPipeline(url, nonUrl);
+      } else {
+        processLinkInputText(url, true);
+        showToast('🎉 제휴 링크 연결 완료! 상품명을 입력해주세요. ✨', 3000);
+        if (inputProductName) {
+          setTimeout(() => {
+            inputProductName.focus();
+            inputProductName.select();
+          }, 300);
+        }
+      }
       return;
     }
 
@@ -1222,51 +1397,27 @@ function startViralMakerApp() {
   if (inputLink) {
     inputLink.addEventListener('paste', () => {
       setTimeout(() => {
-        const raw = inputLink.value.trim();
-        const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
-          ? ContentGenerator.extractShoppingShareInfo(raw)
-          : null;
-        if (shareInfo && shareInfo.url) {
-          inputLink.value = shareInfo.url;
-          state.product.link = shareInfo.url;
-          if (shareInfo.title) {
-            state.product.name = shareInfo.title;
-            if (inputProductName) inputProductName.value = shareInfo.title;
-            if (selectedViralTitle) selectedViralTitle.textContent = shareInfo.title;
-            if (inputMemo) {
-              inputMemo.value = `${shareInfo.title} 실사용 찐후기 추천`;
-              state.product.memo = inputMemo.value;
-            }
-          }
-          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
-            state.product.category = ContentGenerator.inferCategory(state.product);
-          }
-          updateModeBBadge();
-          saveCurrentSession(true);
-          showToast(`🎉 [${shareInfo.platLabel}] "${shareInfo.title || '제휴 링크'}" 분리 입력 완료! ✨`);
-        }
-      }, 50);
+        processLinkInputText(inputLink.value.trim(), true);
+      }, 40);
     });
 
     inputLink.addEventListener('input', () => {
-      updateModeBBadge();
-      const url = inputLink.value.trim();
-      if (url) {
-        state.product.link = url;
-        state.product.platform = (typeof ContentGenerator !== 'undefined') ? ContentGenerator.detectPlatform(url) : 'general';
+      const raw = inputLink.value.trim();
+      if (!raw) return;
+      // 쇼핑몰 복사 문구(한글+링크)이거나 일반 URL이면 즉시 스마트 분리 및 감지 처리
+      const processed = processLinkInputText(raw, false);
+      if (!processed) {
+        updateModeBBadge();
+        state.product.link = raw;
         state.generatedData = null;
         if (typeof updateCopyTextView === 'function') {
           updateCopyTextView();
         }
-
-        // 제휴몰 링크 입력 시 제품 대표 이미지 자동 추출 시도 (디바운스 600ms)
-        if (autoFetchTimer) clearTimeout(autoFetchTimer);
-        autoFetchTimer = setTimeout(() => {
-          if (typeof autoFetchProductImage === 'function') {
-            autoFetchProductImage(url);
-          }
-        }, 600);
       }
+    });
+
+    inputLink.addEventListener('change', () => {
+      processLinkInputText(inputLink.value.trim(), false);
     });
   }
 
@@ -1419,30 +1570,19 @@ function startViralMakerApp() {
     inputProductName.addEventListener('paste', () => {
       setTimeout(() => {
         const raw = inputProductName.value.trim();
-        const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
-          ? ContentGenerator.extractShoppingShareInfo(raw)
-          : null;
-        if (shareInfo && shareInfo.title) {
-          inputProductName.value = shareInfo.title;
-          state.product.name = shareInfo.title;
-          if (selectedViralTitle) selectedViralTitle.textContent = shareInfo.title;
-          if (shareInfo.url && inputLink) {
-            inputLink.value = shareInfo.url;
-            state.product.link = shareInfo.url;
-            updateModeBBadge();
-          }
-          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
-            state.product.category = ContentGenerator.inferCategory(state.product);
-          }
-          saveCurrentSession(true);
-          showToast(`🎉 [${shareInfo.platLabel}] "${shareInfo.title}" 상품명과 링크 자동 세팅 완료! ✨`);
+        if (raw && (raw.includes('http') || raw.includes('오늘의집') || raw.includes('쿠팡'))) {
+          processLinkInputText(raw, true);
         }
-      }, 50);
+      }, 40);
     });
 
     inputProductName.addEventListener('input', () => {
       const val = inputProductName.value.trim();
       if (val) {
+        if (val.includes('http://') || val.includes('https://')) {
+          processLinkInputText(val, false);
+          return;
+        }
         state.product.name = val;
         if (selectedViralTitle) selectedViralTitle.textContent = val;
         if (currentViralItem) currentViralItem.name = val;

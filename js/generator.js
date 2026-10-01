@@ -22,7 +22,7 @@ class ContentGeneratorEngine {
     if (lower.includes('coupang.com') || lower.includes('link.coupang.com')) {
       return 'coupang';
     }
-    if (lower.includes('ohou.se') || lower.includes('todayhouse')) {
+    if (lower.includes('ohou.se') || lower.includes('ozip.to') || lower.includes('ozip.me') || lower.includes('ohse.me') || lower.includes('bucketplace') || lower.includes('todayhouse') || lower.includes('오늘의집')) {
       return 'ohou';
     }
     if (lower.includes('kurly.com')) {
@@ -51,13 +51,15 @@ class ContentGeneratorEngine {
     if (!rawText || typeof rawText !== 'string') return null;
     const text = rawText.trim();
     
-    // 1. URL 정규식 추출
+    // 1. URL 정규식 추출 (말미 괄호, 마침표, 쉼표 등 문장 부호 깔끔히 제거)
     const urlMatch = text.match(/https?:\/\/[^\s"'<>]+/i);
     if (!urlMatch) return null;
-    const url = urlMatch[0];
+    const rawUrl = urlMatch[0];
+    const url = rawUrl.replace(/[)\]}>.,;:~]+$/, '');
 
-    // 2. 쇼핑몰 링크 판별
-    const isShopping = /(ohou\.se|ozip\.to|coupang\.com|kurly\.com|oasis\.co\.kr|toss\.im|smartstore\.naver\.com|shopping\.naver\.com|aliexpress\.com|oliveyoung\.co\.kr)/i.test(url);
+    // 2. 쇼핑몰 링크 판별 (오늘의집 모든 서브도메인 & 단축도메인 지원)
+    const isShopping = /(ohou\.se|ozip\.to|ozip\.me|ohse\.me|bucketplace|coupang\.com|kurly\.com|oasis\.co\.kr|toss\.im|smartstore\.naver\.com|shopping\.naver\.com|aliexpress\.com|oliveyoung\.co\.kr)/i.test(url)
+                    || /(오늘의집|쿠팡|마켓컬리|오아시스|토스쇼핑|스마트스토어)/i.test(text);
     if (!isShopping) return null;
 
     const platKey = this.detectPlatform(url);
@@ -85,12 +87,14 @@ class ContentGeneratorEngine {
     }
 
     // 3. URL을 제외한 텍스트에서 '상품명' 추출 (공유하기 텍스트 분리)
-    let nonUrlText = text.replace(url, '').trim();
+    let nonUrlText = text.replace(rawUrl, '').replace(url, '').trim();
     let cleanedTitle = nonUrlText
       .replace(/(쿠팡!*|오늘의집|마켓컬리|오아시스마켓*|토스쇼핑*|네이버쇼핑|스마트스토어|올리브영)[\s|:/-]*/gi, '')
-      .replace(/\[(로켓배송|로켓와우|특가|단독|오늘의딜|할인|무료배송|오늘출발|쿠팡|오늘의집)\]/gi, '')
-      .replace(/(지금\s*.*에서\s*확인해보세요!?|앱에서\s*확인해보세요!?|자세한\s*내용은\s*링크에서!?)/gi, '')
-      .replace(/^[\s|:/-]+|[\s|:/-]+$/g, '')
+      .replace(/\[(로켓배송|로켓와우|특가|단독|오늘의딜|오굿데이|한정특가|할인|무료배송|오늘출발|쿠팡|오늘의집)\]/gi, '')
+      .replace(/(오굿데이|단독특가|한정특가|오늘의딜|로켓배송|로켓와우|무료배송|오늘출발)[\s|:/-]*/gi, '')
+      .replace(/(지금\s*(.*에서\s*)?확인해보세요!?|앱에서\s*확인해보세요!?|자세한\s*내용은\s*(링크에서)?!?|링크를\s*눌러\s*확인해보세요!?)/gi, '')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/^[\s|:/\-_[\]~·•]+|[\s|:/\-_[\]~·•]+$/g, '')
       .trim();
 
     // 4. URL 슬러그 한글 디코딩 폴백
