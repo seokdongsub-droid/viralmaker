@@ -2614,6 +2614,206 @@ body {
   box-shadow: 0 4px 14px rgba(2, 132, 199, 0.5) !important;
 }
 
+/* 💡 쿠팡/오늘의집 3초 사진 가져오기 가이드 카드 */
+.shopping-photo-guide-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 9px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.guide-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #e9d5ff;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.guide-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+.guide-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .guide-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-step-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.step-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #7c3aed;
+  color: #fff;
+  white-space: nowrap;
+}
+.step-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+.step-desc strong {
+  color: #fff;
+}
+
+/* 🌟 실전 2대 원터치 사진 첨부 액션 그리드 */
+.photo-primary-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 580px) {
+  .photo-primary-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-photo-action-paste {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  border: 1.5px solid rgba(244, 114, 182, 0.6);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-photo-action-paste:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+  border-color: #f472b6;
+}
+.btn-photo-action-paste:active {
+  transform: translateY(0);
+}
+
+.btn-photo-action-upload {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #2563eb 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-photo-action-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5);
+  border-color: #38bdf8;
+}
+.btn-photo-action-upload:active {
+  transform: translateY(0);
+}
+
+.btn-photo-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-photo-content {
+  flex: 1;
+  min-width: 0;
+}
+.btn-photo-title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+.btn-photo-desc {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-photo-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 보조 옵션 토글 링크 */
+.photo-secondary-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+.btn-toggle-sub-method {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.btn-toggle-sub-method:hover {
+  color: #e2e8f0;
+}
+
+
 
 
 

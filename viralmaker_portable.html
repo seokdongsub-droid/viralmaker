@@ -2632,6 +2632,206 @@ body {
   box-shadow: 0 4px 14px rgba(2, 132, 199, 0.5) !important;
 }
 
+/* 💡 쿠팡/오늘의집 3초 사진 가져오기 가이드 카드 */
+.shopping-photo-guide-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 9px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.guide-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #e9d5ff;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.guide-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+.guide-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .guide-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guide-step-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.step-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #7c3aed;
+  color: #fff;
+  white-space: nowrap;
+}
+.step-desc {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+.step-desc strong {
+  color: #fff;
+}
+
+/* 🌟 실전 2대 원터치 사진 첨부 액션 그리드 */
+.photo-primary-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 580px) {
+  .photo-primary-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-photo-action-paste {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
+  border: 1.5px solid rgba(244, 114, 182, 0.6);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-photo-action-paste:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+  border-color: #f472b6;
+}
+.btn-photo-action-paste:active {
+  transform: translateY(0);
+}
+
+.btn-photo-action-upload {
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #2563eb 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-photo-action-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.5);
+  border-color: #38bdf8;
+}
+.btn-photo-action-upload:active {
+  transform: translateY(0);
+}
+
+.btn-photo-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-photo-content {
+  flex: 1;
+  min-width: 0;
+}
+.btn-photo-title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+.btn-photo-desc {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-photo-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 보조 옵션 토글 링크 */
+.photo-secondary-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+.btn-toggle-sub-method {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.btn-toggle-sub-method:hover {
+  color: #e2e8f0;
+}
+
+
 
 
 
@@ -2664,7 +2864,7 @@ body {
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.8 실전 제휴스튜디오</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.9 캡처&amp;복사 스튜디오</span>
         </div>
       </div>
       <div class="header-actions">
@@ -2690,9 +2890,9 @@ body {
     <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(99, 102, 241, 0.18)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 14px; font-size: 11.5px; color: #34d399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.8 실전 제휴마케팅 1초 스튜디오 (고객 찐후기 &amp; 4컷 카드뉴스 자동 완성)</strong></span>
+        <span><strong>v3.9 실전 쇼핑몰 1초 캡처&amp;복사 스튜디오 (쿠팡·오늘의집 3초 연동)</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.8_' + Date.now());" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.9_' + Date.now());" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -2770,16 +2970,21 @@ body {
             쿠팡 · 오늘의집 · 마켓컬리 · 오아시스 · 스마트스토어 등 모든 쇼핑몰의 <strong>링크, 사진, 실제 구매 고객 찐후기</strong>를 넣으면 판매 전환율 높은 홍보물(스레드 글 + 4컷 카드뉴스)이 1초 만에 완성됩니다!
           </p>
 
-          <!-- ⚡ 1초 원클릭 링크/공유문구 가져오기 바 -->
-          <div id="quick-import-card" class="quick-import-card" style="margin-bottom: 10px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(99, 102, 241, 0.16)); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;">
-              <span style="font-size: 22px;">⚡</span>
+          <!-- ⚡ 실전 3초 완성 워크플로우 & 원클릭 복사 불러오기 바 -->
+          <div id="quick-import-card" class="quick-import-card" style="margin-bottom: 12px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(99, 102, 241, 0.18)); border: 1.5px solid rgba(56, 189, 248, 0.55); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 240px;">
+              <span style="font-size: 24px;">⚡</span>
               <div>
-                <div style="font-size: 12.5px; font-weight: 800; color: #fff;">오늘의집 / 쿠팡 / 마켓컬리에서 [링크 복사] 하셨나요?</div>
-                <div style="font-size: 10.5px; color: #bae6fd;">이 버튼을 누르면 복사하신 <strong>상품명과 링크</strong>가 1초 만에 자동 세팅됩니다!</div>
+                <div style="font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
+                  <span>오늘의집 · 쿠팡 앱에서 [공유하기 / 링크 복사] 하셨나요?</span>
+                  <span style="font-size: 10px; background: #0284c7; color: #fff; padding: 1px 6px; border-radius: 4px;">현실적 1초 해결</span>
+                </div>
+                <div style="font-size: 11px; color: #bae6fd; margin-top: 2px;">
+                  아래 버튼을 누르면 복사하신 <strong>상품명과 제휴 링크</strong>가 0.1초 만에 자동 분리 세팅됩니다!
+                </div>
               </div>
             </div>
-            <button type="button" id="btn-quick-import-shopping-link" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; font-weight: 800; font-size: 12px; padding: 8px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35); white-space: nowrap;">
+            <button type="button" id="btn-quick-import-shopping-link" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; font-weight: 800; font-size: 12.5px; padding: 9px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 7px; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4); white-space: nowrap;">
               <span>📋</span> <span>복사한 상품/링크 즉시 불러오기</span>
             </button>
           </div>
@@ -2826,7 +3031,7 @@ body {
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
                 <label for="product-link" id="label-mode-a-link-title" style="font-size: 12px; font-weight: 800; color: #fbbf24; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                   <span class="step-num-badge">1</span>
-                  <span>💰 제품 링크 (내 제휴 수익 링크):</span>
+                  <span>💰 제품 링크 (쿠팡/오늘의집 [공유하기] 문구 또는 링크 붙여넣기):</span>
                 </label>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span id="mode-b-detected-badge" class="platform-pill" style="font-size: 10.5px;">🚀 쿠팡 감지</span>
@@ -2834,10 +3039,15 @@ body {
                 </div>
               </div>
               <div style="display: flex; gap: 6px;">
-                <input type="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="쇼핑몰 제품 링크 붙여넣기 (예: 오늘의집, 쿠팡, 컬리, 오아시스, 스마트스토어 링크)" value="" required>
+                <input type="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="오늘의집/쿠팡 앱에서 [공유하기] 문구나 제품 링크 붙여넣기" value="" required>
                 <!-- 호환용 숨김 입력 필드 -->
                 <input type="hidden" id="input-mode-a-real-link" value="">
                 <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
+              </div>
+              
+              <!-- 💡 링크 입력 후 실시간 행동 안내 힌트 바 -->
+              <div id="link-action-hint-box" style="display: none; margin-top: 8px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 7px 10px; font-size: 11px; color: #34d399; line-height: 1.4;">
+                <span id="link-action-hint-text">🚀 제휴 링크 연결 완료! 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 [사진 붙여넣기]를 눌러주세요.</span>
               </div>
               
               <!-- 5대 제휴몰 내 링크 검색 툴바 -->
@@ -2909,7 +3119,7 @@ body {
         </div>
 
         <!-- 사진/동영상 첨부: 1장 또는 여러 장 (스마트 5단 앵글 연출) -->
-        <div class="section-card photo-upload-card">
+        <div class="section-card photo-upload-card" id="section-photo-upload">
           <div class="section-title" style="margin-bottom: 4px;">
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
               <div style="display: flex; align-items: center; gap: 6px;">
@@ -2923,23 +3133,67 @@ body {
             💡 <strong>쇼핑몰 상세페이지 스크린샷(캡처) 1장만 첨부</strong>해도 슬라이드별 맞춤 앵글로 카드뉴스가 자동 완성됩니다!
           </p>
 
-          <!-- 🚀 제휴몰 제품 사진 초간단 첨부 4-Way 툴바 -->
-          <div class="photo-method-tabs">
-            <button type="button" class="photo-method-btn active" id="btn-tab-method-file">
-              <span>📁</span> <span>내 사진첩/스크린샷</span>
+          <!-- 💡 쿠팡/오늘의집 3초 사진 가져오기 가이드 배너 -->
+          <div class="shopping-photo-guide-card">
+            <div class="guide-header">
+              <span class="guide-title">💡 오늘의집 · 쿠팡 앱에서 사진 3초 만에 가져오는 법</span>
+              <span class="guide-tag">가장 현실적 &amp; 100% 성공</span>
+            </div>
+            <div class="guide-steps-grid">
+              <div class="guide-step-box">
+                <span class="step-pill">방법 ①</span>
+                <div class="step-desc">
+                  쇼핑몰 앱에서 사진을 <strong>손가락으로 꾹 눌러 [사진 복사]</strong> (PC는 우클릭 이미지 복사) ➔ 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong> 터치!
+                </div>
+              </div>
+              <div class="guide-step-box">
+                <span class="step-pill" style="background: #0284c7;">방법 ②</span>
+                <div class="step-desc">
+                  쇼핑몰 화면을 <strong>스크린샷(캡처)</strong> ➔ 아래 <strong>[📸 캡처/사진첩 사진 올리기]</strong> 터치! (1장만 올려도 4단 앵글 자동 연출)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌟 실전 2대 원터치 사진 첨부 액션 그리드 -->
+          <div class="photo-primary-actions-grid">
+            <!-- 원터치 액션 1: 복사한 사진 즉시 붙여넣기 (메인 강조) -->
+            <button type="button" id="btn-primary-paste-photo" class="btn-photo-action-paste">
+              <div class="btn-photo-icon-box">📋</div>
+              <div class="btn-photo-content">
+                <strong class="btn-photo-title">복사한 사진 즉시 붙여넣기</strong>
+                <span class="btn-photo-desc">쇼핑몰에서 사진 꾹 눌러 [복사] 후 터치! (PC: Ctrl+V)</span>
+              </div>
+              <span class="btn-photo-badge">⚡ 1초 장착</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
-              <span>📋</span> <span>사진 클립보드</span>
-            </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-url">
-              <span>🔗</span> <span>이미지 주소 복붙</span>
-            </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이가 생성한 N분할 사진을 1초 만에 개별 슬라이드로 자동 쪼개주는 단축 기능">
-              <span>✂️</span> <span id="lbl-tab-method-collage">제미나이 4컷 자동 분할</span>
+
+            <!-- 원터치 액션 2: 캡처 / 사진첩 파일 올리기 -->
+            <button type="button" id="btn-primary-upload-photo" class="btn-photo-action-upload">
+              <div class="btn-photo-icon-box">📸</div>
+              <div class="btn-photo-content">
+                <strong class="btn-photo-title">캡처 / 사진첩 사진 올리기</strong>
+                <span class="btn-photo-desc">스마트폰 캡처 1장만 올려도 4단 앵글 자동 연출!</span>
+              </div>
+              <span class="btn-photo-badge" style="background: rgba(56, 189, 248, 0.25); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.4);">📁 1~4장 선택</span>
             </button>
           </div>
 
-          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (URL 탭 클릭 시 표시) -->
+          <!-- 호환용 숨김 버튼들 (기존 JS 연동 유지) -->
+          <div style="display: none;">
+            <button type="button" id="btn-tab-method-file"></button>
+            <button type="button" id="btn-tab-method-clipboard"></button>
+            <button type="button" id="btn-tab-method-url"></button>
+            <button type="button" id="btn-tab-method-collage"></button>
+          </div>
+
+          <!-- 보조 옵션: 이미지 웹 주소(URL) 직접 입력 아코디언 토글 -->
+          <div class="photo-secondary-toggle">
+            <button type="button" id="btn-toggle-photo-url" class="btn-toggle-sub-method">
+              🔗 이미지 웹 주소(URL)로 직접 입력하기 ▾
+            </button>
+          </div>
+
+          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (토글 시 표시) -->
           <div id="panel-photo-url" style="display: none; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-light); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
               <span>🔗 쇼핑몰 제품 이미지 웹 주소(URL) 붙여넣기</span>
@@ -2952,7 +3206,7 @@ body {
               </button>
             </div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [내 사진첩/스크린샷]으로 캡처 1장을 올리시는 것이 가장 빠릅니다!
+              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [복사한 사진 붙여넣기] 또는 [캡처 사진 올리기]가 가장 빠릅니다!
             </div>
           </div>
 
@@ -2961,7 +3215,7 @@ body {
             <img id="upload-preview" class="upload-preview" alt="미리보기">
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
-              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택 (또는 이미지 드래그&amp;드롭)</div>
               <div style="font-size: 11px; color: var(--text-muted);">쇼핑몰 화면 캡처 1장만 올려도 OK! (여러 장 첨부 시 1~4컷에 순서대로 자동 배분)</div>
             </div>
           </label>
@@ -8720,10 +8974,16 @@ function startViralMakerApp() {
   async function autoFetchProductMetadata(url) {
     if (!url || !url.startsWith('http')) return null;
 
+    // 💡 쿠팡(Akamai)과 오늘의집(Cloudflare)은 봇 차단 WAF로 인해 프록시 스크래핑이 원천 차단되므로 헛도는 4.5초 대기를 즉시 스킵
+    const isAntiBotMall = /(coupang\.com|link\.coupang\.com|ohou\.se|ozip\.to)/i.test(url);
+    if (isAntiBotMall) {
+      return null;
+    }
+
     try {
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4500); // 4.5초 타임아웃
+      const timeoutId = setTimeout(() => controller.abort(), 2000); // 2초 빠른 타임아웃
       const resp = await fetch(proxyUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
 
@@ -8810,16 +9070,15 @@ function startViralMakerApp() {
       }
     }
 
-    // 쿠팡 봇 차단/단축링크로 인해 상품명을 전혀 못 읽어온 경우: 1초 퀵 프롬프트 폴백!
+    // 쿠팡/오늘의집 단축링크 등으로 인해 상품명을 못 읽어온 경우: 자연스러운 기본 상품명 세팅 & 부드러운 가이드
     if (!determinedTitle || determinedTitle === '화제의 인기 추천템') {
-      const quickInput = prompt(
-        '💡 쿠팡/쇼핑몰의 보안 봇 차단 정책으로 상품명을 자동으로 읽어오지 못했습니다.\n상품명이 무엇인가요? (예: 5구 멀티탭, 모던 장스탠드):',
-        ''
-      );
-      if (quickInput && quickInput.trim()) {
-        determinedTitle = quickInput.trim();
-      } else {
-        determinedTitle = (detectedPlat === 'coupang' ? '쿠팡 로켓 추천템' : (detectedPlat === 'ohou' ? '오늘의집 인기 리빙템' : 'SNS 화제의 꿀템'));
+      determinedTitle = (detectedPlat === 'coupang' ? '쿠팡 로켓 추천템' : (detectedPlat === 'ohou' ? '오늘의집 감성 리빙템' : 'SNS 화제의 꿀템'));
+      showToast('💡 제휴 링크 연결 완료! 상품명을 2~3글자로 가볍게 수정해주세요. ✨', 3500);
+      if (inputProductName) {
+        setTimeout(() => {
+          inputProductName.focus();
+          inputProductName.select();
+        }, 300);
       }
     }
 
@@ -9013,14 +9272,11 @@ function startViralMakerApp() {
     }
 
     if (!clipText || !clipText.trim()) {
-      clipText = prompt(
-        '📋 오늘의집이나 쿠팡에서 복사하신 링크 또는 공유 텍스트를 여기에 붙여넣어 주세요 (Ctrl+V):',
-        ''
-      );
-    }
-
-    if (!clipText || !clipText.trim()) {
-      showToast('⚠️ 복사된 링크나 상품 정보가 없습니다. 쇼핑몰에서 링크 복사 후 다시 눌러주세요.');
+      showToast('💡 복사된 링크나 상품 정보가 없습니다. 오늘의집이나 쿠팡에서 [공유하기] 문구 복사 후 다시 눌러주세요.');
+      if (inputLink) {
+        inputLink.focus();
+        inputLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
@@ -9272,6 +9528,24 @@ function startViralMakerApp() {
       badgeModeALinkStatus.textContent = '✅ 내 제휴 링크 적용됨 (수익 적립 OK)';
       badgeModeALinkStatus.style.background = 'rgba(16, 185, 129, 0.2)';
       badgeModeALinkStatus.style.color = '#34d399';
+    }
+
+    // 💡 실시간 다음 행동 가이드 박스 업데이트
+    const hintBox = document.getElementById('link-action-hint-box');
+    const hintText = document.getElementById('link-action-hint-text');
+    if (hintBox && hintText) {
+      if (url && (url.includes('coupang.com') || url.includes('ohou.se') || url.includes('ozip.to'))) {
+        const isCoupang = url.includes('coupang');
+        hintBox.style.display = 'block';
+        hintText.innerHTML = isCoupang
+          ? '🚀 <strong>쿠팡 제휴 링크 연결 완료!</strong> 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요!'
+          : '🏠 <strong>오늘의집 링크 연결 완료!</strong> 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요!';
+      } else if (url && url.startsWith('http')) {
+        hintBox.style.display = 'block';
+        hintText.innerHTML = '✅ <strong>제휴 링크 연결 완료!</strong> 이제 아래 사진 영역에서 [복사한 사진 붙여넣기] 또는 [캡처 사진 올리기]를 진행해주세요.';
+      } else {
+        hintBox.style.display = 'none';
+      }
     }
   }
 
@@ -9763,43 +10037,16 @@ function startViralMakerApp() {
     const currentName = inputProductName ? inputProductName.value.trim() : '';
 
     if (isDirectPaste) {
-      // 사진만 복사되어 들어온 경우 이전 상품명과 섞이는 것 방지
-      setTimeout(() => {
-        const promptMsg = currentName
-          ? `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n\n현재 이전 제품명("${currentName}")이 남아있습니다.\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`
-          : `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`;
-
-        const userInput = prompt(promptMsg, '');
-        if (userInput && userInput.trim()) {
-          const cleanName = userInput.trim();
-          state.product.name = cleanName;
-          if (inputProductName) inputProductName.value = cleanName;
-          if (selectedViralTitle) selectedViralTitle.textContent = cleanName;
-
-          // 메모도 새 상품에 맞게 갱신
-          if (inputMemo) {
-            inputMemo.value = `${cleanName} 실사용 추천 찐후기`;
-            state.product.memo = inputMemo.value;
-          }
-
-          // 카테고리 자동 추론 (수박 -> food_diet 등)
-          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
-            state.product.category = ContentGenerator.inferCategory(state.product);
-          }
-
-          saveCurrentSession(true);
-
-          showToast(`🍉 '${cleanName}'으로 상품 정보가 갱신되었습니다! 바로 [✨ 1초 만에 완성하기]를 눌러주세요. ✨`, 3500);
-        } else {
-          showToast('📷 새 사진 적용 완료! 상단 [상품명] 입력창에 제품명을 적어주세요.', 3500);
-          if (inputProductName) {
-            inputProductName.focus();
-            inputProductName.select();
-          }
+      // 사진만 복사되어 들어온 경우: 방해되는 prompt() 제거하고 스마트 인라인 안내
+      showToast('📸 쇼핑몰 제품 사진이 카드뉴스에 즉시 장착되었습니다! (4단 앵글 연출 ON) ✨', 3500);
+      if (!currentName || currentName.includes('계란말이') || currentName.includes('넥케어')) {
+        if (inputProductName) {
+          inputProductName.placeholder = '제품명을 2~3글자로 가볍게 적어주세요 (예: 당도선별 꿀수박)';
+          inputProductName.focus();
         }
-      }, 150);
+      }
     } else {
-      showToast('📸 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+      showToast('📸 제품 사진이 카드뉴스에 즉시 적용되었습니다! (4단 앵글 연출 ON) ✨');
     }
   }
 
@@ -9840,32 +10087,44 @@ function startViralMakerApp() {
     });
   }
 
-  // 2. 3-Way 방식 탭 제어
+  // 2. 2대 원터치 사진 액션 바인딩
+  const btnPrimaryPastePhoto = document.getElementById('btn-primary-paste-photo');
+  const btnPrimaryUploadPhoto = document.getElementById('btn-primary-upload-photo');
+  const btnTogglePhotoUrl = document.getElementById('btn-toggle-photo-url');
+
+  if (btnPrimaryPastePhoto) {
+    btnPrimaryPastePhoto.addEventListener('click', async () => {
+      await pasteImageFromClipboard();
+    });
+  }
+
+  if (btnPrimaryUploadPhoto && mediaFileInput) {
+    btnPrimaryUploadPhoto.addEventListener('click', () => {
+      mediaFileInput.click();
+    });
+  }
+
+  if (btnTogglePhotoUrl && panelPhotoUrl) {
+    btnTogglePhotoUrl.addEventListener('click', () => {
+      const isHidden = panelPhotoUrl.style.display === 'none' || !panelPhotoUrl.style.display;
+      panelPhotoUrl.style.display = isHidden ? 'block' : 'none';
+      btnTogglePhotoUrl.textContent = isHidden ? '🔗 이미지 웹 주소(URL) 입력 닫기 ▴' : '🔗 이미지 웹 주소(URL)로 직접 입력하기 ▾';
+      if (isHidden && inputImageUrl) inputImageUrl.focus();
+    });
+  }
+
+  // 호환용 숨김 버튼 연동 (기존 탭 로직 안전 유지)
   if (btnTabMethodUrl && btnTabMethodClipboard && btnTabMethodFile) {
     btnTabMethodUrl.addEventListener('click', () => {
-      btnTabMethodUrl.classList.add('active');
-      btnTabMethodClipboard.classList.remove('active');
-      btnTabMethodFile.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
       if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
       if (inputImageUrl) inputImageUrl.focus();
     });
 
     btnTabMethodClipboard.addEventListener('click', async () => {
-      btnTabMethodClipboard.classList.add('active');
-      btnTabMethodUrl.classList.remove('active');
-      btnTabMethodFile.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
-      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       await pasteImageFromClipboard();
     });
 
     btnTabMethodFile.addEventListener('click', () => {
-      btnTabMethodFile.classList.add('active');
-      btnTabMethodUrl.classList.remove('active');
-      btnTabMethodClipboard.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
-      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (mediaFileInput) mediaFileInput.click();
     });
   }
@@ -9914,6 +10173,12 @@ function startViralMakerApp() {
 
   // 4. 전역 붙여넣기(Paste) 이벤트 지원 (스마트폰/PC 어디서나 사진 복사 후 붙여넣으면 즉시 감지)
   window.addEventListener('paste', (e) => {
+    // 텍스트 입력창에서 텍스트를 붙여넣는 중이면 텍스트 붙여넣기 방해 안 함
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.clipboardData && e.clipboardData.getData('text')) {
+      // 단, 붙여넣은 데이터가 이미지 파일인 경우는 처리
+      if (!e.clipboardData.types.includes('Files')) return;
+    }
+
     if (e.clipboardData && e.clipboardData.items) {
       for (const item of e.clipboardData.items) {
         if (item.type.indexOf('image') !== -1) {
@@ -9928,6 +10193,56 @@ function startViralMakerApp() {
             return;
           }
         }
+      }
+    }
+  });
+
+  // 4-1. 전역 드래그 앤 드롭(Drag & Drop) 사진 지원 (쇼핑몰 사진이나 캡처 파일 끌어다 놓기)
+  window.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  window.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+      if (files.length > 0) {
+        if (files.length === 1) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            onNewProductImageAttached(ev.target.result, false);
+          };
+          reader.readAsDataURL(files[0]);
+        } else {
+          // 다중 이미지 드롭 시 슬롯 순차 배분
+          let loaded = [];
+          files.slice(0, 4).forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              loaded.push({ idx, data: ev.target.result });
+              if (loaded.length === Math.min(files.length, 4)) {
+                loaded.sort((a, b) => a.idx - b.idx);
+                onNewProductImageAttached(loaded[0].data, false);
+                loaded.forEach(item => {
+                  CardNewsStudio.setSlideImage(item.idx, item.data);
+                });
+                renderMultiPhotoSlots();
+                showToast(`🎉 ${loaded.length}장의 사진이 카드뉴스 1~${loaded.length}컷에 순서대로 자동 배분되었습니다! ✨`);
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+        return;
+      }
+    }
+
+    // HTML 이미지 요소 드래그 앤 드롭 시
+    const htmlData = e.dataTransfer ? e.dataTransfer.getData('text/html') : '';
+    if (htmlData) {
+      const match = htmlData.match(/src=["'](https?:\/\/[^"']+)["']/i);
+      if (match && match[1]) {
+        applyImageUrlDirectly(match[1]);
       }
     }
   });

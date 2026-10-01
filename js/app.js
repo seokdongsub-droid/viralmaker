@@ -563,10 +563,16 @@ function startViralMakerApp() {
   async function autoFetchProductMetadata(url) {
     if (!url || !url.startsWith('http')) return null;
 
+    // 💡 쿠팡(Akamai)과 오늘의집(Cloudflare)은 봇 차단 WAF로 인해 프록시 스크래핑이 원천 차단되므로 헛도는 4.5초 대기를 즉시 스킵
+    const isAntiBotMall = /(coupang\.com|link\.coupang\.com|ohou\.se|ozip\.to)/i.test(url);
+    if (isAntiBotMall) {
+      return null;
+    }
+
     try {
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4500); // 4.5초 타임아웃
+      const timeoutId = setTimeout(() => controller.abort(), 2000); // 2초 빠른 타임아웃
       const resp = await fetch(proxyUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
 
@@ -653,16 +659,15 @@ function startViralMakerApp() {
       }
     }
 
-    // 쿠팡 봇 차단/단축링크로 인해 상품명을 전혀 못 읽어온 경우: 1초 퀵 프롬프트 폴백!
+    // 쿠팡/오늘의집 단축링크 등으로 인해 상품명을 못 읽어온 경우: 자연스러운 기본 상품명 세팅 & 부드러운 가이드
     if (!determinedTitle || determinedTitle === '화제의 인기 추천템') {
-      const quickInput = prompt(
-        '💡 쿠팡/쇼핑몰의 보안 봇 차단 정책으로 상품명을 자동으로 읽어오지 못했습니다.\n상품명이 무엇인가요? (예: 5구 멀티탭, 모던 장스탠드):',
-        ''
-      );
-      if (quickInput && quickInput.trim()) {
-        determinedTitle = quickInput.trim();
-      } else {
-        determinedTitle = (detectedPlat === 'coupang' ? '쿠팡 로켓 추천템' : (detectedPlat === 'ohou' ? '오늘의집 인기 리빙템' : 'SNS 화제의 꿀템'));
+      determinedTitle = (detectedPlat === 'coupang' ? '쿠팡 로켓 추천템' : (detectedPlat === 'ohou' ? '오늘의집 감성 리빙템' : 'SNS 화제의 꿀템'));
+      showToast('💡 제휴 링크 연결 완료! 상품명을 2~3글자로 가볍게 수정해주세요. ✨', 3500);
+      if (inputProductName) {
+        setTimeout(() => {
+          inputProductName.focus();
+          inputProductName.select();
+        }, 300);
       }
     }
 
@@ -856,14 +861,11 @@ function startViralMakerApp() {
     }
 
     if (!clipText || !clipText.trim()) {
-      clipText = prompt(
-        '📋 오늘의집이나 쿠팡에서 복사하신 링크 또는 공유 텍스트를 여기에 붙여넣어 주세요 (Ctrl+V):',
-        ''
-      );
-    }
-
-    if (!clipText || !clipText.trim()) {
-      showToast('⚠️ 복사된 링크나 상품 정보가 없습니다. 쇼핑몰에서 링크 복사 후 다시 눌러주세요.');
+      showToast('💡 복사된 링크나 상품 정보가 없습니다. 오늘의집이나 쿠팡에서 [공유하기] 문구 복사 후 다시 눌러주세요.');
+      if (inputLink) {
+        inputLink.focus();
+        inputLink.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
@@ -1115,6 +1117,24 @@ function startViralMakerApp() {
       badgeModeALinkStatus.textContent = '✅ 내 제휴 링크 적용됨 (수익 적립 OK)';
       badgeModeALinkStatus.style.background = 'rgba(16, 185, 129, 0.2)';
       badgeModeALinkStatus.style.color = '#34d399';
+    }
+
+    // 💡 실시간 다음 행동 가이드 박스 업데이트
+    const hintBox = document.getElementById('link-action-hint-box');
+    const hintText = document.getElementById('link-action-hint-text');
+    if (hintBox && hintText) {
+      if (url && (url.includes('coupang.com') || url.includes('ohou.se') || url.includes('ozip.to'))) {
+        const isCoupang = url.includes('coupang');
+        hintBox.style.display = 'block';
+        hintText.innerHTML = isCoupang
+          ? '🚀 <strong>쿠팡 제휴 링크 연결 완료!</strong> 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요!'
+          : '🏠 <strong>오늘의집 링크 연결 완료!</strong> 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong>를 터치하세요!';
+      } else if (url && url.startsWith('http')) {
+        hintBox.style.display = 'block';
+        hintText.innerHTML = '✅ <strong>제휴 링크 연결 완료!</strong> 이제 아래 사진 영역에서 [복사한 사진 붙여넣기] 또는 [캡처 사진 올리기]를 진행해주세요.';
+      } else {
+        hintBox.style.display = 'none';
+      }
     }
   }
 
@@ -1606,43 +1626,16 @@ function startViralMakerApp() {
     const currentName = inputProductName ? inputProductName.value.trim() : '';
 
     if (isDirectPaste) {
-      // 사진만 복사되어 들어온 경우 이전 상품명과 섞이는 것 방지
-      setTimeout(() => {
-        const promptMsg = currentName
-          ? `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n\n현재 이전 제품명("${currentName}")이 남아있습니다.\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`
-          : `📷 새 제품 사진이 카드뉴스에 적용되었습니다!\n새 사진에 맞는 상품명을 입력해주세요 (예: 당도선별 꿀수박):`;
-
-        const userInput = prompt(promptMsg, '');
-        if (userInput && userInput.trim()) {
-          const cleanName = userInput.trim();
-          state.product.name = cleanName;
-          if (inputProductName) inputProductName.value = cleanName;
-          if (selectedViralTitle) selectedViralTitle.textContent = cleanName;
-
-          // 메모도 새 상품에 맞게 갱신
-          if (inputMemo) {
-            inputMemo.value = `${cleanName} 실사용 추천 찐후기`;
-            state.product.memo = inputMemo.value;
-          }
-
-          // 카테고리 자동 추론 (수박 -> food_diet 등)
-          if (typeof ContentGenerator !== 'undefined' && ContentGenerator.inferCategory) {
-            state.product.category = ContentGenerator.inferCategory(state.product);
-          }
-
-          saveCurrentSession(true);
-
-          showToast(`🍉 '${cleanName}'으로 상품 정보가 갱신되었습니다! 바로 [✨ 1초 만에 완성하기]를 눌러주세요. ✨`, 3500);
-        } else {
-          showToast('📷 새 사진 적용 완료! 상단 [상품명] 입력창에 제품명을 적어주세요.', 3500);
-          if (inputProductName) {
-            inputProductName.focus();
-            inputProductName.select();
-          }
+      // 사진만 복사되어 들어온 경우: 방해되는 prompt() 제거하고 스마트 인라인 안내
+      showToast('📸 쇼핑몰 제품 사진이 카드뉴스에 즉시 장착되었습니다! (4단 앵글 연출 ON) ✨', 3500);
+      if (!currentName || currentName.includes('계란말이') || currentName.includes('넥케어')) {
+        if (inputProductName) {
+          inputProductName.placeholder = '제품명을 2~3글자로 가볍게 적어주세요 (예: 당도선별 꿀수박)';
+          inputProductName.focus();
         }
-      }, 150);
+      }
     } else {
-      showToast('📸 제품 사진이 카드뉴스에 즉시 적용되었습니다! ✨');
+      showToast('📸 제품 사진이 카드뉴스에 즉시 적용되었습니다! (4단 앵글 연출 ON) ✨');
     }
   }
 
@@ -1683,32 +1676,44 @@ function startViralMakerApp() {
     });
   }
 
-  // 2. 3-Way 방식 탭 제어
+  // 2. 2대 원터치 사진 액션 바인딩
+  const btnPrimaryPastePhoto = document.getElementById('btn-primary-paste-photo');
+  const btnPrimaryUploadPhoto = document.getElementById('btn-primary-upload-photo');
+  const btnTogglePhotoUrl = document.getElementById('btn-toggle-photo-url');
+
+  if (btnPrimaryPastePhoto) {
+    btnPrimaryPastePhoto.addEventListener('click', async () => {
+      await pasteImageFromClipboard();
+    });
+  }
+
+  if (btnPrimaryUploadPhoto && mediaFileInput) {
+    btnPrimaryUploadPhoto.addEventListener('click', () => {
+      mediaFileInput.click();
+    });
+  }
+
+  if (btnTogglePhotoUrl && panelPhotoUrl) {
+    btnTogglePhotoUrl.addEventListener('click', () => {
+      const isHidden = panelPhotoUrl.style.display === 'none' || !panelPhotoUrl.style.display;
+      panelPhotoUrl.style.display = isHidden ? 'block' : 'none';
+      btnTogglePhotoUrl.textContent = isHidden ? '🔗 이미지 웹 주소(URL) 입력 닫기 ▴' : '🔗 이미지 웹 주소(URL)로 직접 입력하기 ▾';
+      if (isHidden && inputImageUrl) inputImageUrl.focus();
+    });
+  }
+
+  // 호환용 숨김 버튼 연동 (기존 탭 로직 안전 유지)
   if (btnTabMethodUrl && btnTabMethodClipboard && btnTabMethodFile) {
     btnTabMethodUrl.addEventListener('click', () => {
-      btnTabMethodUrl.classList.add('active');
-      btnTabMethodClipboard.classList.remove('active');
-      btnTabMethodFile.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
       if (panelPhotoUrl) panelPhotoUrl.style.display = 'block';
       if (inputImageUrl) inputImageUrl.focus();
     });
 
     btnTabMethodClipboard.addEventListener('click', async () => {
-      btnTabMethodClipboard.classList.add('active');
-      btnTabMethodUrl.classList.remove('active');
-      btnTabMethodFile.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
-      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       await pasteImageFromClipboard();
     });
 
     btnTabMethodFile.addEventListener('click', () => {
-      btnTabMethodFile.classList.add('active');
-      btnTabMethodUrl.classList.remove('active');
-      btnTabMethodClipboard.classList.remove('active');
-      if (btnTabMethodCollage) btnTabMethodCollage.classList.remove('active');
-      if (panelPhotoUrl) panelPhotoUrl.style.display = 'none';
       if (mediaFileInput) mediaFileInput.click();
     });
   }
@@ -1757,6 +1762,12 @@ function startViralMakerApp() {
 
   // 4. 전역 붙여넣기(Paste) 이벤트 지원 (스마트폰/PC 어디서나 사진 복사 후 붙여넣으면 즉시 감지)
   window.addEventListener('paste', (e) => {
+    // 텍스트 입력창에서 텍스트를 붙여넣는 중이면 텍스트 붙여넣기 방해 안 함
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.clipboardData && e.clipboardData.getData('text')) {
+      // 단, 붙여넣은 데이터가 이미지 파일인 경우는 처리
+      if (!e.clipboardData.types.includes('Files')) return;
+    }
+
     if (e.clipboardData && e.clipboardData.items) {
       for (const item of e.clipboardData.items) {
         if (item.type.indexOf('image') !== -1) {
@@ -1771,6 +1782,56 @@ function startViralMakerApp() {
             return;
           }
         }
+      }
+    }
+  });
+
+  // 4-1. 전역 드래그 앤 드롭(Drag & Drop) 사진 지원 (쇼핑몰 사진이나 캡처 파일 끌어다 놓기)
+  window.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  window.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+      if (files.length > 0) {
+        if (files.length === 1) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            onNewProductImageAttached(ev.target.result, false);
+          };
+          reader.readAsDataURL(files[0]);
+        } else {
+          // 다중 이미지 드롭 시 슬롯 순차 배분
+          let loaded = [];
+          files.slice(0, 4).forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              loaded.push({ idx, data: ev.target.result });
+              if (loaded.length === Math.min(files.length, 4)) {
+                loaded.sort((a, b) => a.idx - b.idx);
+                onNewProductImageAttached(loaded[0].data, false);
+                loaded.forEach(item => {
+                  CardNewsStudio.setSlideImage(item.idx, item.data);
+                });
+                renderMultiPhotoSlots();
+                showToast(`🎉 ${loaded.length}장의 사진이 카드뉴스 1~${loaded.length}컷에 순서대로 자동 배분되었습니다! ✨`);
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+        return;
+      }
+    }
+
+    // HTML 이미지 요소 드래그 앤 드롭 시
+    const htmlData = e.dataTransfer ? e.dataTransfer.getData('text/html') : '';
+    if (htmlData) {
+      const match = htmlData.match(/src=["'](https?:\/\/[^"']+)["']/i);
+      if (match && match[1]) {
+        applyImageUrlDirectly(match[1]);
       }
     }
   });

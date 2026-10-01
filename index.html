@@ -40,7 +40,7 @@
         <div class="logo-icon">🚀</div>
         <div>
           <span class="logo-text">ViralMaker</span>
-          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.8 실전 제휴스튜디오</span>
+          <span class="logo-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border-color: rgba(16, 185, 129, 0.4); font-weight: 800;">v3.9 캡처&amp;복사 스튜디오</span>
         </div>
       </div>
       <div class="header-actions">
@@ -66,9 +66,9 @@
     <div style="background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(99, 102, 241, 0.18)); border-bottom: 1px solid rgba(16, 185, 129, 0.35); padding: 7px 14px; font-size: 11.5px; color: #34d399; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-        <span><strong>v3.8 실전 제휴마케팅 1초 스튜디오 (고객 찐후기 &amp; 4컷 카드뉴스 자동 완성)</strong></span>
+        <span><strong>v3.9 실전 쇼핑몰 1초 캡처&amp;복사 스튜디오 (쿠팡·오늘의집 3초 연동)</strong></span>
       </div>
-      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.8_' + Date.now());" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+      <button type="button" id="btn-force-refresh" onclick="window.location.replace(window.location.origin + window.location.pathname + '?v=3.9_' + Date.now());" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
         <span>🔄</span> <span>강력 새로고침</span>
       </button>
     </div>
@@ -146,16 +146,21 @@
             쿠팡 · 오늘의집 · 마켓컬리 · 오아시스 · 스마트스토어 등 모든 쇼핑몰의 <strong>링크, 사진, 실제 구매 고객 찐후기</strong>를 넣으면 판매 전환율 높은 홍보물(스레드 글 + 4컷 카드뉴스)이 1초 만에 완성됩니다!
           </p>
 
-          <!-- ⚡ 1초 원클릭 링크/공유문구 가져오기 바 -->
-          <div id="quick-import-card" class="quick-import-card" style="margin-bottom: 10px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(99, 102, 241, 0.16)); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;">
-              <span style="font-size: 22px;">⚡</span>
+          <!-- ⚡ 실전 3초 완성 워크플로우 & 원클릭 복사 불러오기 바 -->
+          <div id="quick-import-card" class="quick-import-card" style="margin-bottom: 12px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(99, 102, 241, 0.18)); border: 1.5px solid rgba(56, 189, 248, 0.55); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 240px;">
+              <span style="font-size: 24px;">⚡</span>
               <div>
-                <div style="font-size: 12.5px; font-weight: 800; color: #fff;">오늘의집 / 쿠팡 / 마켓컬리에서 [링크 복사] 하셨나요?</div>
-                <div style="font-size: 10.5px; color: #bae6fd;">이 버튼을 누르면 복사하신 <strong>상품명과 링크</strong>가 1초 만에 자동 세팅됩니다!</div>
+                <div style="font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
+                  <span>오늘의집 · 쿠팡 앱에서 [공유하기 / 링크 복사] 하셨나요?</span>
+                  <span style="font-size: 10px; background: #0284c7; color: #fff; padding: 1px 6px; border-radius: 4px;">현실적 1초 해결</span>
+                </div>
+                <div style="font-size: 11px; color: #bae6fd; margin-top: 2px;">
+                  아래 버튼을 누르면 복사하신 <strong>상품명과 제휴 링크</strong>가 0.1초 만에 자동 분리 세팅됩니다!
+                </div>
               </div>
             </div>
-            <button type="button" id="btn-quick-import-shopping-link" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; font-weight: 800; font-size: 12px; padding: 8px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35); white-space: nowrap;">
+            <button type="button" id="btn-quick-import-shopping-link" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: none; color: #fff; font-weight: 800; font-size: 12.5px; padding: 9px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 7px; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4); white-space: nowrap;">
               <span>📋</span> <span>복사한 상품/링크 즉시 불러오기</span>
             </button>
           </div>
@@ -202,7 +207,7 @@
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
                 <label for="product-link" id="label-mode-a-link-title" style="font-size: 12px; font-weight: 800; color: #fbbf24; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                   <span class="step-num-badge">1</span>
-                  <span>💰 제품 링크 (내 제휴 수익 링크):</span>
+                  <span>💰 제품 링크 (쿠팡/오늘의집 [공유하기] 문구 또는 링크 붙여넣기):</span>
                 </label>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span id="mode-b-detected-badge" class="platform-pill" style="font-size: 10.5px;">🚀 쿠팡 감지</span>
@@ -210,10 +215,15 @@
                 </div>
               </div>
               <div style="display: flex; gap: 6px;">
-                <input type="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="쇼핑몰 제품 링크 붙여넣기 (예: 오늘의집, 쿠팡, 컬리, 오아시스, 스마트스토어 링크)" value="" required>
+                <input type="url" id="product-link" class="input-control" style="font-size: 12px; padding: 8px 10px;" placeholder="오늘의집/쿠팡 앱에서 [공유하기] 문구나 제품 링크 붙여넣기" value="" required>
                 <!-- 호환용 숨김 입력 필드 -->
                 <input type="hidden" id="input-mode-a-real-link" value="">
                 <button type="button" id="btn-paste-mode-a-real-link" class="btn-header" style="font-size: 11px; padding: 6px 12px; white-space: nowrap; font-weight: 700; background: var(--primary); color: #fff; border-color: var(--primary);">📋 붙여넣기</button>
+              </div>
+              
+              <!-- 💡 링크 입력 후 실시간 행동 안내 힌트 바 -->
+              <div id="link-action-hint-box" style="display: none; margin-top: 8px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 7px 10px; font-size: 11px; color: #34d399; line-height: 1.4;">
+                <span id="link-action-hint-text">🚀 제휴 링크 연결 완료! 앱에서 대표 사진을 [복사]하거나 [캡처]하여 아래 [사진 붙여넣기]를 눌러주세요.</span>
               </div>
               
               <!-- 5대 제휴몰 내 링크 검색 툴바 -->
@@ -285,7 +295,7 @@
         </div>
 
         <!-- 사진/동영상 첨부: 1장 또는 여러 장 (스마트 5단 앵글 연출) -->
-        <div class="section-card photo-upload-card">
+        <div class="section-card photo-upload-card" id="section-photo-upload">
           <div class="section-title" style="margin-bottom: 4px;">
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
               <div style="display: flex; align-items: center; gap: 6px;">
@@ -299,23 +309,67 @@
             💡 <strong>쇼핑몰 상세페이지 스크린샷(캡처) 1장만 첨부</strong>해도 슬라이드별 맞춤 앵글로 카드뉴스가 자동 완성됩니다!
           </p>
 
-          <!-- 🚀 제휴몰 제품 사진 초간단 첨부 4-Way 툴바 -->
-          <div class="photo-method-tabs">
-            <button type="button" class="photo-method-btn active" id="btn-tab-method-file">
-              <span>📁</span> <span>내 사진첩/스크린샷</span>
+          <!-- 💡 쿠팡/오늘의집 3초 사진 가져오기 가이드 배너 -->
+          <div class="shopping-photo-guide-card">
+            <div class="guide-header">
+              <span class="guide-title">💡 오늘의집 · 쿠팡 앱에서 사진 3초 만에 가져오는 법</span>
+              <span class="guide-tag">가장 현실적 &amp; 100% 성공</span>
+            </div>
+            <div class="guide-steps-grid">
+              <div class="guide-step-box">
+                <span class="step-pill">방법 ①</span>
+                <div class="step-desc">
+                  쇼핑몰 앱에서 사진을 <strong>손가락으로 꾹 눌러 [사진 복사]</strong> (PC는 우클릭 이미지 복사) ➔ 아래 <strong>[📋 복사한 사진 즉시 붙여넣기]</strong> 터치!
+                </div>
+              </div>
+              <div class="guide-step-box">
+                <span class="step-pill" style="background: #0284c7;">방법 ②</span>
+                <div class="step-desc">
+                  쇼핑몰 화면을 <strong>스크린샷(캡처)</strong> ➔ 아래 <strong>[📸 캡처/사진첩 사진 올리기]</strong> 터치! (1장만 올려도 4단 앵글 자동 연출)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌟 실전 2대 원터치 사진 첨부 액션 그리드 -->
+          <div class="photo-primary-actions-grid">
+            <!-- 원터치 액션 1: 복사한 사진 즉시 붙여넣기 (메인 강조) -->
+            <button type="button" id="btn-primary-paste-photo" class="btn-photo-action-paste">
+              <div class="btn-photo-icon-box">📋</div>
+              <div class="btn-photo-content">
+                <strong class="btn-photo-title">복사한 사진 즉시 붙여넣기</strong>
+                <span class="btn-photo-desc">쇼핑몰에서 사진 꾹 눌러 [복사] 후 터치! (PC: Ctrl+V)</span>
+              </div>
+              <span class="btn-photo-badge">⚡ 1초 장착</span>
             </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-clipboard">
-              <span>📋</span> <span>사진 클립보드</span>
-            </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-url">
-              <span>🔗</span> <span>이미지 주소 복붙</span>
-            </button>
-            <button type="button" class="photo-method-btn" id="btn-tab-method-collage" style="color: var(--accent-pink);" title="제미나이가 생성한 N분할 사진을 1초 만에 개별 슬라이드로 자동 쪼개주는 단축 기능">
-              <span>✂️</span> <span id="lbl-tab-method-collage">제미나이 4컷 자동 분할</span>
+
+            <!-- 원터치 액션 2: 캡처 / 사진첩 파일 올리기 -->
+            <button type="button" id="btn-primary-upload-photo" class="btn-photo-action-upload">
+              <div class="btn-photo-icon-box">📸</div>
+              <div class="btn-photo-content">
+                <strong class="btn-photo-title">캡처 / 사진첩 사진 올리기</strong>
+                <span class="btn-photo-desc">스마트폰 캡처 1장만 올려도 4단 앵글 자동 연출!</span>
+              </div>
+              <span class="btn-photo-badge" style="background: rgba(56, 189, 248, 0.25); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.4);">📁 1~4장 선택</span>
             </button>
           </div>
 
-          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (URL 탭 클릭 시 표시) -->
+          <!-- 호환용 숨김 버튼들 (기존 JS 연동 유지) -->
+          <div style="display: none;">
+            <button type="button" id="btn-tab-method-file"></button>
+            <button type="button" id="btn-tab-method-clipboard"></button>
+            <button type="button" id="btn-tab-method-url"></button>
+            <button type="button" id="btn-tab-method-collage"></button>
+          </div>
+
+          <!-- 보조 옵션: 이미지 웹 주소(URL) 직접 입력 아코디언 토글 -->
+          <div class="photo-secondary-toggle">
+            <button type="button" id="btn-toggle-photo-url" class="btn-toggle-sub-method">
+              🔗 이미지 웹 주소(URL)로 직접 입력하기 ▾
+            </button>
+          </div>
+
+          <!-- 방법: 제휴몰 사진 주소(URL) 직접 붙여넣기 박스 (토글 시 표시) -->
           <div id="panel-photo-url" style="display: none; margin-bottom: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.28); border-radius: var(--radius-sm); padding: 10px 12px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-light); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
               <span>🔗 쇼핑몰 제품 이미지 웹 주소(URL) 붙여넣기</span>
@@ -328,7 +382,7 @@
               </button>
             </div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
-              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [내 사진첩/스크린샷]으로 캡처 1장을 올리시는 것이 가장 빠릅니다!
+              💡 <strong>팁:</strong> 웹 브라우저에서 사진을 길게 누르고 [이미지 주소 복사]가 가능한 경우 URL을 넣어주세요. 모바일 앱 환경에서는 위 [복사한 사진 붙여넣기] 또는 [캡처 사진 올리기]가 가장 빠릅니다!
             </div>
           </div>
 
@@ -337,7 +391,7 @@
             <img id="upload-preview" class="upload-preview" alt="미리보기">
             <div id="upload-prompt">
               <div style="font-size: 24px; margin-bottom: 2px;">📷 / 🖼️</div>
-              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">터치하여 쇼핑몰 캡처/제품 사진 선택 (또는 이미지 드래그&amp;드롭)</div>
               <div style="font-size: 11px; color: var(--text-muted);">쇼핑몰 화면 캡처 1장만 올려도 OK! (여러 장 첨부 시 1~4컷에 순서대로 자동 배분)</div>
             </div>
           </label>
@@ -1228,10 +1282,10 @@
 
   </div>
 
-  <!-- Scripts (캐시 방지 v3.8 적용) -->
-  <script src="js/templates.js?v=3.8"></script>
-  <script src="js/generator.js?v=3.8"></script>
-  <script src="js/cardnews.js?v=3.8"></script>
-  <script src="js/app.js?v=3.8"></script>
+  <!-- Scripts (캐시 방지 v3.9 적용) -->
+  <script src="js/templates.js?v=3.9"></script>
+  <script src="js/generator.js?v=3.9"></script>
+  <script src="js/cardnews.js?v=3.9"></script>
+  <script src="js/app.js?v=3.9"></script>
 </body>
 </html>

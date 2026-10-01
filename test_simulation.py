@@ -48,7 +48,10 @@ required_dom_ids = [
     'threads-body-textarea',
     'threads-comment-textarea',
     'btn-copy-threads-body',
-    'btn-copy-threads-comment'
+    'btn-copy-threads-comment',
+    'btn-primary-paste-photo',
+    'btn-primary-upload-photo',
+    'link-action-hint-box'
 ]
 
 print("\n[검증 1] 필수 DOM ID 배치 검증:")
@@ -72,7 +75,11 @@ required_classes = [
     '.btn-clipboard-apply',
     '.recent-history-section',
     '.recent-chip',
-    '.session-save-badge'
+    '.session-save-badge',
+    '.shopping-photo-guide-card',
+    '.photo-primary-actions-grid',
+    '.btn-photo-action-paste',
+    '.btn-photo-action-upload'
 ]
 print("\n[검증 2] 신규 CSS 클래스 스타일 검증:")
 css_pass = True
