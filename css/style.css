@@ -2813,6 +2813,35 @@ body {
   color: #e2e8f0;
 }
 
+/* 🎞️ 4단계 카드뉴스 장수 원터치 선택 칩 */
+.photo-count-chip {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 7px;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.photo-count-chip:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #fff;
+}
+.photo-count-chip.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.25));
+  border-color: #34d399;
+  color: #34d399;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.25);
+}
+
+
 
 
 

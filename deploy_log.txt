@@ -1,4 +1,4 @@
-=== ViralMaker Deploy Log (2026-09-30 21:47:43) ===
+=== ViralMaker Deploy Log (2026-10-01 11:48:57) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
@@ -6,42 +6,51 @@
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
 M PROJECT.md
+ M css/style.css
  M deploy.py
  M deploy_log.txt
  M index.html
+ M js/app.js
  M sw.js
+ M test_simulation.py
  M viralmaker_portable.html
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
 warning: in the working copy of 'PROJECT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'css/style.css', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'sw.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test_simulation.py', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
 M  PROJECT.md
+M  css/style.css
 M  deploy.py
 M  deploy_log.txt
 M  index.html
+M  js/app.js
 M  sw.js
+M  test_simulation.py
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.8: 실전 제휴마케팅 1초 스튜디오 & 고객 찐후기 4컷 카드뉴스 엔진 (20260930_214743)
+▶ [Git Commit] 실행: git commit -m ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
   [출력]
-[main 26cf3f0] ViralMaker v3.8: 실전 제휴마케팅 1초 스튜디오 & 고객 찐후기 4컷 카드뉴스 엔진 (20260930_214743)
- 6 files changed, 40 insertions(+), 29 deletions(-)
+[main 4a90b4d] ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
+ 9 files changed, 872 insertions(+), 226 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+4a90b4d ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
 26cf3f0 ViralMaker v3.8: 실전 제휴마케팅 1초 스튜디오 & 고객 찐후기 4컷 카드뉴스 엔진 (20260930_214743)
 bbfb952 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_214532)
-d04eb34 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_181345)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -49,9 +58,9 @@ d04eb34 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   bbfb952..26cf3f0  main -> main
+   26cf3f0..4a90b4d  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.8_20260930_214743
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.9_20261001_114857
 
 === End of Log ===

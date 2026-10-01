@@ -1566,9 +1566,14 @@ function startViralMakerApp() {
         reader.readAsDataURL(file);
       }
     } else {
-      // 2장 이상 다중 사진 선택 시 (최대 5장 슬라이드 1~5번에 자동 순차 배분)
-      showToast(`📸 ${files.length}장의 사진을 슬라이드별로 배분하는 중...`);
-      const readPromises = files.slice(0, 5).map(f => {
+      // 2장 이상 다중 사진 선택 시: 첨부된 사진 장수에 맞춰 결과물 카드뉴스 장수도 즉시 자동 동기화!
+      const targetCount = Math.min(files.length, 5);
+      if (typeof syncSlideCountUI === 'function') {
+        syncSlideCountUI(targetCount);
+      }
+      showToast(`📸 ${files.length}장의 사진 감지! 카드뉴스도 [${targetCount}장 완성 모드]로 자동 연동되었습니다! ✨`, 3500);
+
+      const readPromises = files.slice(0, targetCount).map(f => {
         return new Promise((resolve) => {
           const r = new FileReader();
           r.onload = ev => resolve(ev.target.result);
@@ -1583,13 +1588,18 @@ function startViralMakerApp() {
       });
       state.product.mediaSrc = dataUrls[0];
       CardNewsStudio.setUserMedia(dataUrls[0]);
-      uploadPreview.src = dataUrls[0];
-      uploadPreview.style.display = 'block';
-      uploadPrompt.style.display = 'none';
+      if (uploadPreview) {
+        uploadPreview.src = dataUrls[0];
+        uploadPreview.style.display = 'block';
+      }
+      if (uploadPrompt) uploadPrompt.style.display = 'none';
 
       CardNewsStudio.render();
       updateSlideSceneBar();
-      showToast(`🎉 ${dataUrls.length}장의 사진이 슬라이드 1~${dataUrls.length}번에 각각 배분되었습니다!`);
+      if (typeof renderMultiPhotoSlots === 'function') {
+        renderMultiPhotoSlots();
+      }
+      showToast(`🎉 ${dataUrls.length}장의 사진이 슬라이드 1~${dataUrls.length}번에 각각 배분되었습니다! (결과물 ${targetCount}장 완성)`);
 
       if (visionActionPanel) {
         visionActionPanel.style.display = 'block';
@@ -1803,20 +1813,26 @@ function startViralMakerApp() {
           };
           reader.readAsDataURL(files[0]);
         } else {
-          // 다중 이미지 드롭 시 슬롯 순차 배분
+          // 다중 이미지 드롭 시: 드롭된 장수에 맞춰 슬롯 및 결과물 장수 자동 연동
+          const targetCount = Math.min(files.length, 5);
+          if (typeof syncSlideCountUI === 'function') {
+            syncSlideCountUI(targetCount);
+          }
           let loaded = [];
-          files.slice(0, 4).forEach((file, idx) => {
+          files.slice(0, targetCount).forEach((file, idx) => {
             const reader = new FileReader();
             reader.onload = (ev) => {
               loaded.push({ idx, data: ev.target.result });
-              if (loaded.length === Math.min(files.length, 4)) {
+              if (loaded.length === targetCount) {
                 loaded.sort((a, b) => a.idx - b.idx);
                 onNewProductImageAttached(loaded[0].data, false);
                 loaded.forEach(item => {
                   CardNewsStudio.setSlideImage(item.idx, item.data);
                 });
-                renderMultiPhotoSlots();
-                showToast(`🎉 ${loaded.length}장의 사진이 카드뉴스 1~${loaded.length}컷에 순서대로 자동 배분되었습니다! ✨`);
+                if (typeof renderMultiPhotoSlots === 'function') {
+                  renderMultiPhotoSlots();
+                }
+                showToast(`🎉 ${loaded.length}장의 사진 감지! 카드뉴스도 [${targetCount}장 완성 모드]로 자동 연동 배분되었습니다! ✨`);
               }
             };
             reader.readAsDataURL(file);
@@ -2361,6 +2377,78 @@ function startViralMakerApp() {
     });
   }
 
+  // 📸 4단계 사진 첨부 슬롯 동적 렌더링 (2~5컷 완벽 연동)
+  function renderMultiPhotoSlots() {
+    const slotsContainer = document.getElementById('multi-photo-slots');
+    const statusBadge = document.getElementById('multi-photo-status-badge');
+    if (!slotsContainer) return;
+
+    const count = state.slideCount || 4;
+    const slotNamesMap = {
+      1: ['1컷 단독 피드'],
+      2: ['1컷 표지/비포', '2컷 애프터/해결'],
+      3: ['1컷 표지', '2컷 디테일/특징', '3컷 완성/구매CTA'],
+      4: ['1컷 표지', '2컷 실사용/조리', '3컷 디테일/단면', '4컷 완성/구매CTA'],
+      5: ['1컷 표지', '2컷 비포/고민', '3컷 실사용/액션', '4컷 디테일/스펙', '5컷 결과/구매CTA']
+    };
+    const slotNames = slotNamesMap[count] || Array.from({ length: count }, (_, i) => `${i + 1}컷 슬라이드`);
+
+    if (statusBadge) {
+      statusBadge.textContent = `${count}컷 카드뉴스 슬라이드 맞춤 배분 중`;
+    }
+
+    slotsContainer.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const slotEl = document.createElement('div');
+      slotEl.className = 'photo-slot' + (i === currentTargetSlot ? ' active' : '');
+      slotEl.dataset.slot = i;
+      slotEl.title = `${i + 1}번 슬라이드: ${slotNames[i]} (터치 시 이 슬롯 사진 교체)`;
+
+      const badge = document.createElement('div');
+      badge.className = 'slot-badge';
+      badge.textContent = slotNames[i];
+      slotEl.appendChild(badge);
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'slot-img-wrap';
+      imgWrap.id = `slot-thumb-${i}`;
+
+      const imgData = (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.slideImages && CardNewsStudio.slideImages[i])
+        ? CardNewsStudio.slideImages[i]
+        : (state.product.mediaSrc || null);
+
+      if (imgData) {
+        const thumbImg = document.createElement('img');
+        thumbImg.src = (typeof imgData === 'string') ? imgData : (imgData.src || '');
+        thumbImg.style.width = '100%';
+        thumbImg.style.height = '100%';
+        thumbImg.style.objectFit = 'cover';
+        thumbImg.style.borderRadius = '4px';
+        imgWrap.appendChild(thumbImg);
+      } else {
+        const textSpan = document.createElement('span');
+        textSpan.className = 'slot-text';
+        textSpan.textContent = `${i + 1}컷`;
+        imgWrap.appendChild(textSpan);
+      }
+
+      slotEl.appendChild(imgWrap);
+
+      slotEl.addEventListener('click', () => {
+        currentTargetSlot = i;
+        slotsContainer.querySelectorAll('.photo-slot').forEach(s => s.classList.remove('active'));
+        slotEl.classList.add('active');
+        if (typeof CardNewsStudio !== 'undefined' && CardNewsStudio.setSlideIndex) {
+          CardNewsStudio.setSlideIndex(i);
+        }
+        if (mediaFileInput) mediaFileInput.click();
+      });
+
+      slotsContainer.appendChild(slotEl);
+    }
+  }
+  window.renderMultiPhotoSlots = renderMultiPhotoSlots;
+
   function syncSlideCountUI(count) {
     count = parseInt(count, 10) || 4;
     if (count < 1) count = 1;
@@ -2396,6 +2484,18 @@ function startViralMakerApp() {
       inputCustomSlideCount.value = count;
     }
 
+    // 4단계 사진 장수 원터치 칩 동기화
+    const photoChips = document.querySelectorAll('#photo-slide-count-chips .photo-count-chip');
+    photoChips.forEach(chip => {
+      chip.classList.toggle('active', parseInt(chip.dataset.count, 10) === count);
+    });
+    const labelPhotoBadge = document.getElementById('label-photo-slide-count-badge');
+    if (labelPhotoBadge) {
+      labelPhotoBadge.textContent = `${count}장 완성`;
+    }
+
+    renderMultiPhotoSlots();
+
     if (promptCountBadge) promptCountBadge.textContent = `${count}장`;
     
     // 모바일/다운로드 버튼 텍스트 동적 동기화
@@ -2424,6 +2524,18 @@ function startViralMakerApp() {
     if (typeof updateSimulator === 'function') updateSimulator();
   }
   window.syncSlideCountUI = syncSlideCountUI;
+
+  // 0. 4단계 사진 완성 장수 칩 클릭 리스너
+  const photoSlideCountChips = document.getElementById('photo-slide-count-chips');
+  if (photoSlideCountChips) {
+    photoSlideCountChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.photo-count-chip');
+      if (!chip) return;
+      const cnt = parseInt(chip.dataset.count, 10) || 4;
+      syncSlideCountUI(cnt);
+      showToast(`🎞️ 카드뉴스 결과물이 [${cnt}장 완성 모드]로 설정되었습니다! ✨`);
+    });
+  }
 
   // 1. 드롭다운 선택 리스너
   if (selectSlideCount) {
@@ -3450,9 +3562,10 @@ function startViralMakerApp() {
   if (!isRestored) {
     renderPlatformSearchToolbar({ name: '', search: '추천템' }, 'coupang');
   }
+  syncSlideCountUI(state.slideCount || 4);
   renderRecentHistory();
   updateSlideSceneBar();
-  updateMultiPhotoSlots();
+  renderMultiPhotoSlots();
 
   // 브라우저 백그라운드 전환 및 복귀 라이프사이클 이벤트 리스너
   window.addEventListener('beforeunload', () => saveCurrentSession(true));
