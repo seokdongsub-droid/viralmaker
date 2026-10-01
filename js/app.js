@@ -3582,14 +3582,32 @@ function startViralMakerApp() {
   // 첫 진입 1초 후 클립보드 검사 시도 (브라우저 정책 허용 시)
   setTimeout(checkClipboardForShoppingLink, 1000);
 
-  // 🚀 PWA Web Share Target 및 쿼리 파라미터(?url=... or ?text=...) 자동 연동
+  // 🚀 PWA Web Share Target 및 쿼리 파라미터(?url=... or ?text=... or ?title=...) 자동 연동
   try {
     const urlParams = new URLSearchParams(window.location.search);
-    const sharedUrl = urlParams.get('url') || (urlParams.get('text') && urlParams.get('text').match(/https?:\/\/[^\s]+/)?.[0]);
-    if (sharedUrl && sharedUrl.startsWith('http')) {
-      setTimeout(() => {
-        triggerDirectThreadsPipeline(sharedUrl);
-      }, 700);
+    const rawTitle = urlParams.get('title') || '';
+    const rawText = urlParams.get('text') || '';
+    const rawUrl = urlParams.get('url') || '';
+    const combined = [rawTitle, rawText, rawUrl].filter(Boolean).join(' ');
+
+    if (combined && (combined.includes('http://') || combined.includes('https://'))) {
+      const shareInfo = (typeof ContentGenerator !== 'undefined' && ContentGenerator.extractShoppingShareInfo)
+        ? ContentGenerator.extractShoppingShareInfo(combined)
+        : null;
+
+      if (shareInfo && shareInfo.url) {
+        setTimeout(() => {
+          showToast(`⚡ [${shareInfo.platLabel}] "${shareInfo.title || '공유 상품'}" 감지 완료! 즉시 세팅 중...`, 3000);
+          triggerDirectThreadsPipeline(shareInfo.url, shareInfo.title);
+        }, 600);
+      } else {
+        const urlMatch = combined.match(/https?:\/\/[^\s"'<>]+/i);
+        if (urlMatch) {
+          setTimeout(() => {
+            triggerDirectThreadsPipeline(urlMatch[0], rawTitle || null);
+          }, 600);
+        }
+      }
     }
   } catch (e) {}
 }

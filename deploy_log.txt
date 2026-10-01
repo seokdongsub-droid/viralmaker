@@ -1,4 +1,4 @@
-=== ViralMaker Deploy Log (2026-10-01 11:48:57) ===
+=== ViralMaker Deploy Log (2026-10-01 12:05:55) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
@@ -40,17 +40,17 @@ M  test_simulation.py
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
+▶ [Git Commit] 실행: git commit -m ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_120555)
   [출력]
-[main 4a90b4d] ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
- 9 files changed, 872 insertions(+), 226 deletions(-)
+[main 389f914] ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_120555)
+ 9 files changed, 401 insertions(+), 62 deletions(-)
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+389f914 ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_120555)
 4a90b4d ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
 26cf3f0 ViralMaker v3.8: 실전 제휴마케팅 1초 스튜디오 & 고객 찐후기 4컷 카드뉴스 엔진 (20260930_214743)
-bbfb952 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드 링크 감지 & 최근 작업 히스토리 (20260930_214532)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -58,9 +58,9 @@ bbfb952 ViralMaker v3.7: 실시간 세션 자동 복원 & 스마트 클립보드
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   26cf3f0..4a90b4d  main -> main
+   4a90b4d..389f914  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=3.9_20261001_114857
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=4.0_20261001_120555
 
 === End of Log ===
