@@ -3607,10 +3607,33 @@ function startViralMakerApp() {
   const btnClosePwaModal = document.getElementById('btn-close-pwa-modal');
   const btnTriggerPwaInstall = document.getElementById('btn-trigger-pwa-install');
 
-  // Service Worker 등록
+  // 🔄 최신 버전 강제 새로고침 & 캐시 완전 소거 버튼
+  const btnForceRefresh = document.getElementById('btn-force-refresh');
+  if (btnForceRefresh) {
+    btnForceRefresh.addEventListener('click', async () => {
+      btnForceRefresh.innerHTML = '<span>⏳</span> <span>캐시 삭제 중...</span>';
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const reg of registrations) {
+            await reg.unregister();
+          }
+        }
+      } catch (e) {}
+      const freshTime = Date.now();
+      window.location.replace(window.location.origin + window.location.pathname + '?v=4.1_' + freshTime);
+    });
+  }
+
+  // Service Worker 등록 & 최신 버전 갱신 체크
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then((reg) => {
+        try { reg.update(); } catch (e) {}
         console.log('ViralMaker PWA Service Worker Registered:', reg.scope);
       }).catch((err) => {
         console.warn('PWA Service Worker registration failed:', err);

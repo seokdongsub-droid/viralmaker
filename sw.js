@@ -39,38 +39,28 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network-First for HTML/navigation, Stale-While-Revalidate for others
+// Fetch: 100% Network-First (모든 리소스 최신 서버 버전 우선 조회, 오프라인 시에만 캐시 사용)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
 
-  // HTML 문서 및 네비게이션 요청은 항상 네트워크(최신 서버 버전) 최우선 조회!
-  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const resClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-        }
-        return networkResponse;
-      }).catch(() => {
-        return caches.match(event.request).then(cached => cached || caches.match('./index.html'));
-      })
-    );
-    return;
-  }
-
-  // 기타 정적 리소스
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
+    fetch(event.request)
+      .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const resClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
         }
         return networkResponse;
-      }).catch(() => {/* offline */});
-
-      return cachedResponse || fetchPromise;
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+          return null;
+        });
+      })
   );
 });

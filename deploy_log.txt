@@ -1,41 +1,56 @@
-=== ViralMaker Deploy Log (2026-10-01 12:29:17) ===
+=== ViralMaker Deploy Log (2026-10-01 12:44:44) ===
 
 [1/3] 단독 포터블 파일(viralmaker_portable.html) 번들링...
   ✓ build_portable.py 실행 완료!
 
 ▶ [Git Status Before Add] 실행: git status -s
   [출력]
-M deploy_log.txt
+M PROJECT.md
+ M deploy.py
+ M deploy_log.txt
  M index.html
  M js/app.js
+ M js/generator.js
+ M sw.js
  M viralmaker_portable.html
+?? test_ohou_share.py
   [종료 코드]: 0
 
 ▶ [Git Add] 실행: git add -A
   [알림/오류]
+warning: in the working copy of 'PROJECT.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'deploy.py', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'js/app.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'sw.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test_ohou_share.py', LF will be replaced by CRLF the next time Git touches it
   [종료 코드]: 0
 
 ▶ [Git Status After Add] 실행: git status -s
   [출력]
+M  PROJECT.md
+M  deploy.py
 M  deploy_log.txt
 M  index.html
 M  js/app.js
+M  js/generator.js
+M  sw.js
+A  test_ohou_share.py
 M  viralmaker_portable.html
   [종료 코드]: 0
 
-▶ [Git Commit] 실행: git commit -m ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_122917)
+▶ [Git Commit] 실행: git commit -m ViralMaker v4.1: 오늘의집/쿠팡 스마트 링크 & 모바일 1초 붙여넣기 퍼펙트 연동 (20261001_124444)
   [출력]
-[main 2605ee6] ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_122917)
- 4 files changed, 56 insertions(+), 20 deletions(-)
+[main c06e4c1] ViralMaker v4.1: 오늘의집/쿠팡 스마트 링크 & 모바일 1초 붙여넣기 퍼펙트 연동 (20261001_124444)
+ 9 files changed, 555 insertions(+), 193 deletions(-)
+ create mode 100644 test_ohou_share.py
   [종료 코드]: 0
 
 ▶ [Recent Git Commits] 실행: git log -n 3 --oneline
   [출력]
+c06e4c1 ViralMaker v4.1: 오늘의집/쿠팡 스마트 링크 & 모바일 1초 붙여넣기 퍼펙트 연동 (20261001_124444)
 2605ee6 ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_122917)
 389f914 ViralMaker v4.0: 가변 N컷 이미지 갯수-결과물 100% 자동 연동 엔진 (20261001_120555)
-4a90b4d ViralMaker v3.9: 실전 쇼핑몰 1초 캡처&복사 스튜디오 & 쿠팡/오늘의집 3초 원터치 연동 (20261001_114857)
   [종료 코드]: 0
 
 [2/3] 깃허브 원격 서버로 전송 중 (Git Push)...
@@ -43,9 +58,9 @@ M  viralmaker_portable.html
 ▶ [Git Push] 실행: git push origin main --force
   [알림/오류]
 To https://github.com/seokdongsub-droid/viralmaker.git
-   389f914..2605ee6  main -> main
+   2605ee6..c06e4c1  main -> main
   [종료 코드]: 0
 
-배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=4.0_20261001_122917
+배포 성공 결과: https://seokdongsub-droid.github.io/viralmaker/?v=4.1_20261001_124444
 
 === End of Log ===
